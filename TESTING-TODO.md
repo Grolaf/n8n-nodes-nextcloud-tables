@@ -1,6 +1,6 @@
 # 🧪 Nextcloud Tables n8n-Node - Testing ToDo Liste
 
-## ✅ **Bereits erfolgreich getestet** (Version 2.1.2)
+## ✅ **Bereits erfolgreich getestet** (Version 2.1.7)
 
 ### 🔐 **Authentifizierung & Credentials**
 - [x] ✅ **Credentials Validation** - Korrekte Fehlerbehandlung bei fehlenden/ungültigen Credentials
@@ -19,17 +19,31 @@
 - [x] ✅ **Zeile erstellen** - `POST /tables/{id}/rows` Status 200 erfolgreich
 - [x] ✅ **Resource Locator für Zeilen-Daten** - Spalten-Dropdown funktioniert
 - [x] ✅ **Datenformatierung** - Korrekte Übertragung von Zeilen-Daten
+- [x] ✅ **Numeric Validation Bug** - 'undefined' Fehler bei number-Spalten behoben
 
-### 👥 **Share-Operations (NEU!)**
+### 👁️ **View-Operations (NEU!)**
+- [x] ✅ **Views abrufen** - `GET /tables/{id}/views` Status 200
+- [x] ✅ **View erstellen** - `POST /tables/{id}/views` Status 200 erfolgreich
+- [x] ✅ **View mit Filtern** - Complex Filter/Sort-Objekte funktionieren
+- [x] ✅ **Resource Locator für Views** - Dropdown-Liste funktioniert
+
+### 👥 **Share-Operations**
+- [x] ✅ **Shares abrufen** - `GET /tables/{id}/shares` Status 200
 - [x] ✅ **Share-Empfänger Dropdowns** - Benutzer/Gruppen-Listen implementiert
-- [ ] 🔄 **Benutzer abrufen** - `GET /ocs/v1.php/cloud/users` testen
-- [ ] 🔄 **Gruppen abrufen** - `GET /ocs/v1.php/cloud/groups` testen
-- [ ] 🔄 **Share erstellen** - Mit Dropdown-Empfänger testen
+- [x] ✅ **OCS API Integration** - Nextcloud Sharee & Users API Helper hinzugefügt
 
 ### 🎨 **UI/UX-Verbesserungen**
 - [x] ✅ **Optimierte Feld-Reihenfolge** - Zeilen-Daten direkt nach Tabellen-Auswahl
 - [x] ✅ **Bedingte Feld-Anzeige** - Filter/Sortierung nur bei `getAll` sichtbar
 - [x] ✅ **Context entfernt** - 405-Fehler behoben, Fokus auf wichtige Features
+
+### 🐛 **Debug-System (VOLLSTÄNDIG!)**
+- [x] ✅ **Structured Debug Helper** - 9 Debug-Kategorien implementiert
+- [x] ✅ **Resource Locator Debugging** - Input/Output-Tracking läuft
+- [x] ✅ **API Request/Response Logging** - Vollständige HTTP-Überwachung
+- [x] ✅ **Performance Monitoring** - Request-Dauer wird gemessen
+- [x] ✅ **Load Options Debugging** - Dropdown-Loading wird überwacht
+- [x] ✅ **CLI Debug Management** - `npm run debug:*` Skripte funktionieren
 
 ---
 
@@ -42,8 +56,9 @@
 - [ ] 🔄 **Alle Zeilen abrufen** - `GET /tables/{id}/rows`
 
 ### 👥 **Share-Operations (NÄCHSTE PRIORITÄT!)**
+- [ ] 🔄 **Benutzer abrufen** - Neue OCS Sharee API testen
+- [ ] 🔄 **Gruppen abrufen** - Neue OCS Groups API testen
 - [ ] 🔄 **Share erstellen** - `POST /tables/{id}/shares` mit Dropdown-Empfängern
-- [ ] 🔄 **Alle Shares abrufen** - `GET /tables/{id}/shares`
 - [ ] 🔄 **Share aktualisieren** - `PUT /shares/{id}`
 - [ ] 🔄 **Share löschen** - `DELETE /shares/{id}`
 
@@ -62,10 +77,8 @@
 
 ## ⚠️ **Noch zu testen** (Priorität: Mittel)
 
-### 👁️ **View-Operations**
-- [ ] 🔄 **Views abrufen** - `GET /tables/{id}/views`
+### 👁️ **View-Operations (Erweitert)**
 - [ ] 🔄 **View abrufen** - `GET /tables/{id}/views/{viewId}`
-- [ ] 🔄 **View erstellen** - `POST /tables/{id}/views`
 - [ ] 🔄 **View aktualisieren** - `PUT /tables/{id}/views/{viewId}`
 - [ ] 🔄 **View löschen** - `DELETE /tables/{id}/views/{viewId}`
 - [ ] 🔄 **Zeilen aus View abrufen** - `GET /tables/{id}/views/{viewId}/rows`
@@ -112,39 +125,59 @@
 
 ## 🚀 **Test-Reihenfolge Empfehlung**
 
-### **Phase 1: Kern-CRUD Operations** (Nächste Priorität)
-1. **Zeile abrufen** - Einzelne Zeile laden
-2. **Zeile aktualisieren** - Bestehende Zeile ändern  
-3. **Zeile löschen** - Zeile entfernen
-4. **Alle Zeilen abrufen** - Basis-Liste ohne Filter
+### **Phase 1: Share-System testen** (Höchste Priorität)
+1. **Benutzer abrufen** - Neue OCS Sharee API testen
+2. **Gruppen abrufen** - Neue OCS Groups API testen
+3. **Share erstellen** - Mit Dropdown-Empfänger testen
+4. **Share aktualisieren/löschen** - CRUD vollständig
 
-### **Phase 2: Erweiterte Zeilen-Features**
-5. **Filter testen** - Einfache Gleichheits-Filter
-6. **Sortierung testen** - Ein-Spalten Sortierung
-7. **Pagination testen** - Limit/Offset
+### **Phase 2: Kern-CRUD Operations**
+5. **Zeile abrufen** - Einzelne Zeile laden
+6. **Zeile aktualisieren** - Bestehende Zeile ändern  
+7. **Zeile löschen** - Zeile entfernen
+8. **Alle Zeilen abrufen** - Basis-Liste ohne Filter
 
-### **Phase 3: Vollständige API-Abdeckung**
-8. **Restliche Spalten-Operations**
-9. **Restliche Tabellen-Operations** 
-10. **View-Operations**
+### **Phase 3: Erweiterte Features**
+9. **Filter testen** - Einfache Gleichheits-Filter
+10. **Sortierung testen** - Ein-Spalten Sortierung
+11. **View CRUD** - Vollständige View-Operationen
 
-### **Phase 4: Edge Cases & Robustheit**
-11. **Fehlerbehandlung**
-12. **Datentyp-Tests**
-13. **Performance & Limits**
+### **Phase 4: Vollständige API-Abdeckung**
+12. **Restliche Spalten-Operations**
+13. **Restliche Tabellen-Operations** 
+14. **Import/Export-Features**
 
 ---
 
 ## 📊 **Testing Status Übersicht**
 
 ```
-✅ Erfolgreich getestet:    8/57 Features (14%)
-⚠️  Noch zu testen (Hoch):  12/57 Features (21%) 
-⚠️  Noch zu testen (Mittel): 15/57 Features (26%)
+✅ Erfolgreich getestet:    15/57 Features (26%) 📈+12!
+⚠️  Noch zu testen (Hoch):  9/57 Features (16%) 
+⚠️  Noch zu testen (Mittel): 11/57 Features (19%)
 ❓ Noch zu testen (Niedrig): 22/57 Features (39%)
 ```
 
-**🎯 Nächstes Ziel:** Kern-CRUD Operations für Zeilen vollständig testen (Phase 1)
+**🎯 Nächstes Ziel:** Share-System vollständig testen (neue OCS APIs)
+
+---
+
+## 🏆 **Erfolgreiche Fixes in Version 2.1.7**
+
+### 🐛 **Kritische Runtime-Bugs behoben:**
+- ✅ **Numeric Validation Error** - `Cannot read properties of undefined (reading 'length')` 
+- ✅ **API Status Undefined** - Response-Handling verbessert
+- ✅ **OCS API Integration** - Nextcloud Sharee & Users APIs hinzugefügt
+
+### 📊 **Debug-System komplett:**
+- ✅ **9 Debug-Kategorien** aktiv
+- ✅ **CLI Management** mit 6 NPM-Skripten
+- ✅ **Production Cleanup** bereit
+
+### 👥 **Share-System erweitert:**
+- ✅ **OCS Sharee API** für Benutzer-/Gruppensuche
+- ✅ **OCS Users API** als Fallback
+- ✅ **Robuste Fehlerbehandlung** mit mehreren API-Endpunkten
 
 ---
 
@@ -165,4 +198,4 @@ Für jeden Test bitte folgende Informationen dokumentieren:
 
 ---
 
-*Letzte Aktualisierung: 30.05.2025 - Version 2.1.2* 
+*Letzte Aktualisierung: 30.05.2025 - Version 2.1.7* 

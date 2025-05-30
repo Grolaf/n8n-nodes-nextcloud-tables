@@ -3,6 +3,7 @@ import { OCSResponse, Column } from '../interfaces';
 import { DataFormatter, FormatOptions } from './data.formatter';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { DebugHelper } from './debug.helper';
+import { NodeOperationError } from 'n8n-workflow';
 
 export class ApiHelper {
 	/**
@@ -355,6 +356,102 @@ export class ApiHelper {
 		} catch (error: any) {
 			console.error('Fehler beim Laden der Tabellen:', error.message);
 			return [];
+		}
+	}
+
+	/**
+	 * Nextcloud Sharee API Request (für Benutzer-/Gruppensuche)
+	 */
+	static async nextcloudShareeApiRequest(
+		context: IExecuteFunctions | ILoadOptionsFunctions,
+		method: string,
+		endpoint: string,
+		body: IDataObject = {},
+	): Promise<IDataObject> {
+		const credentials = await context.getCredentials('nextcloudTablesApi');
+		const serverUrl = (credentials.serverUrl as string).replace(/\/$/, '');
+		const username = credentials.username as string;
+		const password = credentials.password as string;
+
+		const url = `${serverUrl}/ocs/v2.php/apps/files_sharing/api/v1${endpoint}`;
+
+		const config: AxiosRequestConfig = {
+			method,
+			url,
+			headers: {
+				'OCS-APIRequest': 'true',
+				'Content-Type': 'application/json',
+				'Accept': 'application/json',
+			},
+			auth: {
+				username,
+				password,
+			},
+		};
+
+		if (Object.keys(body).length > 0) {
+			config.data = body;
+		}
+
+		try {
+			const response: AxiosResponse = await axios(config);
+			const data = response.data as { ocs?: { data?: IDataObject } };
+			return data?.ocs?.data || (response.data as IDataObject);
+		} catch (error: unknown) {
+			const axiosError = error as { response?: { status?: number; data?: { ocs?: { meta?: { message?: string } } } } };
+			DebugHelper.logError('nextcloudShareeApiRequest', axiosError);
+			throw new NodeOperationError(
+				context.getNode(),
+				`Sharee API-Fehler: ${axiosError.response?.data?.ocs?.meta?.message || 'Unbekannter Fehler'}`
+			);
+		}
+	}
+
+	/**
+	 * Nextcloud OCS Users API Request (für Benutzer-/Gruppenliste)
+	 */
+	static async nextcloudOcsUsersApiRequest(
+		context: IExecuteFunctions | ILoadOptionsFunctions,
+		method: string,
+		endpoint: string,
+		body: IDataObject = {},
+	): Promise<IDataObject> {
+		const credentials = await context.getCredentials('nextcloudTablesApi');
+		const serverUrl = (credentials.serverUrl as string).replace(/\/$/, '');
+		const username = credentials.username as string;
+		const password = credentials.password as string;
+
+		const url = `${serverUrl}/ocs/v2.php/cloud${endpoint}`;
+
+		const config: AxiosRequestConfig = {
+			method,
+			url,
+			headers: {
+				'OCS-APIRequest': 'true',
+				'Content-Type': 'application/json',
+				'Accept': 'application/json',
+			},
+			auth: {
+				username,
+				password,
+			},
+		};
+
+		if (Object.keys(body).length > 0) {
+			config.data = body;
+		}
+
+		try {
+			const response: AxiosResponse = await axios(config);
+			const data = response.data as { ocs?: { data?: IDataObject } };
+			return data?.ocs?.data || (response.data as IDataObject);
+		} catch (error: unknown) {
+			const axiosError = error as { response?: { status?: number; data?: { ocs?: { meta?: { message?: string } } } } };
+			DebugHelper.logError('nextcloudOcsUsersApiRequest', axiosError);
+			throw new NodeOperationError(
+				context.getNode(),
+				`OCS Users API-Fehler: ${axiosError.response?.data?.ocs?.meta?.message || 'Unbekannter Fehler'}`
+			);
 		}
 	}
 } 

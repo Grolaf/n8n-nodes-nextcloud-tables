@@ -139,34 +139,67 @@ export class NodeLoadOptions {
 	 */
 	static async getUsers(context: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
 		try {
-			// Nextcloud Users API verwenden (erfordert OCS-Header)
 			const credentials = await context.getCredentials('nextcloudTablesApi');
-			const baseUrl = (credentials.serverUrl as string).replace(/\/$/, '');
+			const currentUser = credentials.username as string;
+			const results: Array<{ name: string; value: string }> = [];
 			
-			const users = await context.helpers.request({
-				method: 'GET',
-				url: `${baseUrl}/ocs/v1.php/cloud/users`,
-				headers: {
-					'Authorization': `Basic ${Buffer.from(`${credentials.username}:${credentials.password}`).toString('base64')}`,
-					'Content-Type': 'application/json',
-					'Accept': 'application/json',
-					'OCS-APIRequest': 'true',
-				},
-				json: true,
-			});
+			// Füge den aktuellen Benutzer immer als ersten Eintrag hinzu
+			const currentUserDisplayName = `${currentUser} (Sie selbst)`;
+			results.push({ name: currentUserDisplayName, value: currentUser });
+			
+			try {
+				// Verwende den Sharee-Endpunkt, um weitere Benutzer zu suchen
+				const searchTerm = '';
+				const endpoint = `/sharees?search=${encodeURIComponent(searchTerm)}&itemType=0&perPage=50`;
+				
+				const response = await ApiHelper.nextcloudShareeApiRequest(context, 'GET', endpoint);
+				const shareeData = response as { users?: Array<{ value: { shareWith: string; shareWithDisplayName: string } }> };
+				
+				if (shareeData.users && shareeData.users.length > 0) {
+					// Füge Sharee-Benutzer hinzu (aber nicht den aktuellen Benutzer doppelt)
+					for (const user of shareeData.users) {
+						if (user.value.shareWith !== currentUser) {
+							results.push({
+								name: user.value.shareWithDisplayName || user.value.shareWith,
+								value: user.value.shareWith,
+							});
+						}
+					}
+				}
+			} catch (shareeError) {
+				// Fallback: Verwende OCS Users API, wenn Sharee API fehlschlägt
+				try {
+					const usersResponse = await ApiHelper.nextcloudOcsUsersApiRequest(context, 'GET', '/users');
+					const usersData = usersResponse as { users?: string[] };
+					
+					if (usersData.users && usersData.users.length > 0) {
+						// Füge alle Benutzer hinzu (aber nicht den aktuellen Benutzer doppelt)
+						for (const userId of usersData.users) {
+							if (userId !== currentUser) {
+								results.push({
+									name: userId,
+									value: userId,
+								});
+							}
+						}
+					}
+				} catch (usersError) {
+					// Wenn beide APIs fehlschlagen, zeige nur den aktuellen Benutzer
+					// Stille Fehlerbehandlung - zeige nur aktuellen Benutzer
+				}
+			}
+			
+			// Entferne Duplikate und begrenze auf 50 Ergebnisse
+			const uniqueResults = results.filter((result, index, self) => 
+				index === self.findIndex(r => r.value === result.value)
+			).slice(0, 50);
 
-			const userList = users?.ocs?.data?.users || [];
-			
 			// 🐛 DEBUG: Load Options Result
-			DebugHelper.logLoadOptions('getUsers', userList.length, { 
-				sampleUsers: userList.slice(0, 3) 
+			DebugHelper.logLoadOptions('getUsers', uniqueResults.length, { 
+				sampleUsers: uniqueResults.slice(0, 3).map(u => u.name) 
 			});
 			
-			return userList.map((username: string) => ({
-				name: username,
-				value: username,
-				description: '👤 Nextcloud Benutzer',
-			}));
+			return uniqueResults;
 		} catch (error: any) {
 			DebugHelper.logError('NodeLoadOptions.getUsers', error);
 			return [
@@ -184,34 +217,54 @@ export class NodeLoadOptions {
 	 */
 	static async getGroups(context: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
 		try {
-			// Nextcloud Groups API verwenden (erfordert OCS-Header)
-			const credentials = await context.getCredentials('nextcloudTablesApi');
-			const baseUrl = (credentials.serverUrl as string).replace(/\/$/, '');
+			const results: Array<{ name: string; value: string }> = [];
 			
-			const groups = await context.helpers.request({
-				method: 'GET',
-				url: `${baseUrl}/ocs/v1.php/cloud/groups`,
-				headers: {
-					'Authorization': `Basic ${Buffer.from(`${credentials.username}:${credentials.password}`).toString('base64')}`,
-					'Content-Type': 'application/json',
-					'Accept': 'application/json',
-					'OCS-APIRequest': 'true',
-				},
-				json: true,
-			});
+			try {
+				// Verwende den Sharee-Endpunkt, um Gruppen zu suchen
+				const searchTerm = '';
+				const endpoint = `/sharees?search=${encodeURIComponent(searchTerm)}&itemType=1&perPage=50`;
+				
+				const response = await ApiHelper.nextcloudShareeApiRequest(context, 'GET', endpoint);
+				const shareeData = response as { groups?: Array<{ value: { shareWith: string; shareWithDisplayName: string } }> };
+				
+				if (shareeData.groups && shareeData.groups.length > 0) {
+					for (const group of shareeData.groups) {
+						results.push({
+							name: group.value.shareWithDisplayName || group.value.shareWith,
+							value: group.value.shareWith,
+						});
+					}
+				}
+			} catch (shareeError) {
+				// Fallback: Verwende OCS Groups API, wenn Sharee API fehlschlägt
+				try {
+					const groupsResponse = await ApiHelper.nextcloudOcsUsersApiRequest(context, 'GET', '/groups');
+					const groupsData = groupsResponse as { groups?: string[] };
+					
+					if (groupsData.groups && groupsData.groups.length > 0) {
+						for (const groupId of groupsData.groups) {
+							results.push({
+								name: groupId,
+								value: groupId,
+							});
+						}
+					}
+				} catch (groupsError) {
+					// Stille Fehlerbehandlung
+				}
+			}
+			
+			// Entferne Duplikate und begrenze auf 50 Ergebnisse
+			const uniqueResults = results.filter((result, index, self) => 
+				index === self.findIndex(r => r.value === result.value)
+			).slice(0, 50);
 
-			const groupList = groups?.ocs?.data?.groups || [];
-			
 			// 🐛 DEBUG: Load Options Result
-			DebugHelper.logLoadOptions('getGroups', groupList.length, { 
-				sampleGroups: groupList.slice(0, 3) 
+			DebugHelper.logLoadOptions('getGroups', uniqueResults.length, { 
+				sampleGroups: uniqueResults.slice(0, 3).map(g => g.name) 
 			});
 			
-			return groupList.map((groupname: string) => ({
-				name: groupname,
-				value: groupname,
-				description: '👥 Nextcloud Gruppe',
-			}));
+			return uniqueResults;
 		} catch (error: any) {
 			DebugHelper.logError('NodeLoadOptions.getGroups', error);
 			return [
