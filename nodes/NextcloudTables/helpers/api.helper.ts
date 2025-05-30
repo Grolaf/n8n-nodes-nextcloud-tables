@@ -216,23 +216,38 @@ export class ApiHelper {
 	 * Konvertiert Resource Locator zu ID
 	 */
 	static getResourceId(resourceLocator: any): number {
+		console.log('🔍 Resource Locator Debug:', {
+			type: typeof resourceLocator,
+			value: resourceLocator,
+			isObject: typeof resourceLocator === 'object',
+			keys: typeof resourceLocator === 'object' ? Object.keys(resourceLocator || {}) : [],
+		});
+
 		if (typeof resourceLocator === 'number') {
+			console.log('✅ Resource ID (number):', resourceLocator);
 			return resourceLocator;
 		}
 		
 		if (typeof resourceLocator === 'string') {
-			return parseInt(resourceLocator, 10);
+			const id = parseInt(resourceLocator, 10);
+			console.log('✅ Resource ID (string->number):', id);
+			return id;
 		}
 		
 		if (resourceLocator && typeof resourceLocator === 'object') {
 			if (resourceLocator.mode === 'id' && resourceLocator.value) {
-				return parseInt(resourceLocator.value, 10);
+				const id = parseInt(resourceLocator.value, 10);
+				console.log('✅ Resource ID (object.id):', id);
+				return id;
 			}
 			if (resourceLocator.mode === 'list' && resourceLocator.value) {
-				return parseInt(resourceLocator.value, 10);
+				const id = parseInt(resourceLocator.value, 10);
+				console.log('✅ Resource ID (object.list):', id);
+				return id;
 			}
 		}
 		
+		console.error('❌ Invalid Resource Locator:', resourceLocator);
 		throw new Error('Ungültiger Resource Locator');
 	}
 
