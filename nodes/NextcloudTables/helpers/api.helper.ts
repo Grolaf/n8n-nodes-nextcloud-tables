@@ -56,7 +56,7 @@ export class ApiHelper {
 			// Debug-Logging für Troubleshooting
 			console.log(`API Request ${method} ${url}:`, {
 				status: response.statusCode,
-				bodyPreview: JSON.stringify(body).substring(0, 200),
+				bodyPreview: body ? JSON.stringify(body).substring(0, 200) : 'no body',
 				responseHeaders: response.headers,
 			});
 			
