@@ -177,6 +177,35 @@ export const columnFields: INodeProperties[] = [
 		description: 'Der Typ der neuen Spalte',
 	},
 
+	// Subtyp für create (kritisch für API-Funktionalität!)
+	{
+		displayName: 'Text-Subtyp',
+		name: 'subtype',
+		type: 'options',
+		required: true,
+		displayOptions: {
+			show: {
+				resource: ['column'],
+				operation: ['create'],
+				type: ['text'],
+			},
+		},
+		options: [
+			{
+				name: 'Line (Einzeilig)',
+				value: 'line',
+				description: 'Einzeiliges Textfeld',
+			},
+			{
+				name: 'Long Text (Mehrzeilig)',
+				value: 'long',
+				description: 'Mehrzeiliges Textfeld',
+			},
+		],
+		default: 'line',
+		description: 'Der Subtyp der Text-Spalte (erforderlich für API-Kompatibilität)',
+	},
+
 	// Titel für create
 	{
 		displayName: 'Titel',

@@ -85,11 +85,13 @@ export class ColumnHandler {
 				break;
 		}
 
+		// API v1 mit Query-Parametern verwenden (wie in Community-Lösung)
 		return ApiHelper.makeApiRequest<Column>(
 			context,
 			'POST',
 			`/tables/${tableId}/columns`,
 			body,
+			true, // useQueryParams = true
 		);
 	}
 
@@ -148,9 +150,14 @@ export class ColumnHandler {
 	 * Text-spezifische Parameter hinzufügen
 	 */
 	private static addTextParameters(context: IExecuteFunctions, itemIndex: number, body: any): void {
+		// KRITISCH: subtype ist für Text-Spalten erforderlich!
+		const subtype = context.getNodeParameter('subtype', itemIndex, 'line') as string;
 		const textDefault = context.getNodeParameter('textDefault', itemIndex, '') as string;
 		const textMaxLength = context.getNodeParameter('textMaxLength', itemIndex, null) as number | null;
 		const textAllowedPattern = context.getNodeParameter('textAllowedPattern', itemIndex, '') as string;
+
+		// Subtype ist erforderlich für die API
+		body.subtype = subtype;
 
 		if (textDefault) {
 			body.textDefault = textDefault;

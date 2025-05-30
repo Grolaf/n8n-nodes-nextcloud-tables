@@ -1,117 +1,112 @@
-import { IExecuteFunctions, ILoadOptionsFunctions, IHttpRequestMethods } from 'n8n-workflow';
+import { IExecuteFunctions, ILoadOptionsFunctions, IHttpRequestMethods, IRequestOptions } from 'n8n-workflow';
 import { OCSResponse, Column } from '../interfaces';
 import { DataFormatter, FormatOptions } from './data.formatter';
 
 export class ApiHelper {
 	/**
-	 * Führt eine API-Anfrage an die Nextcloud Tables API aus
+	 * API-Request an Nextcloud Tables
 	 */
 	static async makeApiRequest<T>(
 		context: IExecuteFunctions | ILoadOptionsFunctions,
-		method: string,
+		method: 'GET' | 'POST' | 'PUT' | 'DELETE',
 		endpoint: string,
 		body?: any,
-		headers?: Record<string, string>
+		useQueryParams: boolean = false,
 	): Promise<T> {
 		const credentials = await context.getCredentials('nextcloudTablesApi');
-		if (!credentials) {
-			throw new Error('Keine Nextcloud Tables API Credentials konfiguriert');
+		const baseUrl = credentials.url as string;
+		
+		// API v1 verwenden (nicht v2!)
+		const cleanBaseUrl = baseUrl.replace(/\/$/, '');
+		let url = `${cleanBaseUrl}/index.php/apps/tables/api/1${endpoint}`;
+		
+		// Bei Query-Parametern: URL erweitern statt Body verwenden
+		if (useQueryParams && body) {
+			const queryParams = new URLSearchParams();
+			Object.entries(body).forEach(([key, value]) => {
+				if (value !== null && value !== undefined && value !== '') {
+					queryParams.set(key, String(value));
+				}
+			});
+			url += `?${queryParams.toString()}`;
+			body = undefined; // Kein Body bei Query-Parametern
 		}
 
-		const serverUrl = (credentials.serverUrl as string).replace(/\/$/, '');
-		const username = credentials.username as string;
-		const password = credentials.password as string;
-
-		const url = `${serverUrl}/ocs/v2.php/apps/tables/api/2${endpoint}`;
-
-		const requestOptions: any = {
+		const options: IRequestOptions = {
 			method: method as IHttpRequestMethods,
 			url,
 			headers: {
-				'Accept': 'application/json',
+				'Authorization': `Basic ${Buffer.from(`${credentials.username}:${credentials.password}`).toString('base64')}`,
 				'Content-Type': 'application/json',
+				'Accept': 'application/json',
 				'OCS-APIRequest': 'true',
-				'User-Agent': 'n8n-nextcloud-tables/2.0.5',
-				...headers,
-			},
-			auth: {
-				username,
-				password,
 			},
 			json: true,
-			resolveWithFullResponse: true,
+			rejectUnauthorized: false,
 		};
 
-		if (body && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
-			requestOptions.body = body;
+		if (body && !useQueryParams) {
+			options.body = body;
 		}
 
-		if (method === 'GET' && body) {
-			requestOptions.qs = body;
-		}
+		// Debug-Logging für Requests
+		console.log(`API Request ${method} ${url}:`, {
+			status: 'pending',
+			bodyPreview: body ? JSON.stringify(body).substring(0, 200) : 'no body',
+		});
 
 		try {
-			const response = await context.helpers.request(requestOptions);
+			const response = await context.helpers.request(options);
 			
-			// Debug-Logging für Troubleshooting
+			// Debug-Logging für erfolgreiche Responses
 			console.log(`API Request ${method} ${url}:`, {
-				status: response.statusCode,
+				status: 200,
 				bodyPreview: body ? JSON.stringify(body).substring(0, 200) : 'no body',
-				responseHeaders: response.headers,
+				responseHeaders: response.headers || 'no headers',
 			});
-			
-			// Prüfe auf OCS-Response-Format
-			if (response.body && response.body.ocs) {
-				const ocsResponse = response.body as OCSResponse<T>;
-				if (ocsResponse.ocs.meta.statuscode >= 200 && ocsResponse.ocs.meta.statuscode < 300) {
-					return ocsResponse.ocs.data;
-				} else {
-					throw new Error(`API Fehler (${ocsResponse.ocs.meta.statuscode}): ${ocsResponse.ocs.meta.message || 'Unbekannter Fehler'}`);
-				}
-			}
-			
-			return response.body as T;
+
+			return response;
 		} catch (error: any) {
+			// Debug-Logging für API-Fehler
+			console.log(`API Error ${method} ${url}:`, {
+				status: error.statusCode || 'unknown',
+				url: url,
+				requestBody: body ? JSON.stringify(body).substring(0, 200) : '',
+				responseBody: error.response?.body,
+				headers: error.response?.headers,
+			});
+
 			// Erweiterte Fehlerbehandlung
-			let errorMessage = 'Unbekannter API-Fehler';
-			
-			if (error.response) {
-				const status = error.response.statusCode || error.statusCode;
-				const responseBody = error.response.body;
-				
-				// Debug-Logging für detaillierte Fehleranalyse
-				console.error(`API Error ${method} ${url}:`, {
-					status,
-					url,
-					requestBody: body,
-					responseBody: responseBody,
-					headers: error.response.headers,
-				});
-				
-				if (responseBody?.ocs?.meta?.message) {
-					errorMessage = `Nextcloud Tables API Fehler (${status}): ${responseBody.ocs.meta.message}`;
-				} else if (typeof responseBody === 'string' && responseBody.includes('<message>')) {
-					// Parse XML-Error-Message
-					const messageMatch = responseBody.match(/<message>(.*?)<\/message>/);
-					if (messageMatch) {
-						errorMessage = `Nextcloud API Fehler (${status}): ${messageMatch[1]}`;
-					}
-				} else if (status === 401) {
-					errorMessage = 'Authentifizierung fehlgeschlagen. Prüfen Sie Ihre Credentials oder erstellen Sie ein App-Passwort.';
-				} else if (status === 403) {
-					errorMessage = 'Zugriff verweigert. Sie haben keine Berechtigung für diese Operation.';
-				} else if (status === 404) {
-					errorMessage = `Ressource nicht gefunden (${status}). Prüfen Sie die URL und ob die Nextcloud Tables App installiert ist.`;
-				} else if (status === 998) {
-					errorMessage = 'Ungültige API-Syntax. Möglicherweise ist die Nextcloud Tables App nicht installiert oder aktiviert.';
-				} else {
-					errorMessage = `HTTP ${status}: ${responseBody || error.message}`;
+			if (error.statusCode) {
+				switch (error.statusCode) {
+					case 400:
+						throw new Error(`Ungültige Anfrage (400). Prüfen Sie die übermittelten Daten.`);
+					case 401:
+						throw new Error(`Authentifizierung fehlgeschlagen (401). Prüfen Sie Benutzername und Passwort.`);
+					case 403:
+						throw new Error(`Zugriff verweigert (403). Prüfen Sie die Berechtigung für diese Aktion.`);
+					case 404:
+						throw new Error(`Ressource nicht gefunden (404). Prüfen Sie die URL und ob die Nextcloud Tables App installiert ist.`);
+					case 409:
+						throw new Error(`Konflikt (409). Die Ressource existiert bereits oder ist in Verwendung.`);
+					case 422:
+						throw new Error(`Daten können nicht verarbeitet werden (422). Prüfen Sie die Eingabevalidierung.`);
+					case 429:
+						throw new Error(`Zu viele Anfragen (429). Versuchen Sie es später erneut.`);
+					case 500:
+						throw new Error(`Serverfehler (500). Prüfen Sie die Nextcloud-Logs.`);
+					case 502:
+						throw new Error(`Bad Gateway (502). Nextcloud-Server nicht erreichbar.`);
+					case 503:
+						throw new Error(`Service nicht verfügbar (503). Nextcloud ist temporär nicht erreichbar.`);
+					case 504:
+						throw new Error(`Gateway Timeout (504). Anfrage dauerte zu lange.`);
+					default:
+						throw new Error(`API-Fehler (${error.statusCode}): ${error.message}`);
 				}
-			} else {
-				errorMessage = `Netzwerk-Fehler: ${error.message}`;
 			}
-			
-			throw new Error(errorMessage);
+
+			throw new Error(`Unbekannter API-Fehler: ${error.message}`);
 		}
 	}
 
@@ -252,41 +247,6 @@ export class ApiHelper {
 	}
 
 	/**
-	 * Erweiterte Fehlerbehandlung für API-Requests
-	 */
-	static async makeApiRequestWithRetry<T>(
-		context: IExecuteFunctions | ILoadOptionsFunctions,
-		method: string,
-		endpoint: string,
-		body?: any,
-		headers?: Record<string, string>,
-		retries: number = 3
-	): Promise<T> {
-		let lastError: Error;
-		
-		for (let attempt = 1; attempt <= retries; attempt++) {
-			try {
-				return await this.makeApiRequest<T>(context, method, endpoint, body, headers);
-			} catch (error: any) {
-				lastError = error;
-				
-				// Bestimmte Fehler nicht wiederholen
-				if (this.isNonRetryableError(error)) {
-					throw error;
-				}
-				
-				// Exponentielles Backoff bei Wiederholung
-				if (attempt < retries) {
-					const delay = Math.pow(2, attempt) * 1000; // 2s, 4s, 8s
-					await this.sleep(delay);
-				}
-			}
-		}
-		
-		throw lastError!;
-	}
-
-	/**
 	 * Prüft ob ein Fehler wiederholbar ist
 	 */
 	private static isNonRetryableError(error: any): boolean {
@@ -348,38 +308,19 @@ export class ApiHelper {
 	}
 
 	/**
-	 * Testet die API-Verbindung und zeigt verfügbare Informationen
+	 * Lädt alle verfügbaren Tabellen
 	 */
-	static async testApiConnection(
-		context: IExecuteFunctions | ILoadOptionsFunctions
-	): Promise<any> {
+	static async getTables(context: ILoadOptionsFunctions): Promise<any[]> {
 		try {
-			// Test 1: Basis-Endpunkt
-			console.log('Testing API connection...');
-			
-			// Test mit dem grundlegenden Index-Endpunkt
-			const result = await this.makeApiRequest<any>(
+			const tables = await this.makeApiRequest<any[]>(
 				context,
 				'GET',
-				'',  // Root endpoint
+				'/tables',
 			);
-			
-			return result;
+			return tables || [];
 		} catch (error: any) {
-			console.error('API connection test failed:', error);
-			
-			// Versuche alternative Endpunkte
-			try {
-				console.log('Trying alternative endpoint...');
-				const altResult = await this.makeApiRequest<any>(
-					context,
-					'GET',
-					'/tables',
-				);
-				return altResult;
-			} catch (altError: any) {
-				throw new Error(`API-Verbindung fehlgeschlagen: ${error.message}`);
-			}
+			console.error('Fehler beim Laden der Tabellen:', error.message);
+			return [];
 		}
 	}
 } 
