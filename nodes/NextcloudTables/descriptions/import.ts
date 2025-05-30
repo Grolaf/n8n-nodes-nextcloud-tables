@@ -139,12 +139,7 @@ export const importFields: INodeProperties[] = [
 				name: 'customDelimiter',
 				type: 'string',
 				default: '',
-				description: 'Benutzerdefiniertes Trennzeichen für CSV-Spalten',
-				displayOptions: {
-					show: {
-						delimiter: ['custom'],
-					},
-				},
+				description: 'Benutzerdefiniertes Trennzeichen für CSV-Spalten (nur relevant wenn Trennzeichen auf "Benutzerdefiniert" gesetzt ist)',
 				placeholder: 'z.B. |',
 			},
 			{

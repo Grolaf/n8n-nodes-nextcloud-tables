@@ -394,13 +394,8 @@ export const rowFields: INodeProperties[] = [
 						name: 'value',
 						type: 'string',
 						default: '',
-						description: 'Der Filter-Wert',
+						description: 'Der Filter-Wert (leer lassen für "ist leer" / "ist nicht leer" Operatoren)',
 						hint: 'Für Zahlen: "42", für Daten: "2024-01-01" oder "2024-01-01T10:00:00Z", für Text: beliebiger Text',
-						displayOptions: {
-							hide: {
-								operator: ['is_empty', 'is_not_empty'],
-							},
-						},
 						placeholder: 'Filter-Wert eingeben...',
 					},
 				],
