@@ -124,7 +124,7 @@ export const shareFields: INodeProperties[] = [
 	// Empfänger für create - Benutzer
 	{
 		displayName: 'Benutzer',
-		name: 'receiver',
+		name: 'userReceiver',
 		type: 'options',
 		required: true,
 		typeOptions: {
@@ -145,7 +145,7 @@ export const shareFields: INodeProperties[] = [
 	// Empfänger für create - Gruppe
 	{
 		displayName: 'Gruppe',
-		name: 'receiver',
+		name: 'groupReceiver',
 		type: 'options',
 		required: true,
 		typeOptions: {

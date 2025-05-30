@@ -1,6 +1,6 @@
 # 🧪 Nextcloud Tables n8n-Node - Testing ToDo Liste
 
-## ✅ **Bereits erfolgreich getestet** (Version 2.1.8)
+## ✅ **Bereits erfolgreich getestet** (Version 2.1.9)
 
 ### 🔐 **Authentifizierung & Credentials**
 - [x] ✅ **Credentials Validation** - Korrekte Fehlerbehandlung bei fehlenden/ungültigen Credentials
@@ -27,17 +27,21 @@
 - [x] ✅ **View mit Filtern** - Complex Filter/Sort-Objekte funktionieren
 - [x] ✅ **Resource Locator für Views** - Dropdown-Liste funktioniert
 
-### 👥 **Share-Operations (ERWEITERT!)**
+### 👥 **Share-Operations (VOLLSTÄNDIG FUNKTIONAL! 🎉)**
 - [x] ✅ **Shares abrufen** - `GET /tables/{id}/shares` Status 200
 - [x] ✅ **Share-Empfänger Dropdowns** - Benutzer/Gruppen-Listen implementiert
 - [x] ✅ **OCS API Integration** - Nextcloud Sharee & Users API Helper hinzugefügt
 - [x] ✅ **Benutzer abrufen** - OCS Sharee API erfolgreich (6 Benutzer geladen)
-- [x] ✅ **Share erstellen** - `POST /tables/{id}/shares` Status 200, fixedCollection-Fix
+- [x] ✅ **Gruppen abrufen** - OCS API erfolgreich (2 Gruppen: "Team", "admin" geladen)
+- [x] ✅ **Share mit Benutzer erstellen** - `POST /tables/{id}/shares` Status 200, Benutzer-Sharing funktioniert
+- [x] ✅ **Share mit Gruppe erstellen** - `POST /tables/{id}/shares` Status 200, Gruppen-Sharing funktioniert
+- [x] ✅ **UI-Parameter Bug Fix** - userReceiver vs groupReceiver Trennung löst Cache-Problem
 
 ### 🎨 **UI/UX-Verbesserungen**
 - [x] ✅ **Optimierte Feld-Reihenfolge** - Zeilen-Daten direkt nach Tabellen-Auswahl
 - [x] ✅ **Bedingte Feld-Anzeige** - Filter/Sortierung nur bei `getAll` sichtbar
 - [x] ✅ **Context entfernt** - 405-Fehler behoben, Fokus auf wichtige Features
+- [x] ✅ **Conditional Dropdown Loading** - User/Groups werden getrennt geladen je nach Share-Typ
 
 ### 🐛 **Debug-System (VOLLSTÄNDIG!)**
 - [x] ✅ **Structured Debug Helper** - 9 Debug-Kategorien implementiert
@@ -57,9 +61,8 @@
 - [ ] 🔄 **Zeile löschen** - `DELETE /tables/{id}/rows/{rowId}`
 - [ ] 🔄 **Alle Zeilen abrufen** - `GET /tables/{id}/rows`
 
-### 👥 **Share-Operations (NÄCHSTE PRIORITÄT!)**
-- [ ] 🔄 **Gruppen abrufen** - Neue OCS Groups API testen
-- [ ] 🔄 **Share aktualisieren** - `PUT /shares/{id}`
+### 👥 **Share-Operations (REST-CRUD VOLLENDEN!)**
+- [ ] 🔄 **Share aktualisieren** - `PUT /shares/{id}` 
 - [ ] 🔄 **Share löschen** - `DELETE /shares/{id}`
 
 ### 🏗️ **Spalten-Operations (Vollständigkeit)**
@@ -162,7 +165,7 @@
 
 ---
 
-## 🏆 **Erfolgreiche Fixes in Version 2.1.8**
+## 🏆 **Erfolgreiche Fixes in Version 2.1.9**
 
 ### 🐛 **Kritische Runtime-Bugs behoben:**
 - ✅ **Numeric Validation Error** - `Cannot read properties of undefined (reading 'length')` 
@@ -198,4 +201,4 @@ Für jeden Test bitte folgende Informationen dokumentieren:
 
 ---
 
-*Letzte Aktualisierung: 30.05.2025 - Version 2.1.8* 
+*Letzte Aktualisierung: 30.05.2025 - Version 2.1.9* 

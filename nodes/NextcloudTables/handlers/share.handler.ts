@@ -37,7 +37,17 @@ export class ShareHandler {
 	private static async create(context: IExecuteFunctions, itemIndex: number): Promise<Share> {
 		const tableId = ApiHelper.getResourceId(context.getNodeParameter('tableId', itemIndex));
 		const shareType = context.getNodeParameter('shareType', itemIndex) as string;
-		const receiver = context.getNodeParameter('receiver', itemIndex) as string;
+		
+		// Receiver abhängig vom Share-Typ extrahieren
+		let receiver: string;
+		if (shareType === 'user') {
+			receiver = context.getNodeParameter('userReceiver', itemIndex) as string;
+		} else if (shareType === 'group') {
+			receiver = context.getNodeParameter('groupReceiver', itemIndex) as string;
+		} else {
+			throw new Error(`Unbekannter Share-Typ: ${shareType}`);
+		}
+		
 		const permissionsCollection = context.getNodeParameter('permissions', itemIndex, {}) as any;
 		const additionalOptions = context.getNodeParameter('additionalOptions', itemIndex, {}) as any;
 
