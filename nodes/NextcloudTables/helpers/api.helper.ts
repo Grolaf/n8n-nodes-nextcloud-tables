@@ -82,7 +82,7 @@ export class ApiHelper {
 			
 			// 🐛 DEBUG: API Response & Performance
 			DebugHelper.logApiResponse(method, url, response.status, {
-				dataSize: JSON.stringify(response.data).length,
+				dataSize: response.data ? JSON.stringify(response.data).length : 0,
 				headers: response.headers
 			});
 			DebugHelper.logPerformance(`API ${method} ${endpoint}`, startTime);
