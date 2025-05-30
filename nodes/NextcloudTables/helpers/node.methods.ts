@@ -107,6 +107,121 @@ export class NodeLoadOptions {
 			];
 		}
 	}
+
+	/**
+	 * Lädt alle verfügbaren Benutzer für Share-Empfänger (NEUE FUNKTION)
+	 */
+	static async getUsers(context: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+		try {
+			// Nextcloud Users API verwenden (erfordert OCS-Header)
+			const credentials = await context.getCredentials('nextcloudTablesApi');
+			const baseUrl = (credentials.serverUrl as string).replace(/\/$/, '');
+			
+			const users = await context.helpers.request({
+				method: 'GET',
+				url: `${baseUrl}/ocs/v1.php/cloud/users`,
+				headers: {
+					'Authorization': `Basic ${Buffer.from(`${credentials.username}:${credentials.password}`).toString('base64')}`,
+					'Content-Type': 'application/json',
+					'Accept': 'application/json',
+					'OCS-APIRequest': 'true',
+				},
+				json: true,
+			});
+
+			const userList = users?.ocs?.data?.users || [];
+			
+			return userList.map((username: string) => ({
+				name: username,
+				value: username,
+				description: '👤 Nextcloud Benutzer',
+			}));
+		} catch (error: any) {
+			console.error('Load Options getUsers error:', error);
+			return [
+				{
+					name: 'Fehler beim Laden der Benutzer',
+					value: '',
+					description: 'Überprüfen Sie die Berechtigung zur Benutzerliste',
+				},
+			];
+		}
+	}
+
+	/**
+	 * Lädt alle verfügbaren Gruppen für Share-Empfänger (NEUE FUNKTION)
+	 */
+	static async getGroups(context: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+		try {
+			// Nextcloud Groups API verwenden (erfordert OCS-Header)
+			const credentials = await context.getCredentials('nextcloudTablesApi');
+			const baseUrl = (credentials.serverUrl as string).replace(/\/$/, '');
+			
+			const groups = await context.helpers.request({
+				method: 'GET',
+				url: `${baseUrl}/ocs/v1.php/cloud/groups`,
+				headers: {
+					'Authorization': `Basic ${Buffer.from(`${credentials.username}:${credentials.password}`).toString('base64')}`,
+					'Content-Type': 'application/json',
+					'Accept': 'application/json',
+					'OCS-APIRequest': 'true',
+				},
+				json: true,
+			});
+
+			const groupList = groups?.ocs?.data?.groups || [];
+			
+			return groupList.map((groupname: string) => ({
+				name: groupname,
+				value: groupname,
+				description: '👥 Nextcloud Gruppe',
+			}));
+		} catch (error: any) {
+			console.error('Load Options getGroups error:', error);
+			return [
+				{
+					name: 'Fehler beim Laden der Gruppen',
+					value: '',
+					description: 'Überprüfen Sie die Berechtigung zur Gruppenliste',
+				},
+			];
+		}
+	}
+
+	/**
+	 * Lädt Benutzer und Gruppen kombiniert für Share-Empfänger (NEUE FUNKTION)
+	 */
+	static async getShareReceivers(context: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+		try {
+			const shareType = context.getCurrentNodeParameter('shareType') as string;
+			
+			if (shareType === 'user') {
+				return this.getUsers(context);
+			} else if (shareType === 'group') {
+				return this.getGroups(context);
+			} else {
+				// Fallback: Beide laden
+				const [users, groups] = await Promise.all([
+					this.getUsers(context),
+					this.getGroups(context)
+				]);
+				
+				return [
+					...users.map(user => ({ ...user, description: '👤 ' + (user.description || 'Benutzer') })),
+					...groups.map(group => ({ ...group, description: '👥 ' + (group.description || 'Gruppe') }))
+				];
+			}
+		} catch (error: any) {
+			console.error('Load Options getShareReceivers error:', error);
+			return [
+				{
+					name: 'Fehler beim Laden der Empfänger',
+					value: '',
+					description: 'Überprüfen Sie die Berechtigung',
+				},
+			];
+		}
+	}
 }
 
 export class NodeListSearch {

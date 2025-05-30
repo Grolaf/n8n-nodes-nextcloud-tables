@@ -121,24 +121,46 @@ export const shareFields: INodeProperties[] = [
 		description: 'Der Typ des Shares',
 	},
 
-	// Empfänger für create
+	// Empfänger für create - Benutzer
 	{
-		displayName: 'Empfänger',
+		displayName: 'Benutzer',
 		name: 'receiver',
-		type: 'string',
+		type: 'options',
 		required: true,
 		typeOptions: {
-			canBeExpression: true,
+			loadOptionsMethod: 'getUsers',
 		},
 		displayOptions: {
 			show: {
 				resource: ['share'],
 				operation: ['create'],
+				shareType: ['user'],
 			},
 		},
 		default: '',
-		description: 'Benutzername oder Gruppenname für den Share',
-		placeholder: 'benutzername oder gruppenname',
+		description: 'Wählen Sie den Benutzer für den Share aus',
+		hint: 'Alle verfügbaren Nextcloud-Benutzer in Ihrer Instanz',
+	},
+
+	// Empfänger für create - Gruppe
+	{
+		displayName: 'Gruppe',
+		name: 'receiver',
+		type: 'options',
+		required: true,
+		typeOptions: {
+			loadOptionsMethod: 'getGroups',
+		},
+		displayOptions: {
+			show: {
+				resource: ['share'],
+				operation: ['create'],
+				shareType: ['group'],
+			},
+		},
+		default: '',
+		description: 'Wählen Sie die Gruppe für den Share aus',
+		hint: 'Alle verfügbaren Nextcloud-Gruppen in Ihrer Instanz',
 	},
 
 	// Berechtigungen für create und update

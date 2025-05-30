@@ -164,6 +164,54 @@ export const rowFields: INodeProperties[] = [
 		},
 	},
 
+	// Daten für create - DIREKT nach Tabellen-Auswahl!
+	{
+		displayName: 'Zeilen-Daten',
+		name: 'data',
+		type: 'fixedCollection',
+		typeOptions: {
+			multipleValues: true,
+		},
+		placeholder: 'Spalte hinzufügen',
+		required: true,
+		displayOptions: {
+			show: {
+				resource: ['row'],
+				operation: ['create'],
+			},
+		},
+		default: {},
+		options: [
+			{
+				displayName: 'Spalte',
+				name: 'column',
+				values: [
+					{
+						displayName: 'Spalten-ID',
+						name: 'columnId',
+						type: 'options',
+						typeOptions: {
+							loadOptionsMethod: 'getColumns',
+						},
+						default: '',
+						description: 'Die ID der Spalte',
+					},
+					{
+						displayName: 'Wert',
+						name: 'value',
+						type: 'string',
+						default: '',
+						description: 'Der Wert für diese Spalte',
+						typeOptions: {
+							canBeExpression: true,
+						},
+					},
+				],
+			},
+		],
+		description: 'Die Daten für die neue Zeile',
+	},
+
 	// Zeilen-ID für get, update, delete
 	{
 		displayName: 'Zeilen-ID',
@@ -227,7 +275,56 @@ export const rowFields: INodeProperties[] = [
 		},
 	},
 
-	// Zusätzliche Optionen für getAll
+	// Daten für update
+	{
+		displayName: 'Zeilen-Daten Aktualisieren',
+		name: 'data',
+		type: 'fixedCollection',
+		typeOptions: {
+			multipleValues: true,
+		},
+		placeholder: 'Spalte hinzufügen',
+		displayOptions: {
+			show: {
+				resource: ['row'],
+				operation: ['update'],
+			},
+		},
+		default: {},
+		options: [
+			{
+				displayName: 'Spalte',
+				name: 'column',
+				values: [
+					{
+						displayName: 'Spalten-ID',
+						name: 'columnId',
+						type: 'options',
+						typeOptions: {
+							loadOptionsMethod: 'getColumns',
+						},
+						default: '',
+						description: 'Die ID der Spalte',
+					},
+					{
+						displayName: 'Wert',
+						name: 'value',
+						type: 'string',
+						default: '',
+						description: 'Der neue Wert für diese Spalte',
+						typeOptions: {
+							canBeExpression: true,
+						},
+					},
+				],
+			},
+		],
+		description: 'Die zu aktualisierenden Daten',
+	},
+
+	// ============ AB HIER: NUR FÜR getAll ============
+
+	// Zusätzliche Optionen für getAll - NUR FÜR getAll!
 	{
 		displayName: 'Zusätzliche Optionen',
 		name: 'additionalOptions',
@@ -236,7 +333,7 @@ export const rowFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['row'],
-				operation: ['getAll'],
+				operation: ['getAll'], // NUR für getAll!
 			},
 		},
 		default: {},
@@ -291,7 +388,7 @@ export const rowFields: INodeProperties[] = [
 		],
 	},
 
-	// Filter-Konfiguration
+	// Filter-Konfiguration - NUR FÜR getAll!
 	{
 		displayName: 'Filter (aktiviert wenn "Filter aktivieren" gesetzt ist)',
 		name: 'filters',
@@ -301,6 +398,12 @@ export const rowFields: INodeProperties[] = [
 		},
 		default: {},
 		placeholder: 'Filter hinzufügen',
+		displayOptions: {
+			show: {
+				resource: ['row'],
+				operation: ['getAll'], // NUR für getAll!
+			},
+		},
 		options: [
 			{
 				displayName: 'Filter-Regel',
@@ -378,7 +481,7 @@ export const rowFields: INodeProperties[] = [
 							{
 								name: 'Ist nicht leer',
 								value: 'is_not_empty',
-								description: 'Feld hat einen Wert (nicht leer, null oder ungesetzt)',
+								description: 'Feld hat einen Wert (nicht leer, null oder nicht gesetzt)',
 							},
 						],
 					},
@@ -397,7 +500,7 @@ export const rowFields: INodeProperties[] = [
 		description: 'Filter-Regeln für die Zeilen-Abfrage',
 	},
 
-	// Sortierung-Konfiguration
+	// Sortierung-Konfiguration - NUR FÜR getAll!
 	{
 		displayName: 'Sortierung (aktiviert wenn "Sortierung aktivieren" gesetzt ist)',
 		name: 'sorting',
@@ -407,6 +510,12 @@ export const rowFields: INodeProperties[] = [
 		},
 		default: {},
 		placeholder: 'Sortierung hinzufügen',
+		displayOptions: {
+			show: {
+				resource: ['row'],
+				operation: ['getAll'], // NUR für getAll!
+			},
+		},
 		options: [
 			{
 				displayName: 'Sortier-Regel',
@@ -449,13 +558,19 @@ export const rowFields: INodeProperties[] = [
 		description: 'Sortier-Regeln für die Zeilen-Abfrage (erste Regel hat höchste Priorität)',
 	},
 
-	// Suche-Konfiguration
+	// Suche-Konfiguration - NUR FÜR getAll!
 	{
 		displayName: 'Suche (aktiviert wenn "Suche aktivieren" gesetzt ist)',
 		name: 'search',
 		type: 'collection',
 		placeholder: 'Suche konfigurieren',
 		default: {},
+		displayOptions: {
+			show: {
+				resource: ['row'],
+				operation: ['getAll'], // NUR für getAll!
+			},
+		},
 		options: [
 			{
 				displayName: 'Suchbegriff',
@@ -487,100 +602,5 @@ export const rowFields: INodeProperties[] = [
 			},
 		],
 		description: 'Volltext-Suche in den Zeilen-Daten',
-	},
-
-	// Daten für create
-	{
-		displayName: 'Zeilen-Daten',
-		name: 'data',
-		type: 'fixedCollection',
-		typeOptions: {
-			multipleValues: true,
-		},
-		placeholder: 'Spalte hinzufügen',
-		required: true,
-		displayOptions: {
-			show: {
-				resource: ['row'],
-				operation: ['create'],
-			},
-		},
-		default: {},
-		options: [
-			{
-				displayName: 'Spalte',
-				name: 'column',
-				values: [
-					{
-						displayName: 'Spalten-ID',
-						name: 'columnId',
-						type: 'options',
-						typeOptions: {
-							loadOptionsMethod: 'getColumns',
-						},
-						default: '',
-						description: 'Die ID der Spalte',
-					},
-					{
-						displayName: 'Wert',
-						name: 'value',
-						type: 'string',
-						default: '',
-						description: 'Der Wert für diese Spalte',
-						typeOptions: {
-							canBeExpression: true,
-						},
-					},
-				],
-			},
-		],
-		description: 'Die Daten für die neue Zeile',
-	},
-
-	// Daten für update
-	{
-		displayName: 'Zeilen-Daten Aktualisieren',
-		name: 'data',
-		type: 'fixedCollection',
-		typeOptions: {
-			multipleValues: true,
-		},
-		placeholder: 'Spalte hinzufügen',
-		displayOptions: {
-			show: {
-				resource: ['row'],
-				operation: ['update'],
-			},
-		},
-		default: {},
-		options: [
-			{
-				displayName: 'Spalte',
-				name: 'column',
-				values: [
-					{
-						displayName: 'Spalten-ID',
-						name: 'columnId',
-						type: 'options',
-						typeOptions: {
-							loadOptionsMethod: 'getColumns',
-						},
-						default: '',
-						description: 'Die ID der Spalte',
-					},
-					{
-						displayName: 'Wert',
-						name: 'value',
-						type: 'string',
-						default: '',
-						description: 'Der neue Wert für diese Spalte',
-						typeOptions: {
-							canBeExpression: true,
-						},
-					},
-				],
-			},
-		],
-		description: 'Die zu aktualisierenden Daten',
 	},
 ]; 

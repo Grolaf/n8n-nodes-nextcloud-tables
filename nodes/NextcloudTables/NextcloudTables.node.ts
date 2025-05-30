@@ -16,7 +16,6 @@ import { ViewHandler } from './handlers/view.handler';
 import { ColumnHandler } from './handlers/column.handler';
 import { ShareHandler } from './handlers/share.handler';
 import { ImportHandler } from './handlers/import.handler';
-import { ContextHandler } from './handlers/context.handler';
 
 // Helper importieren
 import { NodeLoadOptions, NodeListSearch } from './helpers/node.methods';
@@ -28,7 +27,6 @@ import { viewOperations, viewFields } from './descriptions/view';
 import { columnOperations, columnFields } from './descriptions/column';
 import { shareOperations, shareFields } from './descriptions/share';
 import { importOperations, importFields } from './descriptions/import';
-import { contextOperations, contextFields } from './descriptions/context';
 
 export class NextcloudTables implements INodeType {
 	description: INodeTypeDescription = {
@@ -90,11 +88,6 @@ export class NextcloudTables implements INodeType {
 						description: 'CSV-Import in Tabellen',
 					},
 					{
-						name: 'Context',
-						value: 'context',
-						description: 'App-Context-Navigation',
-					},
-					{
 						name: 'Zeile',
 						value: 'row',
 						description: 'Operationen mit Tabellen-Zeilen',
@@ -114,8 +107,6 @@ export class NextcloudTables implements INodeType {
 			...shareFields,
 			...importOperations,
 			...importFields,
-			...contextOperations,
-			...contextFields,
 			...rowOperations,
 			...rowFields,
 		],
@@ -131,6 +122,15 @@ export class NextcloudTables implements INodeType {
 			},
 			async getColumns(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
 				return NodeLoadOptions.getColumns(this);
+			},
+			async getUsers(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				return NodeLoadOptions.getUsers(this);
+			},
+			async getGroups(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				return NodeLoadOptions.getGroups(this);
+			},
+			async getShareReceivers(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				return NodeLoadOptions.getShareReceivers(this);
 			},
 		},
 		listSearch: {
@@ -171,9 +171,6 @@ export class NextcloudTables implements INodeType {
 						break;
 					case 'import':
 						result = await ImportHandler.execute(this, operation, i);
-						break;
-					case 'context':
-						result = await ContextHandler.execute(this, operation, i);
 						break;
 					case 'row':
 						result = await RowHandler.execute(this, operation, i);
