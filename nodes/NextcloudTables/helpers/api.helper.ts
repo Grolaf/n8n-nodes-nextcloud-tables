@@ -4,19 +4,18 @@ import { DataFormatter, FormatOptions } from './data.formatter';
 
 export class ApiHelper {
 	/**
-	 * Führt einen HTTP-Request zur Nextcloud Tables API aus
+	 * Führt eine API-Anfrage an die Nextcloud Tables API aus
 	 */
 	static async makeApiRequest<T>(
 		context: IExecuteFunctions | ILoadOptionsFunctions,
 		method: string,
 		endpoint: string,
 		body?: any,
-		headers?: Record<string, string>,
+		headers?: Record<string, string>
 	): Promise<T> {
 		const credentials = await context.getCredentials('nextcloudTablesApi');
-		
 		if (!credentials) {
-			throw new Error('Nextcloud Tables API Credentials sind erforderlich');
+			throw new Error('Keine Nextcloud Tables API Credentials konfiguriert');
 		}
 
 		const serverUrl = (credentials.serverUrl as string).replace(/\/$/, '');
@@ -32,6 +31,7 @@ export class ApiHelper {
 				'Accept': 'application/json',
 				'Content-Type': 'application/json',
 				'OCS-APIRequest': 'true',
+				'User-Agent': 'n8n-nextcloud-tables/2.0.5',
 				...headers,
 			},
 			auth: {
@@ -39,6 +39,7 @@ export class ApiHelper {
 				password,
 			},
 			json: true,
+			resolveWithFullResponse: true,
 		};
 
 		if (body && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
@@ -52,22 +53,65 @@ export class ApiHelper {
 		try {
 			const response = await context.helpers.request(requestOptions);
 			
+			// Debug-Logging für Troubleshooting
+			console.log(`API Request ${method} ${url}:`, {
+				status: response.statusCode,
+				bodyPreview: JSON.stringify(body).substring(0, 200),
+				responseHeaders: response.headers,
+			});
+			
 			// Prüfe auf OCS-Response-Format
-			if (response.ocs) {
-				const ocsResponse = response as OCSResponse<T>;
+			if (response.body && response.body.ocs) {
+				const ocsResponse = response.body as OCSResponse<T>;
 				if (ocsResponse.ocs.meta.statuscode >= 200 && ocsResponse.ocs.meta.statuscode < 300) {
 					return ocsResponse.ocs.data;
 				} else {
-					throw new Error(`API Fehler: ${ocsResponse.ocs.meta.message || 'Unbekannter Fehler'}`);
+					throw new Error(`API Fehler (${ocsResponse.ocs.meta.statuscode}): ${ocsResponse.ocs.meta.message || 'Unbekannter Fehler'}`);
 				}
 			}
 			
-			return response as T;
+			return response.body as T;
 		} catch (error: any) {
-			if (error.response?.body?.ocs?.meta?.message) {
-				throw new Error(`Nextcloud Tables API Fehler: ${error.response.body.ocs.meta.message}`);
+			// Erweiterte Fehlerbehandlung
+			let errorMessage = 'Unbekannter API-Fehler';
+			
+			if (error.response) {
+				const status = error.response.statusCode || error.statusCode;
+				const responseBody = error.response.body;
+				
+				// Debug-Logging für detaillierte Fehleranalyse
+				console.error(`API Error ${method} ${url}:`, {
+					status,
+					url,
+					requestBody: body,
+					responseBody: responseBody,
+					headers: error.response.headers,
+				});
+				
+				if (responseBody?.ocs?.meta?.message) {
+					errorMessage = `Nextcloud Tables API Fehler (${status}): ${responseBody.ocs.meta.message}`;
+				} else if (typeof responseBody === 'string' && responseBody.includes('<message>')) {
+					// Parse XML-Error-Message
+					const messageMatch = responseBody.match(/<message>(.*?)<\/message>/);
+					if (messageMatch) {
+						errorMessage = `Nextcloud API Fehler (${status}): ${messageMatch[1]}`;
+					}
+				} else if (status === 401) {
+					errorMessage = 'Authentifizierung fehlgeschlagen. Prüfen Sie Ihre Credentials oder erstellen Sie ein App-Passwort.';
+				} else if (status === 403) {
+					errorMessage = 'Zugriff verweigert. Sie haben keine Berechtigung für diese Operation.';
+				} else if (status === 404) {
+					errorMessage = `Ressource nicht gefunden (${status}). Prüfen Sie die URL und ob die Nextcloud Tables App installiert ist.`;
+				} else if (status === 998) {
+					errorMessage = 'Ungültige API-Syntax. Möglicherweise ist die Nextcloud Tables App nicht installiert oder aktiviert.';
+				} else {
+					errorMessage = `HTTP ${status}: ${responseBody || error.message}`;
+				}
+			} else {
+				errorMessage = `Netzwerk-Fehler: ${error.message}`;
 			}
-			throw error;
+			
+			throw new Error(errorMessage);
 		}
 	}
 
@@ -285,6 +329,42 @@ export class ApiHelper {
 				throw new Error(`Dienst nicht verfügbar: ${errorMessage || 'Der Server ist vorübergehend nicht erreichbar'}`);
 			default:
 				throw new Error(`API-Fehler: ${errorMessage || 'Ein unbekannter Fehler ist aufgetreten'}`);
+		}
+	}
+
+	/**
+	 * Testet die API-Verbindung und zeigt verfügbare Informationen
+	 */
+	static async testApiConnection(
+		context: IExecuteFunctions | ILoadOptionsFunctions
+	): Promise<any> {
+		try {
+			// Test 1: Basis-Endpunkt
+			console.log('Testing API connection...');
+			
+			// Test mit dem grundlegenden Index-Endpunkt
+			const result = await this.makeApiRequest<any>(
+				context,
+				'GET',
+				'',  // Root endpoint
+			);
+			
+			return result;
+		} catch (error: any) {
+			console.error('API connection test failed:', error);
+			
+			// Versuche alternative Endpunkte
+			try {
+				console.log('Trying alternative endpoint...');
+				const altResult = await this.makeApiRequest<any>(
+					context,
+					'GET',
+					'/tables',
+				);
+				return altResult;
+			} catch (altError: any) {
+				throw new Error(`API-Verbindung fehlgeschlagen: ${error.message}`);
+			}
 		}
 	}
 } 
