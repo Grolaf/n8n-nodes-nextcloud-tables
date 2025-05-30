@@ -1,6 +1,6 @@
 # 🧪 Nextcloud Tables n8n-Node - Testing ToDo Liste
 
-## ✅ **Bereits erfolgreich getestet** (Version 2.1.7)
+## ✅ **Bereits erfolgreich getestet** (Version 2.1.8)
 
 ### 🔐 **Authentifizierung & Credentials**
 - [x] ✅ **Credentials Validation** - Korrekte Fehlerbehandlung bei fehlenden/ungültigen Credentials
@@ -27,10 +27,12 @@
 - [x] ✅ **View mit Filtern** - Complex Filter/Sort-Objekte funktionieren
 - [x] ✅ **Resource Locator für Views** - Dropdown-Liste funktioniert
 
-### 👥 **Share-Operations**
+### 👥 **Share-Operations (ERWEITERT!)**
 - [x] ✅ **Shares abrufen** - `GET /tables/{id}/shares` Status 200
 - [x] ✅ **Share-Empfänger Dropdowns** - Benutzer/Gruppen-Listen implementiert
 - [x] ✅ **OCS API Integration** - Nextcloud Sharee & Users API Helper hinzugefügt
+- [x] ✅ **Benutzer abrufen** - OCS Sharee API erfolgreich (6 Benutzer geladen)
+- [x] ✅ **Share erstellen** - `POST /tables/{id}/shares` Status 200, fixedCollection-Fix
 
 ### 🎨 **UI/UX-Verbesserungen**
 - [x] ✅ **Optimierte Feld-Reihenfolge** - Zeilen-Daten direkt nach Tabellen-Auswahl
@@ -56,9 +58,7 @@
 - [ ] 🔄 **Alle Zeilen abrufen** - `GET /tables/{id}/rows`
 
 ### 👥 **Share-Operations (NÄCHSTE PRIORITÄT!)**
-- [ ] 🔄 **Benutzer abrufen** - Neue OCS Sharee API testen
 - [ ] 🔄 **Gruppen abrufen** - Neue OCS Groups API testen
-- [ ] 🔄 **Share erstellen** - `POST /tables/{id}/shares` mit Dropdown-Empfängern
 - [ ] 🔄 **Share aktualisieren** - `PUT /shares/{id}`
 - [ ] 🔄 **Share löschen** - `DELETE /shares/{id}`
 
@@ -152,17 +152,17 @@
 ## 📊 **Testing Status Übersicht**
 
 ```
-✅ Erfolgreich getestet:    15/57 Features (26%) 📈+12!
+✅ Erfolgreich getestet:    17/57 Features (29%) 📈+12!
 ⚠️  Noch zu testen (Hoch):  9/57 Features (16%) 
 ⚠️  Noch zu testen (Mittel): 11/57 Features (19%)
-❓ Noch zu testen (Niedrig): 22/57 Features (39%)
+❓ Noch zu testen (Niedrig): 20/57 Features (35%)
 ```
 
 **🎯 Nächstes Ziel:** Share-System vollständig testen (neue OCS APIs)
 
 ---
 
-## 🏆 **Erfolgreiche Fixes in Version 2.1.7**
+## 🏆 **Erfolgreiche Fixes in Version 2.1.8**
 
 ### 🐛 **Kritische Runtime-Bugs behoben:**
 - ✅ **Numeric Validation Error** - `Cannot read properties of undefined (reading 'length')` 
@@ -198,4 +198,4 @@ Für jeden Test bitte folgende Informationen dokumentieren:
 
 ---
 
-*Letzte Aktualisierung: 30.05.2025 - Version 2.1.7* 
+*Letzte Aktualisierung: 30.05.2025 - Version 2.1.8* 
