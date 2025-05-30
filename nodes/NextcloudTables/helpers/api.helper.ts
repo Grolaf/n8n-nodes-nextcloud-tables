@@ -20,7 +20,7 @@ export class ApiHelper {
 			throw new Error('Keine Nextcloud Tables API Credentials konfiguriert');
 		}
 		
-		const baseUrl = credentials.url as string;
+		const baseUrl = credentials.serverUrl as string;
 		
 		// Validiere URL
 		if (!baseUrl || typeof baseUrl !== 'string') {
