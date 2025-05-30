@@ -1,6 +1,8 @@
-import { IExecuteFunctions, ILoadOptionsFunctions, IHttpRequestMethods, IRequestOptions } from 'n8n-workflow';
+import { IExecuteFunctions, ILoadOptionsFunctions, IHttpRequestMethods, IRequestOptions, IDataObject } from 'n8n-workflow';
 import { OCSResponse, Column } from '../interfaces';
 import { DataFormatter, FormatOptions } from './data.formatter';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { DebugHelper } from './debug.helper';
 
 export class ApiHelper {
 	/**
@@ -48,6 +50,10 @@ export class ApiHelper {
 			body = undefined; // Kein Body bei Query-Parametern
 		}
 
+		// 🐛 DEBUG: API Request
+		DebugHelper.logApiRequest(method, url, body);
+		const startTime = Date.now();
+
 		const options: IRequestOptions = {
 			method: method as IHttpRequestMethods,
 			url,
@@ -74,6 +80,13 @@ export class ApiHelper {
 		try {
 			const response = await context.helpers.request(options);
 			
+			// 🐛 DEBUG: API Response & Performance
+			DebugHelper.logApiResponse(method, url, response.status, {
+				dataSize: JSON.stringify(response.data).length,
+				headers: response.headers
+			});
+			DebugHelper.logPerformance(`API ${method} ${endpoint}`, startTime);
+
 			// Debug-Logging für erfolgreiche Responses
 			console.log(`API Request ${method} ${url}:`, {
 				status: 200,
@@ -83,6 +96,9 @@ export class ApiHelper {
 
 			return response;
 		} catch (error: any) {
+			// 🐛 DEBUG: API Error
+			DebugHelper.logError(`API ${method} ${url}`, error);
+
 			// Debug-Logging für API-Fehler
 			console.log(`API Error ${method} ${url}:`, {
 				status: error.statusCode || 'unknown',
@@ -227,7 +243,8 @@ export class ApiHelper {
 	 * Konvertiert Resource Locator zu ID
 	 */
 	static getResourceId(resourceLocator: any): number {
-		console.log('🔍 Resource Locator Debug:', {
+		// 🐛 DEBUG: Resource Locator Input
+		DebugHelper.logResourceLocator('input', {
 			type: typeof resourceLocator,
 			value: resourceLocator,
 			isObject: typeof resourceLocator === 'object',
@@ -235,30 +252,31 @@ export class ApiHelper {
 		});
 
 		if (typeof resourceLocator === 'number') {
-			console.log('✅ Resource ID (number):', resourceLocator);
+			DebugHelper.logResourceLocator('number', resourceLocator);
 			return resourceLocator;
 		}
 		
 		if (typeof resourceLocator === 'string') {
 			const id = parseInt(resourceLocator, 10);
-			console.log('✅ Resource ID (string->number):', id);
+			DebugHelper.logResourceLocator('string->number', { input: resourceLocator, output: id });
 			return id;
 		}
 		
 		if (resourceLocator && typeof resourceLocator === 'object') {
 			if (resourceLocator.mode === 'id' && resourceLocator.value) {
 				const id = parseInt(resourceLocator.value, 10);
-				console.log('✅ Resource ID (object.id):', id);
+				DebugHelper.logResourceLocator('object.id', { input: resourceLocator, output: id });
 				return id;
 			}
 			if (resourceLocator.mode === 'list' && resourceLocator.value) {
 				const id = parseInt(resourceLocator.value, 10);
-				console.log('✅ Resource ID (object.list):', id);
+				DebugHelper.logResourceLocator('object.list', { input: resourceLocator, output: id });
 				return id;
 			}
 		}
 		
-		console.error('❌ Invalid Resource Locator:', resourceLocator);
+		// 🐛 DEBUG: Invalid Resource Locator
+		DebugHelper.logError('getResourceId', new Error(`Ungültiger Resource Locator: ${JSON.stringify(resourceLocator)}`));
 		throw new Error('Ungültiger Resource Locator');
 	}
 

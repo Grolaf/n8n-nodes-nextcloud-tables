@@ -6,6 +6,7 @@ import {
 
 import { ApiHelper } from './api.helper';
 import { Table, View, Column } from '../interfaces';
+import { DebugHelper } from './debug.helper';
 
 export class NodeLoadOptions {
 	/**
@@ -15,14 +16,25 @@ export class NodeLoadOptions {
 		try {
 			const tables = await ApiHelper.makeApiRequest<Table[]>(context, 'GET', '/tables');
 			
+			// 🐛 DEBUG: Load Options Result
+			DebugHelper.logLoadOptions('getTables', tables.length, { 
+				sampleTitles: tables.slice(0, 3).map(t => t.title) 
+			});
+			
 			return tables.map((table) => ({
 				name: table.title || `Tabelle ${table.id}`,
 				value: table.id.toString(),
 				description: table.description || undefined,
 			}));
 		} catch (error: any) {
-			console.error('Load Options getTables error:', error);
-			throw new Error(`Fehler beim Laden der Tabellen: ${error.message || error}`);
+			DebugHelper.logError('NodeLoadOptions.getTables', error);
+			return [
+				{
+					name: 'Fehler beim Laden der Tabellen',
+					value: '',
+					description: 'Überprüfen Sie die Verbindung zu Nextcloud',
+				},
+			];
 		}
 	}
 
@@ -51,17 +63,24 @@ export class NodeLoadOptions {
 				`/tables/${extractedTableId}/views`
 			);
 			
+			// 🐛 DEBUG: Load Options Result
+			DebugHelper.logLoadOptions('getViews', views.length, { 
+				tableId: extractedTableId,
+				sampleTitles: views.slice(0, 3).map(v => v.title) 
+			});
+
 			return views.map((view) => ({
 				name: view.title || `View ${view.id}`,
 				value: view.id.toString(),
 				description: view.description || undefined,
 			}));
-		} catch (error) {
+		} catch (error: any) {
+			DebugHelper.logError('NodeLoadOptions.getViews', error);
 			return [
 				{
 					name: 'Fehler beim Laden der Views',
 					value: '',
-					description: error as string,
+					description: 'Überprüfen Sie die Tabellen-Auswahl',
 				},
 			];
 		}
@@ -92,17 +111,24 @@ export class NodeLoadOptions {
 				`/tables/${extractedTableId}/columns`
 			);
 			
+			// 🐛 DEBUG: Load Options Result
+			DebugHelper.logLoadOptions('getColumns', columns.length, { 
+				tableId: extractedTableId,
+				sampleColumns: columns.slice(0, 3).map(c => ({ title: c.title, type: c.type }))
+			});
+
 			return columns.map((column) => ({
 				name: column.title || `Spalte ${column.id}`,
 				value: column.id.toString(),
 				description: `Typ: ${column.type}`,
 			}));
-		} catch (error) {
+		} catch (error: any) {
+			DebugHelper.logError('NodeLoadOptions.getColumns', error);
 			return [
 				{
 					name: 'Fehler beim Laden der Spalten',
 					value: '',
-					description: error as string,
+					description: 'Überprüfen Sie die Tabellen-Auswahl',
 				},
 			];
 		}
@@ -131,13 +157,18 @@ export class NodeLoadOptions {
 
 			const userList = users?.ocs?.data?.users || [];
 			
+			// 🐛 DEBUG: Load Options Result
+			DebugHelper.logLoadOptions('getUsers', userList.length, { 
+				sampleUsers: userList.slice(0, 3) 
+			});
+			
 			return userList.map((username: string) => ({
 				name: username,
 				value: username,
 				description: '👤 Nextcloud Benutzer',
 			}));
 		} catch (error: any) {
-			console.error('Load Options getUsers error:', error);
+			DebugHelper.logError('NodeLoadOptions.getUsers', error);
 			return [
 				{
 					name: 'Fehler beim Laden der Benutzer',
@@ -171,13 +202,18 @@ export class NodeLoadOptions {
 
 			const groupList = groups?.ocs?.data?.groups || [];
 			
+			// 🐛 DEBUG: Load Options Result
+			DebugHelper.logLoadOptions('getGroups', groupList.length, { 
+				sampleGroups: groupList.slice(0, 3) 
+			});
+			
 			return groupList.map((groupname: string) => ({
 				name: groupname,
 				value: groupname,
 				description: '👥 Nextcloud Gruppe',
 			}));
 		} catch (error: any) {
-			console.error('Load Options getGroups error:', error);
+			DebugHelper.logError('NodeLoadOptions.getGroups', error);
 			return [
 				{
 					name: 'Fehler beim Laden der Gruppen',

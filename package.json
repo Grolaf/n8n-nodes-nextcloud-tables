@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-nextcloud-tables",
-  "version": "2.1.3",
+  "version": "2.1.4",
   "description": "Production-Ready n8n Node für Nextcloud Tables - Vollständige API-Abdeckung mit erweiterten Filtern, Multi-Column-Sorting, CSV-Import und professioneller Datenvalidierung",
   "keywords": [
     "n8n-community-node-package",
@@ -34,7 +34,13 @@
     "format": "prettier nodes credentials --write",
     "lint": "eslint \"nodes/**/*.ts\" \"credentials/**/*.ts\"",
     "lintfix": "eslint \"nodes/**/*.ts\" \"credentials/**/*.ts\" --fix",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "debug:report": "npx ts-node scripts/debug-inventory.ts report",
+    "debug:category": "npx ts-node scripts/debug-inventory.ts category",
+    "debug:enable": "npx ts-node scripts/debug-inventory.ts enable",
+    "debug:disable": "npx ts-node scripts/debug-inventory.ts disable",
+    "debug:cleanup": "npx ts-node scripts/debug-inventory.ts cleanup",
+    "debug:stats": "npx ts-node scripts/debug-inventory.ts stats"
   },
   "files": [
     "dist"

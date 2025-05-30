@@ -103,12 +103,12 @@ export class DataFormatter {
 			throw new Error(`Ungültiger Zahlenwert: ${value}`);
 		}
 		
-		// Min/Max-Prüfung
-		if (column.numberMin !== undefined && numValue < column.numberMin) {
+		// Min/Max-Prüfung - nur wenn Werte gesetzt sind (nicht null oder undefined)
+		if (column.numberMin !== undefined && column.numberMin !== null && numValue < column.numberMin) {
 			throw new Error(`Zahl zu klein: ${numValue}, Minimum: ${column.numberMin}`);
 		}
 		
-		if (column.numberMax !== undefined && numValue > column.numberMax) {
+		if (column.numberMax !== undefined && column.numberMax !== null && numValue > column.numberMax) {
 			throw new Error(`Zahl zu groß: ${numValue}, Maximum: ${column.numberMax}`);
 		}
 		
