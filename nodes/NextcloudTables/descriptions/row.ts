@@ -293,18 +293,11 @@ export const rowFields: INodeProperties[] = [
 
 	// Filter-Konfiguration
 	{
-		displayName: 'Filter',
+		displayName: 'Filter (aktiviert wenn "Filter aktivieren" gesetzt ist)',
 		name: 'filters',
 		type: 'fixedCollection',
 		typeOptions: {
 			multipleValues: true,
-		},
-		displayOptions: {
-			show: {
-				resource: ['row'],
-				operation: ['getAll'],
-				'additionalOptions.useFilters': [true],
-			},
 		},
 		default: {},
 		placeholder: 'Filter hinzufügen',
@@ -406,18 +399,11 @@ export const rowFields: INodeProperties[] = [
 
 	// Sortierung-Konfiguration
 	{
-		displayName: 'Sortierung',
+		displayName: 'Sortierung (aktiviert wenn "Sortierung aktivieren" gesetzt ist)',
 		name: 'sorting',
 		type: 'fixedCollection',
 		typeOptions: {
 			multipleValues: true,
-		},
-		displayOptions: {
-			show: {
-				resource: ['row'],
-				operation: ['getAll'],
-				'additionalOptions.useSorting': [true],
-			},
 		},
 		default: {},
 		placeholder: 'Sortierung hinzufügen',
@@ -465,17 +451,10 @@ export const rowFields: INodeProperties[] = [
 
 	// Suche-Konfiguration
 	{
-		displayName: 'Suche',
+		displayName: 'Suche (aktiviert wenn "Suche aktivieren" gesetzt ist)',
 		name: 'search',
 		type: 'collection',
 		placeholder: 'Suche konfigurieren',
-		displayOptions: {
-			show: {
-				resource: ['row'],
-				operation: ['getAll'],
-				'additionalOptions.useSearch': [true],
-			},
-		},
 		default: {},
 		options: [
 			{
