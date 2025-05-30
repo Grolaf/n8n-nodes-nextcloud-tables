@@ -14,11 +14,27 @@ export class ApiHelper {
 		useQueryParams: boolean = false,
 	): Promise<T> {
 		const credentials = await context.getCredentials('nextcloudTablesApi');
+		
+		// Validiere Credentials
+		if (!credentials) {
+			throw new Error('Keine Nextcloud Tables API Credentials konfiguriert');
+		}
+		
 		const baseUrl = credentials.url as string;
+		
+		// Validiere URL
+		if (!baseUrl || typeof baseUrl !== 'string') {
+			throw new Error('Nextcloud URL ist nicht konfiguriert oder ungültig');
+		}
 		
 		// API v1 verwenden (nicht v2!)
 		const cleanBaseUrl = baseUrl.replace(/\/$/, '');
 		let url = `${cleanBaseUrl}/index.php/apps/tables/api/1${endpoint}`;
+		
+		// Validiere weitere Credentials
+		if (!credentials.username || !credentials.password) {
+			throw new Error('Benutzername oder Passwort ist nicht konfiguriert');
+		}
 		
 		// Bei Query-Parametern: URL erweitern statt Body verwenden
 		if (useQueryParams && body) {

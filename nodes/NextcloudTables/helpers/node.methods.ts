@@ -20,8 +20,9 @@ export class NodeLoadOptions {
 				value: table.id.toString(),
 				description: table.description || undefined,
 			}));
-		} catch (error) {
-			throw new Error(`Fehler beim Laden der Tabellen: ${error}`);
+		} catch (error: any) {
+			console.error('Load Options getTables error:', error);
+			throw new Error(`Fehler beim Laden der Tabellen: ${error.message || error}`);
 		}
 	}
 
@@ -133,8 +134,9 @@ export class NodeListSearch {
 					description: table.description || undefined,
 				})),
 			};
-		} catch (error) {
-			throw new Error(`Fehler beim Durchsuchen der Tabellen: ${error}`);
+		} catch (error: any) {
+			console.error('NodeListSearch getTables error:', error);
+			throw new Error(`Fehler beim Durchsuchen der Tabellen: ${error.message || error}`);
 		}
 	}
 
