@@ -81,7 +81,7 @@ export class ApiHelper {
 			const response = await context.helpers.request(options);
 			
 			// 🐛 DEBUG: API Response & Performance
-			DebugHelper.logApiResponse(method, url, response.status, {
+			DebugHelper.logApiResponse(method, url, 200, {
 				dataSize: response.data ? JSON.stringify(response.data).length : 0,
 				headers: response.headers
 			});

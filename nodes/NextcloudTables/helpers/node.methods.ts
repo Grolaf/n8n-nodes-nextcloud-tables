@@ -141,7 +141,7 @@ export class NodeLoadOptions {
 		try {
 			// Nextcloud Users API verwenden (erfordert OCS-Header)
 			const credentials = await context.getCredentials('nextcloudTablesApi');
-			const baseUrl = (credentials.host as string).replace(/\/$/, '');
+			const baseUrl = (credentials.serverUrl as string).replace(/\/$/, '');
 			
 			const users = await context.helpers.request({
 				method: 'GET',
@@ -186,7 +186,7 @@ export class NodeLoadOptions {
 		try {
 			// Nextcloud Groups API verwenden (erfordert OCS-Header)
 			const credentials = await context.getCredentials('nextcloudTablesApi');
-			const baseUrl = (credentials.host as string).replace(/\/$/, '');
+			const baseUrl = (credentials.serverUrl as string).replace(/\/$/, '');
 			
 			const groups = await context.helpers.request({
 				method: 'GET',
