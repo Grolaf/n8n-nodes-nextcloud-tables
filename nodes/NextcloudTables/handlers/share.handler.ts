@@ -38,7 +38,7 @@ export class ShareHandler {
 		const tableId = ApiHelper.getResourceId(context.getNodeParameter('tableId', itemIndex));
 		const shareType = context.getNodeParameter('shareType', itemIndex) as string;
 		const receiver = context.getNodeParameter('receiver', itemIndex) as string;
-		const permissions = context.getNodeParameter('permissions.permission', itemIndex) as any;
+		const permissionsCollection = context.getNodeParameter('permissions', itemIndex, {}) as any;
 		const additionalOptions = context.getNodeParameter('additionalOptions', itemIndex, {}) as any;
 
 		// Basis-Body aufbauen
@@ -51,6 +51,9 @@ export class ShareHandler {
 		if (additionalOptions.displayName) {
 			body.receiverDisplayName = additionalOptions.displayName;
 		}
+
+		// Berechtigungen aus fixedCollection extrahieren
+		const permissions = permissionsCollection?.permission?.[0] || null;
 
 		// Berechtigungen hinzufügen
 		if (permissions) {
@@ -81,7 +84,10 @@ export class ShareHandler {
 	 */
 	private static async update(context: IExecuteFunctions, itemIndex: number): Promise<Share> {
 		const shareId = context.getNodeParameter('shareId', itemIndex) as string;
-		const permissions = context.getNodeParameter('permissions.permission', itemIndex) as any;
+		const permissionsCollection = context.getNodeParameter('permissions', itemIndex, {}) as any;
+
+		// Berechtigungen aus fixedCollection extrahieren
+		const permissions = permissionsCollection?.permission?.[0] || null;
 
 		// Berechtigungen-Body aufbauen
 		const body: any = {};
