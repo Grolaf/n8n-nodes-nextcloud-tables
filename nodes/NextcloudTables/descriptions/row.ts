@@ -85,22 +85,11 @@ export const rowFields: INodeProperties[] = [
 					{
 						displayName: 'Quell-Typ',
 						name: 'type',
-						type: 'options',
+						type: 'string',
 						required: true,
-						options: [
-							{
-								name: 'Tabelle',
-								value: 'table',
-								description: 'Zeilen direkt aus einer Tabelle',
-							},
-							{
-								name: 'View',
-								value: 'view',
-								description: 'Zeilen aus einer View',
-							},
-						],
 						default: 'table',
-						description: 'Wählen Sie ob Sie mit einer Tabelle oder View arbeiten',
+						description: 'Wählen Sie ob Sie mit einer Tabelle oder View arbeiten. Gültige Werte: "table" (Tabelle), "view" (View)',
+						placeholder: 'table',
 					},
 					{
 						displayName: 'Tabellen-ID',

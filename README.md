@@ -66,7 +66,7 @@ Operation: "Spalte Aktualisieren (KI-Friendly)"
 **Vorteile für KI-Agents:**
 - 🔍 **Parameter-Transparenz**: 24 Parameter gleichzeitig sichtbar
 - 🎯 **Autonome Operationen**: Keine UI-Interaktion erforderlich
-- 🚀 **Vollständige Kontrolle**: Create + Update aller Spaltentypen
+- 🚀 **String-basierte Eingaben**: Keine Dropdown-Listen, maximale Flexibilität
 - 🛡️ **Robuste Validierung**: Hilfreiche Fehlermeldungen
 - ↩️ **Backward Compatible**: Human-UI bleibt unverändert
 
@@ -174,6 +174,36 @@ Erstellen Sie neue Credentials vom Typ "Nextcloud Tables API":
 }
 ```
 
+### Verschiedene Spaltentypen für KI-Agents
+```javascript
+// Text-Spalte erstellen
+{
+  "columnType": "text",
+  "columnTitle": "Beschreibung",
+  "textSubtypeAI": "long",
+  "textMaxLengthAI": 1000,
+  "textPatternAI": "^[A-Za-z0-9\\s]+$"
+}
+
+// Zahlen-Spalte erstellen  
+{
+  "columnType": "number",
+  "columnTitle": "Budget",
+  "numberMinAI": 0,
+  "numberMaxAI": 100000,
+  "numberDecimalsAI": 2,
+  "numberPrefixAI": "€"
+}
+
+// Benutzer/Gruppen-Spalte erstellen
+{
+  "columnType": "usergroup", 
+  "columnTitle": "Zuständig",
+  "usergroupTypeAI": "user",
+  "usergroupMultipleAI": false
+}
+```
+
 ### Human vs. KI-Agent Vergleich
 ```javascript
 // HUMAN (UI-optimiert) - Parameter erscheinen dynamisch
@@ -185,6 +215,8 @@ Typ: "Auswahl"
 // KI-AGENT (AI-optimiert) - Alle Parameter sichtbar
 Operation: "Spalte Erstellen (KI-Friendly)"  
 // → ALLE 23 Parameter sofort sichtbar und verwendbar
+// → String-basierte Eingaben statt Dropdown-Listen
+// → Maximale Flexibilität für autonome Ausführung
 ```
 
 ## 🔧 **Advanced Usage**

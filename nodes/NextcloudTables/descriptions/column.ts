@@ -85,7 +85,7 @@ export const columnFields: INodeProperties[] = [
 	{
 		displayName: 'Spaltentyp (AI-Friendly)',
 		name: 'columnType',
-		type: 'options',
+		type: 'string',
 		required: false,
 		displayOptions: {
 			show: {
@@ -93,35 +93,9 @@ export const columnFields: INodeProperties[] = [
 				operation: ['createAIFriendly', 'updateAIFriendly'],
 			},
 		},
-		options: [
-			{
-				name: 'Text',
-				value: 'text',
-				description: 'Textspalte mit optionaler Pattern-Validierung',
-			},
-			{
-				name: 'Zahl',
-				value: 'number',
-				description: 'Zahlenspalte mit Min/Max/Dezimalstellen',
-			},
-			{
-				name: 'Datum/Zeit',
-				value: 'datetime',
-				description: 'Datum- und Zeitspalte',
-			},
-			{
-				name: 'Auswahl',
-				value: 'selection',
-				description: 'Dropdown-Auswahl mit vordefinierten Optionen',
-			},
-			{
-				name: 'Benutzer/Gruppe',
-				value: 'usergroup',
-				description: 'Benutzer-, Gruppen- oder Team-Auswahl',
-			},
-		],
 		default: 'text',
-		description: 'Der Typ der Spalte (erforderlich für createAIFriendly, optional für updateAIFriendly, wird bei anderen ignoriert)',
+		description: 'Der Typ der Spalte (erforderlich für createAIFriendly, optional für updateAIFriendly, wird bei anderen ignoriert). Gültige Werte: "text", "number", "datetime", "selection", "usergroup"',
+		placeholder: 'text',
 	},
 
 	{
@@ -173,27 +147,16 @@ export const columnFields: INodeProperties[] = [
 	{
 		displayName: 'Text-Subtyp (nur für Typ "text")',
 		name: 'textSubtypeAI',
-		type: 'options',
+		type: 'string',
 		displayOptions: {
 			show: {
 				resource: ['column'],
 				operation: ['createAIFriendly', 'updateAIFriendly'],
 			},
 		},
-		options: [
-			{
-				name: 'Line (Einzeilig)',
-				value: 'line',
-				description: 'Einzeiliges Textfeld',
-			},
-			{
-				name: 'Long Text (Mehrzeilig)',
-				value: 'long',
-				description: 'Mehrzeiliges Textfeld',
-			},
-		],
 		default: 'line',
-		description: 'Subtyp für Text-Spalten (wird ignoriert bei anderen Typen, für createAIFriendly/updateAIFriendly Operationen verwendet)',
+		description: 'Subtyp für Text-Spalten (wird ignoriert bei anderen Typen, für createAIFriendly/updateAIFriendly Operationen verwendet). Gültige Werte: "line" (einzeilig), "long" (mehrzeilig)',
+		placeholder: 'line',
 	},
 
 	{
@@ -392,27 +355,16 @@ export const columnFields: INodeProperties[] = [
 	{
 		displayName: 'Benutzer/Gruppen-Typ (nur für Typ "usergroup")',
 		name: 'usergroupTypeAI',
-		type: 'options',
+		type: 'string',
 		displayOptions: {
 			show: {
 				resource: ['column'],
 				operation: ['createAIFriendly', 'updateAIFriendly'],
 			},
 		},
-		options: [
-			{
-				name: 'User (Benutzer)',
-				value: 'user',
-				description: 'Nur Benutzer auswählbar',
-			},
-			{
-				name: 'Group (Gruppen)',
-				value: 'group',
-				description: 'Nur Gruppen auswählbar',
-			},
-		],
 		default: 'user',
-		description: 'Art der Benutzer/Gruppen-Auswahl (wird ignoriert bei anderen Typen, für createAIFriendly/updateAIFriendly Operationen verwendet)',
+		description: 'Art der Benutzer/Gruppen-Auswahl (wird ignoriert bei anderen Typen, für createAIFriendly/updateAIFriendly Operationen verwendet). Gültige Werte: "user" (Benutzer), "group" (Gruppen)',
+		placeholder: 'user',
 	},
 
 	{

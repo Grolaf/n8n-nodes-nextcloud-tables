@@ -222,46 +222,10 @@ export const viewFields: INodeProperties[] = [
 									{
 										displayName: 'Operator',
 										name: 'operator',
-										type: 'options',
-										options: [
-											{
-												name: 'Gleich (=)',
-												value: 'EQ',
-												description: 'Exakte Übereinstimmung',
-											},
-											{
-												name: 'Ungleich (!=)',
-												value: 'NEQ',
-												description: 'Nicht gleich',
-											},
-											{
-												name: 'Größer (>)',
-												value: 'GT',
-												description: 'Größer als',
-											},
-											{
-												name: 'Größer gleich (>=)',
-												value: 'GTE',
-												description: 'Größer oder gleich',
-											},
-											{
-												name: 'Kleiner (<)',
-												value: 'LT',
-												description: 'Kleiner als',
-											},
-											{
-												name: 'Kleiner gleich (<=)',
-												value: 'LTE',
-												description: 'Kleiner oder gleich',
-											},
-											{
-												name: 'Enthält (LIKE)',
-												value: 'LIKE',
-												description: 'Text enthält Begriff',
-											},
-										],
+										type: 'string',
 										default: 'EQ',
-										description: 'Der Filter-Operator',
+										description: 'Der Filter-Operator. Gültige Werte: "EQ" (gleich), "NEQ" (ungleich), "GT" (größer), "GTE" (größer gleich), "LT" (kleiner), "LTE" (kleiner gleich), "LIKE" (enthält)',
+										placeholder: 'EQ',
 									},
 									{
 										displayName: 'Wert',
@@ -325,21 +289,10 @@ export const viewFields: INodeProperties[] = [
 									{
 										displayName: 'Richtung',
 										name: 'direction',
-										type: 'options',
-										options: [
-											{
-												name: 'Aufsteigend (A-Z, 1-9)',
-												value: 'ASC',
-												description: 'Von klein zu groß',
-											},
-											{
-												name: 'Absteigend (Z-A, 9-1)',
-												value: 'DESC',
-												description: 'Von groß zu klein',
-											},
-										],
+										type: 'string',
 										default: 'ASC',
-										description: 'Die Sortierrichtung',
+										description: 'Die Sortierrichtung. Gültige Werte: "ASC" (aufsteigend A-Z, 1-9), "DESC" (absteigend Z-A, 9-1)',
+										placeholder: 'ASC',
 									},
 								],
 							},
@@ -591,46 +544,10 @@ export const viewFields: INodeProperties[] = [
 					{
 						displayName: 'Operator',
 						name: 'operator',
-						type: 'options',
-						options: [
-							{
-								name: 'Gleich',
-								value: 'EQ',
-								description: 'Wert ist gleich',
-							},
-							{
-								name: 'Ungleich',
-								value: 'NEQ',
-								description: 'Wert ist ungleich',
-							},
-							{
-								name: 'Größer als',
-								value: 'GT',
-								description: 'Wert ist größer als',
-							},
-							{
-								name: 'Größer oder gleich',
-								value: 'GTE',
-								description: 'Wert ist größer oder gleich',
-							},
-							{
-								name: 'Kleiner als',
-								value: 'LT',
-								description: 'Wert ist kleiner als',
-							},
-							{
-								name: 'Kleiner oder gleich',
-								value: 'LTE',
-								description: 'Wert ist kleiner oder gleich',
-							},
-							{
-								name: 'Enthält',
-								value: 'LIKE',
-								description: 'Wert enthält Text',
-							},
-						],
+						type: 'string',
 						default: 'EQ',
 						description: 'Der Vergleichsoperator',
+						placeholder: 'EQ',
 					},
 					{
 						displayName: 'Wert',
