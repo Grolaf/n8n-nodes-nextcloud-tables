@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-nextcloud-tables",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "Production-Ready n8n Node für Nextcloud Tables - Vollständige API-Abdeckung mit erweiterten Filtern, Multi-Column-Sorting, CSV-Import und professioneller Datenvalidierung",
   "keywords": [
     "n8n-community-node-package",
