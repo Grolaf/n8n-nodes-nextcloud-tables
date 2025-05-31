@@ -252,33 +252,72 @@ export class ApiHelper {
 			keys: typeof resourceLocator === 'object' ? Object.keys(resourceLocator || {}) : [],
 		});
 
+		// Prüfe auf null/undefined zuerst
+		if (resourceLocator === null || resourceLocator === undefined) {
+			DebugHelper.logError('getResourceId', new Error('Resource Locator ist null oder undefined'));
+			throw new Error('Resource Locator ist erforderlich aber nicht gesetzt');
+		}
+
 		if (typeof resourceLocator === 'number') {
+			if (resourceLocator <= 0 || isNaN(resourceLocator)) {
+				throw new Error('Ungültige ID: Muss eine positive Zahl sein');
+			}
 			DebugHelper.logResourceLocator('number', resourceLocator);
 			return resourceLocator;
 		}
 		
 		if (typeof resourceLocator === 'string') {
+			if (resourceLocator.trim() === '') {
+				throw new Error('Resource Locator ist leer - ID ist erforderlich');
+			}
 			const id = parseInt(resourceLocator, 10);
+			if (isNaN(id) || id <= 0) {
+				throw new Error(`Ungültige ID: "${resourceLocator}" ist keine gültige Zahl`);
+			}
 			DebugHelper.logResourceLocator('string->number', { input: resourceLocator, output: id });
 			return id;
 		}
 		
 		if (resourceLocator && typeof resourceLocator === 'object') {
-			if (resourceLocator.mode === 'id' && resourceLocator.value) {
-				const id = parseInt(resourceLocator.value, 10);
-				DebugHelper.logResourceLocator('object.id', { input: resourceLocator, output: id });
-				return id;
+			// Prüfe __rl Struktur
+			if (resourceLocator.__rl === true) {
+				const value = resourceLocator.value;
+				const mode = resourceLocator.mode;
+				
+				if (!value || value === '') {
+					throw new Error(`Resource Locator Value ist leer (mode: ${mode}) - Eine ID ist erforderlich`);
+				}
+				
+				if (mode === 'id' || mode === 'list') {
+					const id = parseInt(value, 10);
+					if (isNaN(id) || id <= 0) {
+						throw new Error(`Ungültige ID in Resource Locator: "${value}" ist keine gültige Zahl`);
+					}
+					DebugHelper.logResourceLocator(`object.${mode}`, { input: resourceLocator, output: id });
+					return id;
+				} else {
+					throw new Error(`Unbekannter Resource Locator Mode: ${mode}`);
+				}
 			}
-			if (resourceLocator.mode === 'list' && resourceLocator.value) {
-				const id = parseInt(resourceLocator.value, 10);
-				DebugHelper.logResourceLocator('object.list', { input: resourceLocator, output: id });
+			
+			// Legacy Format Support
+			if (resourceLocator.mode && resourceLocator.value) {
+				const value = resourceLocator.value;
+				if (!value || value === '') {
+					throw new Error(`Resource Locator Value ist leer - Eine ID ist erforderlich`);
+				}
+				const id = parseInt(value, 10);
+				if (isNaN(id) || id <= 0) {
+					throw new Error(`Ungültige ID: "${value}" ist keine gültige Zahl`);
+				}
+				DebugHelper.logResourceLocator('legacy', { input: resourceLocator, output: id });
 				return id;
 			}
 		}
 		
 		// 🐛 DEBUG: Invalid Resource Locator
 		DebugHelper.logError('getResourceId', new Error(`Ungültiger Resource Locator: ${JSON.stringify(resourceLocator)}`));
-		throw new Error('Ungültiger Resource Locator');
+		throw new Error(`Ungültiger Resource Locator Format: ${JSON.stringify(resourceLocator)}`);
 	}
 
 	/**
