@@ -45,27 +45,84 @@ export class NodeLoadOptions {
 		try {
 			// Versuche die Tabellen-ID aus dem Kontext zu extrahieren
 			const tableId = context.getCurrentNodeParameter('tableId') as any;
-			const extractedTableId = tableId?.value || tableId;
 			
-			if (!extractedTableId) {
+			// 🐛 DEBUG: Detailed tableId debugging
+			DebugHelper.logResourceLocator('getViews.input', {
+				raw: tableId,
+				type: typeof tableId,
+				isNull: tableId === null,
+				isUndefined: tableId === undefined,
+				hasValue: tableId?.value,
+				hasMode: tableId?.mode,
+				keys: typeof tableId === 'object' ? Object.keys(tableId || {}) : [],
+			});
+			
+			// Verbesserte Extraktion mit mehr Validierung
+			let extractedTableId: any;
+			
+			if (!tableId) {
+				console.warn('getViews: tableId is null/undefined');
 				return [
 					{
-						name: 'Wählen Sie zuerst eine Tabelle aus',
+						name: 'Keine Tabelle ausgewählt',
 						value: '',
-						description: 'Eine Tabelle muss ausgewählt werden, um Views zu laden',
+						description: 'Wählen Sie zuerst eine Tabelle aus, um Views zu laden',
+					},
+				];
+			}
+			
+			// Resource Locator Struktur
+			if (typeof tableId === 'object' && tableId !== null) {
+				if (tableId.__rl === true || tableId.mode) {
+					extractedTableId = tableId.value;
+				} else {
+					extractedTableId = tableId;
+				}
+			} else {
+				extractedTableId = tableId;
+			}
+			
+			// Validierung der extrahierten ID
+			if (!extractedTableId || extractedTableId === '' || extractedTableId === 'undefined') {
+				console.warn('getViews: extractedTableId is empty or invalid:', extractedTableId);
+				return [
+					{
+						name: 'Ungültige Tabellen-ID',
+						value: '',
+						description: 'Bitte wählen Sie eine gültige Tabelle aus',
+					},
+				];
+			}
+			
+			// Stelle sicher, dass es eine gültige Zahl ist
+			const numericTableId = parseInt(extractedTableId, 10);
+			if (isNaN(numericTableId) || numericTableId <= 0) {
+				console.warn('getViews: tableId is not a valid number:', extractedTableId);
+				return [
+					{
+						name: 'Ungültige Tabellen-ID (keine Zahl)',
+						value: '',
+						description: `"${extractedTableId}" ist keine gültige Tabellen-ID`,
 					},
 				];
 			}
 
+			// 🐛 DEBUG: Final tableId being used
+			DebugHelper.logResourceLocator('getViews.final', {
+				original: tableId,
+				extracted: extractedTableId,
+				numeric: numericTableId,
+			});
+
 			const views = await ApiHelper.makeApiRequest<View[]>(
 				context, 
 				'GET', 
-				`/tables/${extractedTableId}/views`
+				`/tables/${numericTableId}/views`
 			);
 			
 			// 🐛 DEBUG: Load Options Result
 			DebugHelper.logLoadOptions('getViews', views.length, { 
-				tableId: extractedTableId,
+				tableId: numericTableId,
 				sampleTitles: views.slice(0, 3).map(v => v.title) 
 			});
 
@@ -76,11 +133,18 @@ export class NodeLoadOptions {
 			}));
 		} catch (error: any) {
 			DebugHelper.logError('NodeLoadOptions.getViews', error);
+			console.error('getViews detailed error:', {
+				message: error.message,
+				statusCode: error.statusCode,
+				response: error.response?.body,
+				stack: error.stack?.split('\n').slice(0, 5),
+			});
+			
 			return [
 				{
 					name: 'Fehler beim Laden der Views',
 					value: '',
-					description: 'Überprüfen Sie die Tabellen-Auswahl',
+					description: `Fehler: ${error.message || 'Unbekannter Fehler'}`,
 				},
 			];
 		}
@@ -93,27 +157,84 @@ export class NodeLoadOptions {
 		try {
 			// Versuche die Tabellen-ID aus dem Kontext zu extrahieren
 			const tableId = context.getCurrentNodeParameter('tableId') as any;
-			const extractedTableId = tableId?.value || tableId;
 			
-			if (!extractedTableId) {
+			// 🐛 DEBUG: Detailed tableId debugging
+			DebugHelper.logResourceLocator('getColumns.input', {
+				raw: tableId,
+				type: typeof tableId,
+				isNull: tableId === null,
+				isUndefined: tableId === undefined,
+				hasValue: tableId?.value,
+				hasMode: tableId?.mode,
+				keys: typeof tableId === 'object' ? Object.keys(tableId || {}) : [],
+			});
+			
+			// Verbesserte Extraktion mit mehr Validierung
+			let extractedTableId: any;
+			
+			if (!tableId) {
+				console.warn('getColumns: tableId is null/undefined');
 				return [
 					{
-						name: 'Wählen Sie zuerst eine Tabelle aus',
+						name: 'Keine Tabelle ausgewählt',
 						value: '',
-						description: 'Eine Tabelle muss ausgewählt werden, um Spalten zu laden',
+						description: 'Wählen Sie zuerst eine Tabelle aus, um Spalten zu laden',
+					},
+				];
+			}
+			
+			// Resource Locator Struktur
+			if (typeof tableId === 'object' && tableId !== null) {
+				if (tableId.__rl === true || tableId.mode) {
+					extractedTableId = tableId.value;
+				} else {
+					extractedTableId = tableId;
+				}
+			} else {
+				extractedTableId = tableId;
+			}
+			
+			// Validierung der extrahierten ID
+			if (!extractedTableId || extractedTableId === '' || extractedTableId === 'undefined') {
+				console.warn('getColumns: extractedTableId is empty or invalid:', extractedTableId);
+				return [
+					{
+						name: 'Ungültige Tabellen-ID',
+						value: '',
+						description: 'Bitte wählen Sie eine gültige Tabelle aus',
+					},
+				];
+			}
+			
+			// Stelle sicher, dass es eine gültige Zahl ist
+			const numericTableId = parseInt(extractedTableId, 10);
+			if (isNaN(numericTableId) || numericTableId <= 0) {
+				console.warn('getColumns: tableId is not a valid number:', extractedTableId);
+				return [
+					{
+						name: 'Ungültige Tabellen-ID (keine Zahl)',
+						value: '',
+						description: `"${extractedTableId}" ist keine gültige Tabellen-ID`,
 					},
 				];
 			}
 
+			// 🐛 DEBUG: Final tableId being used
+			DebugHelper.logResourceLocator('getColumns.final', {
+				original: tableId,
+				extracted: extractedTableId,
+				numeric: numericTableId,
+			});
+
 			const columns = await ApiHelper.makeApiRequest<Column[]>(
 				context, 
 				'GET', 
-				`/tables/${extractedTableId}/columns`
+				`/tables/${numericTableId}/columns`
 			);
 			
 			// 🐛 DEBUG: Load Options Result
 			DebugHelper.logLoadOptions('getColumns', columns.length, { 
-				tableId: extractedTableId,
+				tableId: numericTableId,
 				sampleColumns: columns.slice(0, 3).map(c => ({ title: c.title, type: c.type }))
 			});
 
@@ -124,11 +245,18 @@ export class NodeLoadOptions {
 			}));
 		} catch (error: any) {
 			DebugHelper.logError('NodeLoadOptions.getColumns', error);
+			console.error('getColumns detailed error:', {
+				message: error.message,
+				statusCode: error.statusCode,
+				response: error.response?.body,
+				stack: error.stack?.split('\n').slice(0, 5),
+			});
+			
 			return [
 				{
 					name: 'Fehler beim Laden der Spalten',
 					value: '',
-					description: 'Überprüfen Sie die Tabellen-Auswahl',
+					description: `Fehler: ${error.message || 'Unbekannter Fehler'}`,
 				},
 			];
 		}
@@ -351,24 +479,85 @@ export class NodeListSearch {
 		try {
 			// Versuche die Tabellen-ID aus dem Kontext zu extrahieren
 			const tableId = context.getCurrentNodeParameter('tableId') as any;
-			const extractedTableId = tableId?.value || tableId;
 			
-			if (!extractedTableId) {
+			// 🐛 DEBUG: Detailed tableId debugging
+			DebugHelper.logResourceLocator('getViews.listSearch.input', {
+				raw: tableId,
+				type: typeof tableId,
+				isNull: tableId === null,
+				isUndefined: tableId === undefined,
+				hasValue: tableId?.value,
+				hasMode: tableId?.mode,
+				keys: typeof tableId === 'object' ? Object.keys(tableId || {}) : [],
+			});
+			
+			// Verbesserte Extraktion mit mehr Validierung
+			let extractedTableId: any;
+			
+			if (!tableId) {
+				console.warn('getViews (listSearch): tableId is null/undefined');
 				return {
 					results: [
 						{
-							name: 'Wählen Sie zuerst eine Tabelle aus',
+							name: 'Keine Tabelle ausgewählt',
 							value: '',
-							description: 'Eine Tabelle muss ausgewählt werden, um Views zu suchen',
+							description: 'Wählen Sie zuerst eine Tabelle aus, um Views zu suchen',
+						},
+					],
+				};
+			}
+			
+			// Resource Locator Struktur
+			if (typeof tableId === 'object' && tableId !== null) {
+				if (tableId.__rl === true || tableId.mode) {
+					extractedTableId = tableId.value;
+				} else {
+					extractedTableId = tableId;
+				}
+			} else {
+				extractedTableId = tableId;
+			}
+			
+			// Validierung der extrahierten ID
+			if (!extractedTableId || extractedTableId === '' || extractedTableId === 'undefined') {
+				console.warn('getViews (listSearch): extractedTableId is empty or invalid:', extractedTableId);
+				return {
+					results: [
+						{
+							name: 'Ungültige Tabellen-ID',
+							value: '',
+							description: 'Bitte wählen Sie eine gültige Tabelle aus',
+						},
+					],
+				};
+			}
+			
+			// Stelle sicher, dass es eine gültige Zahl ist
+			const numericTableId = parseInt(extractedTableId, 10);
+			if (isNaN(numericTableId) || numericTableId <= 0) {
+				console.warn('getViews (listSearch): tableId is not a valid number:', extractedTableId);
+				return {
+					results: [
+						{
+							name: 'Ungültige Tabellen-ID (keine Zahl)',
+							value: '',
+							description: `"${extractedTableId}" ist keine gültige Tabellen-ID`,
 						},
 					],
 				};
 			}
 
+			// 🐛 DEBUG: Final tableId being used
+			DebugHelper.logResourceLocator('getViews.listSearch.final', {
+				original: tableId,
+				extracted: extractedTableId,
+				numeric: numericTableId,
+			});
+
 			const views = await ApiHelper.makeApiRequest<View[]>(
 				context, 
 				'GET', 
-				`/tables/${extractedTableId}/views`
+				`/tables/${numericTableId}/views`
 			);
 			
 			let filteredViews = views;
@@ -388,13 +577,21 @@ export class NodeListSearch {
 					description: view.description || undefined,
 				})),
 			};
-		} catch (error) {
+		} catch (error: any) {
+			DebugHelper.logError('NodeListSearch.getViews', error);
+			console.error('getViews (listSearch) detailed error:', {
+				message: error.message,
+				statusCode: error.statusCode,
+				response: error.response?.body,
+				stack: error.stack?.split('\n').slice(0, 5),
+			});
+			
 			return {
 				results: [
 					{
 						name: 'Fehler beim Durchsuchen der Views',
 						value: '',
-						description: error as string,
+						description: `Fehler: ${error.message || 'Unbekannter Fehler'}`,
 					},
 				],
 			};
@@ -408,24 +605,85 @@ export class NodeListSearch {
 		try {
 			// Versuche die Tabellen-ID aus dem Kontext zu extrahieren
 			const tableId = context.getCurrentNodeParameter('tableId') as any;
-			const extractedTableId = tableId?.value || tableId;
 			
-			if (!extractedTableId) {
+			// 🐛 DEBUG: Detailed tableId debugging
+			DebugHelper.logResourceLocator('getColumns.listSearch.input', {
+				raw: tableId,
+				type: typeof tableId,
+				isNull: tableId === null,
+				isUndefined: tableId === undefined,
+				hasValue: tableId?.value,
+				hasMode: tableId?.mode,
+				keys: typeof tableId === 'object' ? Object.keys(tableId || {}) : [],
+			});
+			
+			// Verbesserte Extraktion mit mehr Validierung
+			let extractedTableId: any;
+			
+			if (!tableId) {
+				console.warn('getColumns (listSearch): tableId is null/undefined');
 				return {
 					results: [
 						{
-							name: 'Wählen Sie zuerst eine Tabelle aus',
+							name: 'Keine Tabelle ausgewählt',
 							value: '',
-							description: 'Eine Tabelle muss ausgewählt werden, um Spalten zu suchen',
+							description: 'Wählen Sie zuerst eine Tabelle aus, um Spalten zu suchen',
+						},
+					],
+				};
+			}
+			
+			// Resource Locator Struktur
+			if (typeof tableId === 'object' && tableId !== null) {
+				if (tableId.__rl === true || tableId.mode) {
+					extractedTableId = tableId.value;
+				} else {
+					extractedTableId = tableId;
+				}
+			} else {
+				extractedTableId = tableId;
+			}
+			
+			// Validierung der extrahierten ID
+			if (!extractedTableId || extractedTableId === '' || extractedTableId === 'undefined') {
+				console.warn('getColumns (listSearch): extractedTableId is empty or invalid:', extractedTableId);
+				return {
+					results: [
+						{
+							name: 'Ungültige Tabellen-ID',
+							value: '',
+							description: 'Bitte wählen Sie eine gültige Tabelle aus',
+						},
+					],
+				};
+			}
+			
+			// Stelle sicher, dass es eine gültige Zahl ist
+			const numericTableId = parseInt(extractedTableId, 10);
+			if (isNaN(numericTableId) || numericTableId <= 0) {
+				console.warn('getColumns (listSearch): tableId is not a valid number:', extractedTableId);
+				return {
+					results: [
+						{
+							name: 'Ungültige Tabellen-ID (keine Zahl)',
+							value: '',
+							description: `"${extractedTableId}" ist keine gültige Tabellen-ID`,
 						},
 					],
 				};
 			}
 
+			// 🐛 DEBUG: Final tableId being used
+			DebugHelper.logResourceLocator('getColumns.listSearch.final', {
+				original: tableId,
+				extracted: extractedTableId,
+				numeric: numericTableId,
+			});
+
 			const columns = await ApiHelper.makeApiRequest<Column[]>(
 				context, 
 				'GET', 
-				`/tables/${extractedTableId}/columns`
+				`/tables/${numericTableId}/columns`
 			);
 			
 			let filteredColumns = columns;
@@ -445,13 +703,21 @@ export class NodeListSearch {
 					description: `Typ: ${column.type}`,
 				})),
 			};
-		} catch (error) {
+		} catch (error: any) {
+			DebugHelper.logError('NodeListSearch.getColumns', error);
+			console.error('getColumns (listSearch) detailed error:', {
+				message: error.message,
+				statusCode: error.statusCode,
+				response: error.response?.body,
+				stack: error.stack?.split('\n').slice(0, 5),
+			});
+			
 			return {
 				results: [
 					{
 						name: 'Fehler beim Durchsuchen der Spalten',
 						value: '',
-						description: error as string,
+						description: `Fehler: ${error.message || 'Unbekannter Fehler'}`,
 					},
 				],
 			};
