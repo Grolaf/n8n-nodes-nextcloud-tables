@@ -460,26 +460,47 @@ export class RowHandler {
 	}
 
 	/**
-	 * Eine Zeile löschen
+	 * Eine Zeile löschen - Teste verschiedene API-Endpunkte
 	 */
 	private static async delete(context: IExecuteFunctions, itemIndex: number): Promise<{ success: boolean; message: string }> {
 		const tableId = ApiHelper.getResourceId(context.getNodeParameter('tableId', itemIndex));
 		const rowId = ApiHelper.validateRowId(context.getNodeParameter('rowId', itemIndex));
 
-		try {
-			await ApiHelper.makeApiRequest(
-				context,
-				'DELETE',
-				`/tables/${tableId}/rows/${rowId}`,
-			);
+		// Verschiedene API-Endpunkte testen
+		const endpointsToTry = [
+			`/api/1/tables/${tableId}/rows/${rowId}`,      // Standard DELETE
+			`/api/2/tables/${tableId}/rows/${rowId}`,      // API v2 
+			`/ocs/v2.php/apps/tables/api/1/tables/${tableId}/rows/${rowId}`, // OCS v1
+			`/ocs/v2.php/apps/tables/api/2/tables/${tableId}/rows/${rowId}`, // OCS v2
+		];
 
-			return { 
-				success: true, 
-				message: `Zeile ${rowId} wurde erfolgreich aus Tabelle ${tableId} gelöscht` 
-			};
-		} catch (error) {
-			ApiHelper.handleApiError(error);
+		let lastError: any = null;
+
+		for (const endpoint of endpointsToTry) {
+			try {
+				await ApiHelper.makeApiRequest(
+					context,
+					'DELETE',
+					endpoint,
+				);
+
+				return { 
+					success: true, 
+					message: `Zeile ${rowId} wurde erfolgreich aus Tabelle ${tableId} gelöscht (Endpunkt: ${endpoint})` 
+				};
+			} catch (error: any) {
+				lastError = error;
+				// 405 = Method Not Allowed, 404 = Not Found - beide bedeuten "Endpunkt existiert nicht"
+				if (error.status && (error.status === 405 || error.status === 404)) {
+					continue; // Nächsten Endpunkt probieren
+				}
+				// Bei anderen Fehlern (403, 500, etc.) sofort abbrechen
+				break;
+			}
 		}
+
+		// Wenn alle Endpunkte fehlschlagen
+		throw new Error(`DELETE für Zeilen wird von der Nextcloud Tables API nicht unterstützt. Letzter Fehler: ${lastError?.message || 'Unbekannt'}`);
 	}
 
 	/**

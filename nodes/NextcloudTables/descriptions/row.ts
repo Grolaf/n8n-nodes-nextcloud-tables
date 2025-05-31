@@ -37,9 +37,9 @@ export const rowOperations: INodeProperties[] = [
 				action: 'Zeile aktualisieren',
 			},
 			{
-				name: 'Zeile Löschen',
+				name: 'Zeile Löschen (Experimentell)',
 				value: 'delete',
-				description: 'Eine Zeile löschen',
+				description: 'Eine Zeile löschen - Testet verschiedene API-Endpunkte',
 				action: 'Zeile löschen',
 			},
 		],

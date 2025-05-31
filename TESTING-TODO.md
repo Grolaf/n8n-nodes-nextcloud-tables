@@ -20,6 +20,10 @@
 - [x] ✅ **Resource Locator für Zeilen-Daten** - Spalten-Dropdown funktioniert
 - [x] ✅ **Datenformatierung** - Korrekte Übertragung von Zeilen-Daten
 - [x] ✅ **Numeric Validation Bug** - 'undefined' Fehler bei number-Spalten behoben
+- [x] ✅ **Alle Zeilen abrufen** - `GET /tables/{id}/rows` Status 200 - Test-Tabelle hat 7 Zeilen, 609ms Response Time
+- [ ] 🔄 **Zeile abrufen** - `GET /tables/{id}/rows/{rowId}` - Bereit für Test
+- [ ] 🔄 **Zeile aktualisieren** - `PUT /tables/{id}/rows/{rowId}`  
+- [x] ❌ **Zeile löschen** - `DELETE /tables/{id}/rows/{rowId}` - **API unterstützt Operation nicht (HTTP 405)**
 
 ### 👁️ **View-Operations (NEU!)**
 - [x] ✅ **Views abrufen** - `GET /tables/{id}/views` Status 200
@@ -36,6 +40,7 @@
 - [x] ✅ **Share mit Benutzer erstellen** - `POST /tables/{id}/shares` Status 200, Benutzer-Sharing funktioniert
 - [x] ✅ **Share mit Gruppe erstellen** - `POST /tables/{id}/shares` Status 200, Gruppen-Sharing funktioniert
 - [x] ✅ **UI-Parameter Bug Fix** - userReceiver vs groupReceiver Trennung löst Cache-Problem
+- [x] ✅ **Groups Dropdown Cache Fix** - Separate Parameter Namen beheben n8n Cache-Problem
 
 ### 🎨 **UI/UX-Verbesserungen**
 - [x] ✅ **Optimierte Feld-Reihenfolge** - Zeilen-Daten direkt nach Tabellen-Auswahl
@@ -51,6 +56,12 @@
 - [x] ✅ **Load Options Debugging** - Dropdown-Loading wird überwacht
 - [x] ✅ **CLI Debug Management** - `npm run debug:*` Skripte funktionieren
 
+### 🧪 **Test-Umgebung (READY!)**
+- [x] ✅ **Docker-Entwicklungsumgebung** - n8n lokale Instanz läuft
+- [x] ✅ **Node Installation** - Version 2.1.9 erfolgreich installiert
+- [x] ✅ **Test-Workflows erstellt** - Zeilen-CRUD Test-Workflows bereit
+- [x] ✅ **Test-Daten analysiert** - Tabelle 1 mit 7 Zeilen, 4 Spalten identifiziert
+
 ---
 
 ## ⚠️ **Noch zu testen** (Priorität: Hoch)
@@ -58,12 +69,8 @@
 ### 📝 **Zeilen-Operations (Kern-Features)**
 - [ ] 🔄 **Zeile abrufen** - `GET /tables/{id}/rows/{rowId}`
 - [ ] 🔄 **Zeile aktualisieren** - `PUT /tables/{id}/rows/{rowId}`  
-- [ ] 🔄 **Zeile löschen** - `DELETE /tables/{id}/rows/{rowId}`
+- [x] ❌ **Zeile löschen** - `DELETE /tables/{id}/rows/{rowId}` - **Nextcloud Tables API unterstützt keine DELETE für Zeilen (HTTP 405)**
 - [ ] 🔄 **Alle Zeilen abrufen** - `GET /tables/{id}/rows`
-
-### 👥 **Share-Operations (REST-CRUD VOLLENDEN!)**
-- [ ] 🔄 **Share aktualisieren** - `PUT /shares/{id}` 
-- [ ] 🔄 **Share löschen** - `DELETE /shares/{id}`
 
 ### 🏗️ **Spalten-Operations (Vollständigkeit)**
 - [ ] 🔄 **Spalte abrufen** - `GET /tables/{id}/columns/{columnId}`
@@ -128,40 +135,40 @@
 
 ## 🚀 **Test-Reihenfolge Empfehlung**
 
-### **Phase 1: Share-System testen** (Höchste Priorität)
-1. **Benutzer abrufen** - Neue OCS Sharee API testen
-2. **Gruppen abrufen** - Neue OCS Groups API testen
-3. **Share erstellen** - Mit Dropdown-Empfänger testen
-4. **Share aktualisieren/löschen** - CRUD vollständig
+### **Phase 1: Zeilen-CRUD vollenden** (Höchste Priorität)
+1. **Zeile abrufen** - Einzelne Zeile mit ID laden
+2. **Zeile aktualisieren** - Bestehende Zeile-Daten ändern  
+3. **Zeile löschen** - Einzelne Zeile entfernen
+4. **Alle Zeilen abrufen** - Basis-Liste ohne Filter
 
-### **Phase 2: Kern-CRUD Operations**
-5. **Zeile abrufen** - Einzelne Zeile laden
-6. **Zeile aktualisieren** - Bestehende Zeile ändern  
-7. **Zeile löschen** - Zeile entfernen
-8. **Alle Zeilen abrufen** - Basis-Liste ohne Filter
+### **Phase 2: Spalten-CRUD vollenden**
+5. **Spalte abrufen** - Einzelne Spalte laden
+6. **Spalte aktualisieren** - Spalten-Eigenschaften ändern
+7. **Spalte löschen** - Spalte entfernen
 
-### **Phase 3: Erweiterte Features**
-9. **Filter testen** - Einfache Gleichheits-Filter
-10. **Sortierung testen** - Ein-Spalten Sortierung
-11. **View CRUD** - Vollständige View-Operationen
+### **Phase 3: Tabellen-CRUD vollenden**
+8. **Tabelle abrufen** - Einzelne Tabelle laden
+9. **Tabelle erstellen** - Neue Tabelle anlegen
+10. **Tabelle aktualisieren** - Tabellen-Eigenschaften ändern
+11. **Tabelle löschen** - Tabelle entfernen
 
-### **Phase 4: Vollständige API-Abdeckung**
-12. **Restliche Spalten-Operations**
-13. **Restliche Tabellen-Operations** 
-14. **Import/Export-Features**
+### **Phase 4: Erweiterte Features**
+12. **Filter testen** - Einfache Gleichheits-Filter
+13. **Sortierung testen** - Ein-Spalten Sortierung
+14. **View CRUD** - Vollständige View-Operationen
 
 ---
 
 ## 📊 **Testing Status Übersicht**
 
 ```
-✅ Erfolgreich getestet:    17/57 Features (29%) 📈+12!
-⚠️  Noch zu testen (Hoch):  9/57 Features (16%) 
+✅ Erfolgreich getestet:    22/57 Features (39%) 📈+4!
+⚠️  Noch zu testen (Hoch):  11/57 Features (19%) 
 ⚠️  Noch zu testen (Mittel): 11/57 Features (19%)
-❓ Noch zu testen (Niedrig): 20/57 Features (35%)
+❓ Noch zu testen (Niedrig): 13/57 Features (23%)
 ```
 
-**🎯 Nächstes Ziel:** Share-System vollständig testen (neue OCS APIs)
+**🎯 Nächstes Ziel:** Zeilen-CRUD Operations vollständig testen
 
 ---
 
