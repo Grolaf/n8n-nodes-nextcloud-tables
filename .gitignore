@@ -5,4 +5,4 @@ dist/
 .DS_Store
 .env
 .vscode/
-.idea/ 
+.idea/ .DS_Store

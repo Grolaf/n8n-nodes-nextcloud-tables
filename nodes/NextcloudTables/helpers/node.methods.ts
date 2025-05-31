@@ -6,7 +6,6 @@ import {
 
 import { ApiHelper } from './api.helper';
 import { Table, View, Column } from '../interfaces';
-import { DebugHelper } from './debug.helper';
 
 export class NodeLoadOptions {
 	/**
@@ -16,18 +15,12 @@ export class NodeLoadOptions {
 		try {
 			const tables = await ApiHelper.makeApiRequest<Table[]>(context, 'GET', '/tables');
 			
-			// 🐛 DEBUG: Load Options Result
-			DebugHelper.logLoadOptions('getTables', tables.length, { 
-				sampleTitles: tables.slice(0, 3).map(t => t.title) 
-			});
-			
 			return tables.map((table) => ({
 				name: table.title || `Tabelle ${table.id}`,
 				value: table.id.toString(),
 				description: table.description || undefined,
 			}));
 		} catch (error: any) {
-			DebugHelper.logError('NodeLoadOptions.getTables', error);
 			return [
 				{
 					name: 'Fehler beim Laden der Tabellen',
@@ -43,25 +36,12 @@ export class NodeLoadOptions {
 	 */
 	static async getViews(context: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
 		try {
-			// Versuche die Tabellen-ID aus dem Kontext zu extrahieren
 			const tableId = context.getCurrentNodeParameter('tableId') as any;
 			
-			// 🐛 DEBUG: Detailed tableId debugging
-			DebugHelper.logResourceLocator('getViews.input', {
-				raw: tableId,
-				type: typeof tableId,
-				isNull: tableId === null,
-				isUndefined: tableId === undefined,
-				hasValue: tableId?.value,
-				hasMode: tableId?.mode,
-				keys: typeof tableId === 'object' ? Object.keys(tableId || {}) : [],
-			});
-			
-			// Verbesserte Extraktion mit mehr Validierung
+			// Verbesserte Extraktion mit Validierung
 			let extractedTableId: any;
 			
 			if (!tableId) {
-				console.warn('getViews: tableId is null/undefined');
 				return [
 					{
 						name: 'Keine Tabelle ausgewählt',
@@ -84,7 +64,6 @@ export class NodeLoadOptions {
 			
 			// Validierung der extrahierten ID
 			if (!extractedTableId || extractedTableId === '' || extractedTableId === 'undefined') {
-				console.warn('getViews: extractedTableId is empty or invalid:', extractedTableId);
 				return [
 					{
 						name: 'Ungültige Tabellen-ID',
@@ -97,7 +76,6 @@ export class NodeLoadOptions {
 			// Stelle sicher, dass es eine gültige Zahl ist
 			const numericTableId = parseInt(extractedTableId, 10);
 			if (isNaN(numericTableId) || numericTableId <= 0) {
-				console.warn('getViews: tableId is not a valid number:', extractedTableId);
 				return [
 					{
 						name: 'Ungültige Tabellen-ID (keine Zahl)',
@@ -107,24 +85,11 @@ export class NodeLoadOptions {
 				];
 			}
 
-			// 🐛 DEBUG: Final tableId being used
-			DebugHelper.logResourceLocator('getViews.final', {
-				original: tableId,
-				extracted: extractedTableId,
-				numeric: numericTableId,
-			});
-
 			const views = await ApiHelper.makeApiRequest<View[]>(
 				context, 
 				'GET', 
 				`/tables/${numericTableId}/views`
 			);
-			
-			// 🐛 DEBUG: Load Options Result
-			DebugHelper.logLoadOptions('getViews', views.length, { 
-				tableId: numericTableId,
-				sampleTitles: views.slice(0, 3).map(v => v.title) 
-			});
 
 			return views.map((view) => ({
 				name: view.title || `View ${view.id}`,
@@ -132,14 +97,6 @@ export class NodeLoadOptions {
 				description: view.description || undefined,
 			}));
 		} catch (error: any) {
-			DebugHelper.logError('NodeLoadOptions.getViews', error);
-			console.error('getViews detailed error:', {
-				message: error.message,
-				statusCode: error.statusCode,
-				response: error.response?.body,
-				stack: error.stack?.split('\n').slice(0, 5),
-			});
-			
 			return [
 				{
 					name: 'Fehler beim Laden der Views',
@@ -155,25 +112,12 @@ export class NodeLoadOptions {
 	 */
 	static async getColumns(context: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
 		try {
-			// Versuche die Tabellen-ID aus dem Kontext zu extrahieren
 			const tableId = context.getCurrentNodeParameter('tableId') as any;
 			
-			// 🐛 DEBUG: Detailed tableId debugging
-			DebugHelper.logResourceLocator('getColumns.input', {
-				raw: tableId,
-				type: typeof tableId,
-				isNull: tableId === null,
-				isUndefined: tableId === undefined,
-				hasValue: tableId?.value,
-				hasMode: tableId?.mode,
-				keys: typeof tableId === 'object' ? Object.keys(tableId || {}) : [],
-			});
-			
-			// Verbesserte Extraktion mit mehr Validierung
+			// Verbesserte Extraktion mit Validierung
 			let extractedTableId: any;
 			
 			if (!tableId) {
-				console.warn('getColumns: tableId is null/undefined');
 				return [
 					{
 						name: 'Keine Tabelle ausgewählt',
@@ -196,7 +140,6 @@ export class NodeLoadOptions {
 			
 			// Validierung der extrahierten ID
 			if (!extractedTableId || extractedTableId === '' || extractedTableId === 'undefined') {
-				console.warn('getColumns: extractedTableId is empty or invalid:', extractedTableId);
 				return [
 					{
 						name: 'Ungültige Tabellen-ID',
@@ -209,7 +152,6 @@ export class NodeLoadOptions {
 			// Stelle sicher, dass es eine gültige Zahl ist
 			const numericTableId = parseInt(extractedTableId, 10);
 			if (isNaN(numericTableId) || numericTableId <= 0) {
-				console.warn('getColumns: tableId is not a valid number:', extractedTableId);
 				return [
 					{
 						name: 'Ungültige Tabellen-ID (keine Zahl)',
@@ -219,24 +161,11 @@ export class NodeLoadOptions {
 				];
 			}
 
-			// 🐛 DEBUG: Final tableId being used
-			DebugHelper.logResourceLocator('getColumns.final', {
-				original: tableId,
-				extracted: extractedTableId,
-				numeric: numericTableId,
-			});
-
 			const columns = await ApiHelper.makeApiRequest<Column[]>(
 				context, 
 				'GET', 
 				`/tables/${numericTableId}/columns`
 			);
-			
-			// 🐛 DEBUG: Load Options Result
-			DebugHelper.logLoadOptions('getColumns', columns.length, { 
-				tableId: numericTableId,
-				sampleColumns: columns.slice(0, 3).map(c => ({ title: c.title, type: c.type }))
-			});
 
 			return columns.map((column) => ({
 				name: column.title || `Spalte ${column.id}`,
@@ -244,14 +173,6 @@ export class NodeLoadOptions {
 				description: `Typ: ${column.type}`,
 			}));
 		} catch (error: any) {
-			DebugHelper.logError('NodeLoadOptions.getColumns', error);
-			console.error('getColumns detailed error:', {
-				message: error.message,
-				statusCode: error.statusCode,
-				response: error.response?.body,
-				stack: error.stack?.split('\n').slice(0, 5),
-			});
-			
 			return [
 				{
 					name: 'Fehler beim Laden der Spalten',
@@ -263,7 +184,7 @@ export class NodeLoadOptions {
 	}
 
 	/**
-	 * Lädt alle verfügbaren Benutzer für Share-Empfänger (NEUE FUNKTION)
+	 * Lädt alle verfügbaren Benutzer für Share-Empfänger
 	 */
 	static async getUsers(context: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
 		try {
@@ -312,7 +233,6 @@ export class NodeLoadOptions {
 						}
 					}
 				} catch (usersError) {
-					// Wenn beide APIs fehlschlagen, zeige nur den aktuellen Benutzer
 					// Stille Fehlerbehandlung - zeige nur aktuellen Benutzer
 				}
 			}
@@ -321,15 +241,9 @@ export class NodeLoadOptions {
 			const uniqueResults = results.filter((result, index, self) => 
 				index === self.findIndex(r => r.value === result.value)
 			).slice(0, 50);
-
-			// 🐛 DEBUG: Load Options Result
-			DebugHelper.logLoadOptions('getUsers', uniqueResults.length, { 
-				sampleUsers: uniqueResults.slice(0, 3).map(u => u.name) 
-			});
 			
 			return uniqueResults;
 		} catch (error: any) {
-			DebugHelper.logError('NodeLoadOptions.getUsers', error);
 			return [
 				{
 					name: 'Fehler beim Laden der Benutzer',
@@ -341,7 +255,7 @@ export class NodeLoadOptions {
 	}
 
 	/**
-	 * Lädt alle verfügbaren Gruppen für Share-Empfänger (NEUE FUNKTION)
+	 * Lädt alle verfügbaren Gruppen für Share-Empfänger
 	 */
 	static async getGroups(context: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
 		try {
@@ -386,15 +300,9 @@ export class NodeLoadOptions {
 			const uniqueResults = results.filter((result, index, self) => 
 				index === self.findIndex(r => r.value === result.value)
 			).slice(0, 50);
-
-			// 🐛 DEBUG: Load Options Result
-			DebugHelper.logLoadOptions('getGroups', uniqueResults.length, { 
-				sampleGroups: uniqueResults.slice(0, 3).map(g => g.name) 
-			});
 			
 			return uniqueResults;
 		} catch (error: any) {
-			DebugHelper.logError('NodeLoadOptions.getGroups', error);
 			return [
 				{
 					name: 'Fehler beim Laden der Gruppen',
@@ -406,7 +314,7 @@ export class NodeLoadOptions {
 	}
 
 	/**
-	 * Lädt Benutzer und Gruppen kombiniert für Share-Empfänger (NEUE FUNKTION)
+	 * Lädt Benutzer und Gruppen kombiniert für Share-Empfänger
 	 */
 	static async getShareReceivers(context: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
 		try {
@@ -429,7 +337,6 @@ export class NodeLoadOptions {
 				];
 			}
 		} catch (error: any) {
-			console.error('Load Options getShareReceivers error:', error);
 			return [
 				{
 					name: 'Fehler beim Laden der Empfänger',
@@ -467,7 +374,6 @@ export class NodeListSearch {
 				})),
 			};
 		} catch (error: any) {
-			console.error('NodeListSearch getTables error:', error);
 			throw new Error(`Fehler beim Durchsuchen der Tabellen: ${error.message || error}`);
 		}
 	}
@@ -477,25 +383,12 @@ export class NodeListSearch {
 	 */
 	static async getViews(context: ILoadOptionsFunctions, filter?: string): Promise<INodeListSearchResult> {
 		try {
-			// Versuche die Tabellen-ID aus dem Kontext zu extrahieren
 			const tableId = context.getCurrentNodeParameter('tableId') as any;
 			
-			// 🐛 DEBUG: Detailed tableId debugging
-			DebugHelper.logResourceLocator('getViews.listSearch.input', {
-				raw: tableId,
-				type: typeof tableId,
-				isNull: tableId === null,
-				isUndefined: tableId === undefined,
-				hasValue: tableId?.value,
-				hasMode: tableId?.mode,
-				keys: typeof tableId === 'object' ? Object.keys(tableId || {}) : [],
-			});
-			
-			// Verbesserte Extraktion mit mehr Validierung
+			// Verbesserte Extraktion mit Validierung
 			let extractedTableId: any;
 			
 			if (!tableId) {
-				console.warn('getViews (listSearch): tableId is null/undefined');
 				return {
 					results: [
 						{
@@ -520,7 +413,6 @@ export class NodeListSearch {
 			
 			// Validierung der extrahierten ID
 			if (!extractedTableId || extractedTableId === '' || extractedTableId === 'undefined') {
-				console.warn('getViews (listSearch): extractedTableId is empty or invalid:', extractedTableId);
 				return {
 					results: [
 						{
@@ -535,7 +427,6 @@ export class NodeListSearch {
 			// Stelle sicher, dass es eine gültige Zahl ist
 			const numericTableId = parseInt(extractedTableId, 10);
 			if (isNaN(numericTableId) || numericTableId <= 0) {
-				console.warn('getViews (listSearch): tableId is not a valid number:', extractedTableId);
 				return {
 					results: [
 						{
@@ -546,13 +437,6 @@ export class NodeListSearch {
 					],
 				};
 			}
-
-			// 🐛 DEBUG: Final tableId being used
-			DebugHelper.logResourceLocator('getViews.listSearch.final', {
-				original: tableId,
-				extracted: extractedTableId,
-				numeric: numericTableId,
-			});
 
 			const views = await ApiHelper.makeApiRequest<View[]>(
 				context, 
@@ -578,14 +462,6 @@ export class NodeListSearch {
 				})),
 			};
 		} catch (error: any) {
-			DebugHelper.logError('NodeListSearch.getViews', error);
-			console.error('getViews (listSearch) detailed error:', {
-				message: error.message,
-				statusCode: error.statusCode,
-				response: error.response?.body,
-				stack: error.stack?.split('\n').slice(0, 5),
-			});
-			
 			return {
 				results: [
 					{
@@ -603,25 +479,12 @@ export class NodeListSearch {
 	 */
 	static async getColumns(context: ILoadOptionsFunctions, filter?: string): Promise<INodeListSearchResult> {
 		try {
-			// Versuche die Tabellen-ID aus dem Kontext zu extrahieren
 			const tableId = context.getCurrentNodeParameter('tableId') as any;
 			
-			// 🐛 DEBUG: Detailed tableId debugging
-			DebugHelper.logResourceLocator('getColumns.listSearch.input', {
-				raw: tableId,
-				type: typeof tableId,
-				isNull: tableId === null,
-				isUndefined: tableId === undefined,
-				hasValue: tableId?.value,
-				hasMode: tableId?.mode,
-				keys: typeof tableId === 'object' ? Object.keys(tableId || {}) : [],
-			});
-			
-			// Verbesserte Extraktion mit mehr Validierung
+			// Verbesserte Extraktion mit Validierung
 			let extractedTableId: any;
 			
 			if (!tableId) {
-				console.warn('getColumns (listSearch): tableId is null/undefined');
 				return {
 					results: [
 						{
@@ -646,7 +509,6 @@ export class NodeListSearch {
 			
 			// Validierung der extrahierten ID
 			if (!extractedTableId || extractedTableId === '' || extractedTableId === 'undefined') {
-				console.warn('getColumns (listSearch): extractedTableId is empty or invalid:', extractedTableId);
 				return {
 					results: [
 						{
@@ -661,7 +523,6 @@ export class NodeListSearch {
 			// Stelle sicher, dass es eine gültige Zahl ist
 			const numericTableId = parseInt(extractedTableId, 10);
 			if (isNaN(numericTableId) || numericTableId <= 0) {
-				console.warn('getColumns (listSearch): tableId is not a valid number:', extractedTableId);
 				return {
 					results: [
 						{
@@ -672,13 +533,6 @@ export class NodeListSearch {
 					],
 				};
 			}
-
-			// 🐛 DEBUG: Final tableId being used
-			DebugHelper.logResourceLocator('getColumns.listSearch.final', {
-				original: tableId,
-				extracted: extractedTableId,
-				numeric: numericTableId,
-			});
 
 			const columns = await ApiHelper.makeApiRequest<Column[]>(
 				context, 
@@ -704,14 +558,6 @@ export class NodeListSearch {
 				})),
 			};
 		} catch (error: any) {
-			DebugHelper.logError('NodeListSearch.getColumns', error);
-			console.error('getColumns (listSearch) detailed error:', {
-				message: error.message,
-				statusCode: error.statusCode,
-				response: error.response?.body,
-				stack: error.stack?.split('\n').slice(0, 5),
-			});
-			
 			return {
 				results: [
 					{

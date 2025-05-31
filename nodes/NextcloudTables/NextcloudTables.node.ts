@@ -19,6 +19,7 @@ import { ImportHandler } from './handlers/import.handler';
 
 // Helper importieren
 import { NodeLoadOptions, NodeListSearch } from './helpers/node.methods';
+import { NextcloudTablesLogger } from './helpers/api.helper';
 
 // Beschreibungen importieren
 import { tableOperations, tableFields } from './descriptions/table';
@@ -151,9 +152,16 @@ export class NextcloudTables implements INodeType {
 		const returnData: INodeExecutionData[] = [];
 
 		for (let i = 0; i < items.length; i++) {
+			const startTime = Date.now();
 			try {
 				const resource = this.getNodeParameter('resource', i) as string;
 				const operation = this.getNodeParameter('operation', i) as string;
+
+				// Log operation start
+				NextcloudTablesLogger.operationStart(resource, operation, {
+					itemIndex: i,
+					totalItems: items.length
+				});
 
 				let result;
 				switch (resource) {
@@ -176,11 +184,21 @@ export class NextcloudTables implements INodeType {
 						result = await RowHandler.execute(this, operation, i);
 						break;
 					default:
-						throw new Error(`Unbekannte Ressource: ${resource}`);
+						NextcloudTablesLogger.error('OPERATION-ERROR', `Unknown resource: ${resource}`, null, { resource, operation });
+						throw new Error(`[N8N-NEXTCLOUD-TABLES] Unbekannte Ressource: ${resource}`);
 				}
+
+				const duration = Date.now() - startTime;
+				NextcloudTablesLogger.operationSuccess(resource, operation, duration, result);
 
 				returnData.push({ json: result });
 			} catch (error) {
+				const duration = Date.now() - startTime;
+				const resource = this.getNodeParameter('resource', i, 'unknown') as string;
+				const operation = this.getNodeParameter('operation', i, 'unknown') as string;
+				
+				NextcloudTablesLogger.operationError(resource, operation, error, duration);
+				
 				const nodeError = error as Error;
 				if (this.continueOnFail()) {
 					returnData.push({

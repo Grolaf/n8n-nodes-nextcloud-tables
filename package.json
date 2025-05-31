@@ -29,18 +29,12 @@
   },
   "main": "index.js",
   "scripts": {
-    "build": "tsc && gulp build:icons",
+    "build": "tsc",
     "dev": "tsc --watch",
-    "format": "prettier nodes credentials --write",
-    "lint": "eslint \"nodes/**/*.ts\" \"credentials/**/*.ts\"",
-    "lintfix": "eslint \"nodes/**/*.ts\" \"credentials/**/*.ts\" --fix",
-    "prepublishOnly": "npm run build",
-    "debug:report": "npx ts-node scripts/debug-inventory.ts report",
-    "debug:category": "npx ts-node scripts/debug-inventory.ts category",
-    "debug:enable": "npx ts-node scripts/debug-inventory.ts enable",
-    "debug:disable": "npx ts-node scripts/debug-inventory.ts disable",
-    "debug:cleanup": "npx ts-node scripts/debug-inventory.ts cleanup",
-    "debug:stats": "npx ts-node scripts/debug-inventory.ts stats"
+    "format": "prettier --write .",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "package": "npm run build && npm pack"
   },
   "files": [
     "dist"
