@@ -31,10 +31,22 @@ export const viewOperations: INodeProperties[] = [
 				action: 'View erstellen',
 			},
 			{
+				name: 'View Erstellen (KI-Friendly)',
+				value: 'createAIFriendly',
+				description: 'Eine neue View erstellen - optimiert für KI Agents',
+				action: 'View erstellen (KI-Friendly)',
+			},
+			{
 				name: 'View Aktualisieren',
 				value: 'update',
 				description: 'Eine View aktualisieren',
 				action: 'View aktualisieren',
+			},
+			{
+				name: 'View Aktualisieren (KI-Friendly)',
+				value: 'updateAIFriendly',
+				description: 'Eine View aktualisieren - optimiert für KI Agents',
+				action: 'View aktualisieren (KI-Friendly)',
 			},
 			{
 				name: 'View Löschen',
@@ -48,6 +60,302 @@ export const viewOperations: INodeProperties[] = [
 ];
 
 export const viewFields: INodeProperties[] = [
+	// ==============================================
+	// KI-FRIENDLY OPERATIONS - Alle Parameter verfügbar
+	// ==============================================
+
+	// View-Konfiguration für AI-Friendly create
+	{
+		displayName: 'View-Konfiguration (AI-Friendly)',
+		name: 'viewConfig',
+		type: 'fixedCollection',
+		required: true,
+		displayOptions: {
+			show: {
+				resource: ['view'],
+				operation: ['createAIFriendly'],
+			},
+		},
+		default: {},
+		options: [
+			{
+				displayName: 'Basis-Konfiguration',
+				name: 'basic',
+				values: [
+					{
+						displayName: 'Titel',
+						name: 'title',
+						type: 'string',
+						required: true,
+						default: '',
+						description: 'Der Titel der neuen View',
+						placeholder: 'Meine View',
+					},
+					{
+						displayName: 'Tabellen-ID',
+						name: 'tableId',
+						type: 'string',
+						required: true,
+						default: '',
+						description: 'Die ID der Tabelle für die View',
+						placeholder: '123',
+					},
+					{
+						displayName: 'Emoji',
+						name: 'emoji',
+						type: 'string',
+						default: '',
+						description: 'Ein optionales Emoji für die View',
+						placeholder: '🔍',
+					},
+					{
+						displayName: 'Beschreibung',
+						name: 'description',
+						type: 'string',
+						default: '',
+						description: 'Eine optionale Beschreibung für die View',
+						placeholder: 'Beschreibung der View...',
+					},
+				],
+			},
+		],
+		description: 'Basis-Konfiguration für die neue View',
+	},
+
+	// Update-Konfiguration für AI-Friendly update
+	{
+		displayName: 'Update-Konfiguration (AI-Friendly)',
+		name: 'updateConfig',
+		type: 'fixedCollection',
+		required: true,
+		displayOptions: {
+			show: {
+				resource: ['view'],
+				operation: ['updateAIFriendly'],
+			},
+		},
+		default: {},
+		options: [
+			{
+				displayName: 'Update-Daten',
+				name: 'data',
+				values: [
+					{
+						displayName: 'View-ID',
+						name: 'viewId',
+						type: 'string',
+						required: true,
+						default: '',
+						description: 'Die ID der zu aktualisierenden View',
+						placeholder: '456',
+					},
+					{
+						displayName: 'Neuer Titel',
+						name: 'title',
+						type: 'string',
+						default: '',
+						description: 'Der neue Titel der View (leer lassen = nicht ändern)',
+						placeholder: 'Neuer View-Name',
+					},
+					{
+						displayName: 'Neues Emoji',
+						name: 'emoji',
+						type: 'string',
+						default: '',
+						description: 'Das neue Emoji für die View (leer lassen = nicht ändern)',
+						placeholder: '🔍',
+					},
+					{
+						displayName: 'Neue Beschreibung',
+						name: 'description',
+						type: 'string',
+						default: '',
+						description: 'Die neue Beschreibung der View (leer lassen = nicht ändern)',
+						placeholder: 'Neue Beschreibung...',
+					},
+				],
+			},
+		],
+		description: 'Update-Konfiguration für die View',
+	},
+
+	// Filter-Konfiguration für AI-Friendly Operationen
+	{
+		displayName: 'Filter-Konfiguration (AI-Friendly)',
+		name: 'filterConfig',
+		type: 'fixedCollection',
+		displayOptions: {
+			show: {
+				resource: ['view'],
+				operation: ['createAIFriendly', 'updateAIFriendly'],
+			},
+		},
+		default: {},
+		options: [
+			{
+				displayName: 'Filter-Regeln',
+				name: 'rules',
+				values: [
+					{
+						displayName: 'Filter',
+						name: 'filters',
+						type: 'fixedCollection',
+						typeOptions: {
+							multipleValues: true,
+						},
+						placeholder: 'Filter hinzufügen',
+						default: {},
+						options: [
+							{
+								displayName: 'Filter-Regel',
+								name: 'filter',
+								values: [
+									{
+										displayName: 'Spalten-ID',
+										name: 'columnId',
+										type: 'string',
+										required: true,
+										default: '',
+										description: 'Die ID der zu filternden Spalte',
+										placeholder: '1',
+									},
+									{
+										displayName: 'Operator',
+										name: 'operator',
+										type: 'options',
+										options: [
+											{
+												name: 'Gleich (=)',
+												value: 'EQ',
+												description: 'Exakte Übereinstimmung',
+											},
+											{
+												name: 'Ungleich (!=)',
+												value: 'NEQ',
+												description: 'Nicht gleich',
+											},
+											{
+												name: 'Größer (>)',
+												value: 'GT',
+												description: 'Größer als',
+											},
+											{
+												name: 'Größer gleich (>=)',
+												value: 'GTE',
+												description: 'Größer oder gleich',
+											},
+											{
+												name: 'Kleiner (<)',
+												value: 'LT',
+												description: 'Kleiner als',
+											},
+											{
+												name: 'Kleiner gleich (<=)',
+												value: 'LTE',
+												description: 'Kleiner oder gleich',
+											},
+											{
+												name: 'Enthält (LIKE)',
+												value: 'LIKE',
+												description: 'Text enthält Begriff',
+											},
+										],
+										default: 'EQ',
+										description: 'Der Filter-Operator',
+									},
+									{
+										displayName: 'Wert',
+										name: 'value',
+										type: 'string',
+										default: '',
+										description: 'Der Filter-Wert',
+										placeholder: 'Filter-Wert...',
+									},
+								],
+							},
+						],
+						description: 'Die Filter-Regeln für die View',
+					},
+				],
+			},
+		],
+		description: 'Filter-Konfiguration für die View',
+	},
+
+	// Sortierung-Konfiguration für AI-Friendly Operationen
+	{
+		displayName: 'Sortierungs-Konfiguration (AI-Friendly)',
+		name: 'sortConfig',
+		type: 'fixedCollection',
+		displayOptions: {
+			show: {
+				resource: ['view'],
+				operation: ['createAIFriendly', 'updateAIFriendly'],
+			},
+		},
+		default: {},
+		options: [
+			{
+				displayName: 'Sortier-Regeln',
+				name: 'rules',
+				values: [
+					{
+						displayName: 'Sortierung',
+						name: 'sorting',
+						type: 'fixedCollection',
+						typeOptions: {
+							multipleValues: true,
+						},
+						placeholder: 'Sortierung hinzufügen',
+						default: {},
+						options: [
+							{
+								displayName: 'Sortier-Regel',
+								name: 'sort',
+								values: [
+									{
+										displayName: 'Spalten-ID',
+										name: 'columnId',
+										type: 'string',
+										required: true,
+										default: '',
+										description: 'Die ID der zu sortierenden Spalte',
+										placeholder: '1',
+									},
+									{
+										displayName: 'Richtung',
+										name: 'direction',
+										type: 'options',
+										options: [
+											{
+												name: 'Aufsteigend (A-Z, 1-9)',
+												value: 'ASC',
+												description: 'Von klein zu groß',
+											},
+											{
+												name: 'Absteigend (Z-A, 9-1)',
+												value: 'DESC',
+												description: 'Von groß zu klein',
+											},
+										],
+										default: 'ASC',
+										description: 'Die Sortierrichtung',
+									},
+								],
+							},
+						],
+						description: 'Die Sortier-Regeln für die View',
+					},
+				],
+			},
+		],
+		description: 'Sortierungs-Konfiguration für die View',
+	},
+
+	// ==============================================
+	// ORIGINAL OPERATIONS - Für normale UI Nutzer
+	// ==============================================
+
 	// Tabellen-ID für getAll, create
 	{
 		displayName: 'Tabelle',

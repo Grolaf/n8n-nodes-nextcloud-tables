@@ -1,0 +1,332 @@
+{
+  "name": "AI-Friendly Column Creation Example",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "d8b1e0e0-1234-4567-8901-000000000001",
+      "name": "When clicking 'Test workflow'",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        820,
+        360
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "column",
+        "operation": "createAIFriendly",
+        "tableId": {
+          "mode": "id",
+          "value": "123"
+        },
+        "columnConfig": {
+          "basic": {
+            "type": "text",
+            "title": "Produktname",
+            "description": "Name des Produkts",
+            "mandatory": true
+          }
+        },
+        "textConfig": {
+          "settings": {
+            "subtype": "line",
+            "textMaxLength": 100,
+            "textAllowedPattern": "^[A-Za-z0-9\\s]+$"
+          }
+        }
+      },
+      "id": "d8b1e0e0-1234-4567-8901-000000000002",
+      "name": "Create Text Column (AI-Friendly)",
+      "type": "nextcloudTables",
+      "typeVersion": 1,
+      "position": [
+        1040,
+        200
+      ],
+      "credentials": {
+        "nextcloudTablesApi": {
+          "id": "your-credential-id",
+          "name": "Nextcloud Tables API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "column",
+        "operation": "createAIFriendly",
+        "tableId": {
+          "mode": "id",
+          "value": "123"
+        },
+        "columnConfig": {
+          "basic": {
+            "type": "number",
+            "title": "Preis",
+            "description": "Produktpreis in Euro",
+            "mandatory": true
+          }
+        },
+        "numberConfig": {
+          "settings": {
+            "numberDefault": 0,
+            "numberMin": 0.01,
+            "numberMax": 9999.99,
+            "numberDecimals": 2,
+            "numberPrefix": "€",
+            "numberSuffix": ""
+          }
+        }
+      },
+      "id": "d8b1e0e0-1234-4567-8901-000000000003",
+      "name": "Create Number Column (AI-Friendly)",
+      "type": "nextcloudTables",
+      "typeVersion": 1,
+      "position": [
+        1260,
+        200
+      ],
+      "credentials": {
+        "nextcloudTablesApi": {
+          "id": "your-credential-id",
+          "name": "Nextcloud Tables API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "column",
+        "operation": "createAIFriendly",
+        "tableId": {
+          "mode": "id", 
+          "value": "123"
+        },
+        "columnConfig": {
+          "basic": {
+            "type": "selection",
+            "title": "Kategorie",
+            "description": "Produktkategorie",
+            "mandatory": false
+          }
+        },
+        "selectionConfig": {
+          "settings": {
+            "selectionOptions": "Elektronik\nKleidung\nBücher\nSport",
+            "selectionDefault": "Elektronik"
+          }
+        }
+      },
+      "id": "d8b1e0e0-1234-4567-8901-000000000004",
+      "name": "Create Selection Column (AI-Friendly)",
+      "type": "nextcloudTables",
+      "typeVersion": 1,
+      "position": [
+        1480,
+        200
+      ],
+      "credentials": {
+        "nextcloudTablesApi": {
+          "id": "your-credential-id",
+          "name": "Nextcloud Tables API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "column",
+        "operation": "createAIFriendly",
+        "tableId": {
+          "mode": "id",
+          "value": "123"
+        },
+        "columnConfig": {
+          "basic": {
+            "type": "datetime",
+            "title": "Erstellungsdatum",
+            "description": "Wann wurde das Element erstellt",
+            "mandatory": false
+          }
+        },
+        "datetimeConfig": {
+          "settings": {
+            "datetimeDefault": "today"
+          }
+        }
+      },
+      "id": "d8b1e0e0-1234-4567-8901-000000000005",
+      "name": "Create DateTime Column (AI-Friendly)",
+      "type": "nextcloudTables",
+      "typeVersion": 1,
+      "position": [
+        1040,
+        380
+      ],
+      "credentials": {
+        "nextcloudTablesApi": {
+          "id": "your-credential-id",
+          "name": "Nextcloud Tables API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "column",
+        "operation": "createAIFriendly",
+        "tableId": {
+          "mode": "id",
+          "value": "123"
+        },
+        "columnConfig": {
+          "basic": {
+            "type": "usergroup",
+            "title": "Zuständiger",
+            "description": "Wer ist für dieses Element zuständig",
+            "mandatory": true
+          }
+        },
+        "usergroupConfig": {
+          "settings": {
+            "usergroupMultipleItems": false,
+            "usergroupSelectUsers": true,
+            "usergroupSelectGroups": false,
+            "usergroupSelectTeams": false,
+            "showUserStatus": true
+          }
+        }
+      },
+      "id": "d8b1e0e0-1234-4567-8901-000000000006",
+      "name": "Create UserGroup Column (AI-Friendly)",
+      "type": "nextcloudTables",
+      "typeVersion": 1,
+      "position": [
+        1260,
+        380
+      ],
+      "credentials": {
+        "nextcloudTablesApi": {
+          "id": "your-credential-id",
+          "name": "Nextcloud Tables API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Sammle alle erstellten Spalten\nconst results = {\n  textColumn: $input.first().json,\n  numberColumn: $input.all()[1].json,\n  selectionColumn: $input.all()[2].json,\n  datetimeColumn: $input.all()[3].json,\n  usergroupColumn: $input.all()[4].json\n};\n\n// Log für Debugging\nconsole.log('Created columns:', results);\n\nreturn {\n  success: true,\n  message: 'Alle 5 Spalten wurden erfolgreich erstellt',\n  columns: results,\n  columnCount: Object.keys(results).length\n};"
+      },
+      "id": "d8b1e0e0-1234-4567-8901-000000000007",
+      "name": "Collect Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1700,
+        290
+      ]
+    }
+  ],
+  "connections": {
+    "When clicking 'Test workflow'": {
+      "main": [
+        [
+          {
+            "node": "Create Text Column (AI-Friendly)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create Number Column (AI-Friendly)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create Selection Column (AI-Friendly)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create DateTime Column (AI-Friendly)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create UserGroup Column (AI-Friendly)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Text Column (AI-Friendly)": {
+      "main": [
+        [
+          {
+            "node": "Collect Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Number Column (AI-Friendly)": {
+      "main": [
+        [
+          {
+            "node": "Collect Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Selection Column (AI-Friendly)": {
+      "main": [
+        [
+          {
+            "node": "Collect Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create DateTime Column (AI-Friendly)": {
+      "main": [
+        [
+          {
+            "node": "Collect Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create UserGroup Column (AI-Friendly)": {
+      "main": [
+        [
+          {
+            "node": "Collect Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "tags": [
+    {
+      "createdAt": "2024-01-15T10:00:00.000Z",
+      "updatedAt": "2024-01-15T10:00:00.000Z",
+      "id": "1",
+      "name": "nextcloud-tables"
+    },
+    {
+      "createdAt": "2024-01-15T10:00:00.000Z", 
+      "updatedAt": "2024-01-15T10:00:00.000Z",
+      "id": "2",
+      "name": "ai-friendly"
+    }
+  ]
+} 

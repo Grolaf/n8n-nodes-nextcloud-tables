@@ -46,7 +46,7 @@ Ein **Community** n8n Node für die Integration mit Nextcloud Tables. Diese Node
 - **Volltext-Suche**: Durchsucht Text-Spalten (case-sensitive/insensitive)
 - **Zeile abrufen**: Spezifische Zeilen mit formatierter Ausgabe
 - **Zeile erstellen/aktualisieren**: Spalten-basierte Validierung
-- **Zeile löschen**: Mit detaillierter Rückmeldung
+- ⚠️ **Zeile löschen**: **NICHT VERFÜGBAR** - Die Nextcloud Tables API unterstützt keine DELETE-Operation für Zeilen
 
 ### 📋 **Views-Management** ⚠️ *Ungetestet*
 - **View-CRUD**: Vollständige Create, Read, Update, Delete-Operationen
@@ -217,9 +217,9 @@ Spalten-Konfiguration:
 
 ### ✅ Implementierte Endpunkte
 - **Tables**: `/tables` (GET ✅ getestet, POST/PUT/DELETE ⚠️ ungetestet)
-- **Rows**: `/tables/{id}/rows`, `/views/{id}/rows` (GET, POST, PUT, DELETE - ⚠️ alle ungetestet)
+- **Rows**: `/tables/{id}/rows`, `/views/{id}/rows` (GET ✅ getestet, POST ⚠️ ungetestet, PUT ⚠️ ungetestet, ❌ DELETE nicht unterstützt von API)
 - **Views**: `/tables/{id}/views`, `/views/{id}` (GET, POST, PUT, DELETE - ⚠️ alle ungetestet)
-- **Columns**: `/tables/{id}/columns`, `/columns/{id}` (POST ✅ getestet, GET/PUT/DELETE ⚠️ ungetestet)
+- **Columns**: `/tables/{id}/columns`, `/columns/{id}` (POST ✅ getestet, GET ✅ getestet, PUT/DELETE ⚠️ ungetestet)
 - **Shares**: `/tables/{id}/shares`, `/shares/{id}` (GET, POST, PUT, DELETE - ⚠️ alle ungetestet)
 - **Import**: `/tables/{id}/import` (POST + Status - ⚠️ ungetestet)
 - **Context**: `/contexts`, `/contexts/{id}/tables`, `/contexts/{id}/pages` (GET - ⚠️ ungetestet)
@@ -233,6 +233,7 @@ Spalten-Konfiguration:
 - **API v2** funktioniert nicht für Column-Erstellung → **API v1** wird verwendet
 - **Query-Parameter** erforderlich statt JSON-Body für Spalten-Erstellung
 - **Subtype-Parameter** ist kritisch für Text-Spalten (nicht in offizieller Dokumentation)
+- ❌ **ROW DELETE nicht unterstützt**: Die Nextcloud Tables API bietet KEINE DELETE-Operation für Zeilen (bestätigt v2.1.12, Execution ID 2574)
 
 ## Entwicklung & Testing
 

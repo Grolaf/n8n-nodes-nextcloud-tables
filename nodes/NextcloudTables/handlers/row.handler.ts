@@ -12,10 +12,14 @@ export class RowHandler {
 				return this.get(context, itemIndex);
 			case 'create':
 				return this.create(context, itemIndex);
+			case 'createAIFriendly':
+				return this.createAIFriendly(context, itemIndex);
+			case 'getAllAIFriendly':
+				return this.getAllAIFriendly(context, itemIndex);
 			case 'update':
 				return this.update(context, itemIndex);
-			case 'delete':
-				return this.delete(context, itemIndex);
+			case 'updateAIFriendly':
+				return this.updateAIFriendly(context, itemIndex);
 			default:
 				throw new Error(`Unbekannte Operation: ${operation}`);
 		}
@@ -326,23 +330,33 @@ export class RowHandler {
 	}
 
 	/**
-	 * Eine spezifische Zeile abrufen
+	 * Eine einzelne Zeile abrufen (über clientseitige Filterung)
+	 * Da die Nextcloud Tables API keinen direkten Einzelzeilen-Abruf unterstützt,
+	 * werden alle Zeilen abgerufen und dann gefiltert.
 	 */
 	private static async get(context: IExecuteFunctions, itemIndex: number): Promise<Row> {
 		const tableId = ApiHelper.getResourceId(context.getNodeParameter('tableId', itemIndex));
 		const rowId = ApiHelper.validateRowId(context.getNodeParameter('rowId', itemIndex));
 		
 		try {
-			const row = await ApiHelper.makeApiRequest<Row>(
+			// Alle Zeilen der Tabelle abrufen
+			const allRows = await ApiHelper.makeApiRequest<Row[]>(
 				context,
 				'GET',
-				`/tables/${tableId}/rows/${rowId}`,
+				`/tables/${tableId}/rows`,
 			);
+
+			// Die gewünschte Zeile finden
+			const targetRow = allRows.find(row => row.id === rowId);
+			
+			if (!targetRow) {
+				throw new Error(`Zeile mit ID ${rowId} wurde in Tabelle ${tableId} nicht gefunden`);
+			}
 
 			// Spalten-Info für bessere Formatierung laden
 			const columns = await ApiHelper.getTableColumns(context, tableId);
 			
-			return this.formatRowForOutput(row, columns);
+			return this.formatRowForOutput(targetRow, columns);
 		} catch (error) {
 			ApiHelper.handleApiError(error);
 		}
@@ -460,50 +474,6 @@ export class RowHandler {
 	}
 
 	/**
-	 * Eine Zeile löschen - Teste verschiedene API-Endpunkte
-	 */
-	private static async delete(context: IExecuteFunctions, itemIndex: number): Promise<{ success: boolean; message: string }> {
-		const tableId = ApiHelper.getResourceId(context.getNodeParameter('tableId', itemIndex));
-		const rowId = ApiHelper.validateRowId(context.getNodeParameter('rowId', itemIndex));
-
-		// Verschiedene API-Endpunkte testen
-		const endpointsToTry = [
-			`/api/1/tables/${tableId}/rows/${rowId}`,      // Standard DELETE
-			`/api/2/tables/${tableId}/rows/${rowId}`,      // API v2 
-			`/ocs/v2.php/apps/tables/api/1/tables/${tableId}/rows/${rowId}`, // OCS v1
-			`/ocs/v2.php/apps/tables/api/2/tables/${tableId}/rows/${rowId}`, // OCS v2
-		];
-
-		let lastError: any = null;
-
-		for (const endpoint of endpointsToTry) {
-			try {
-				await ApiHelper.makeApiRequest(
-					context,
-					'DELETE',
-					endpoint,
-				);
-
-				return { 
-					success: true, 
-					message: `Zeile ${rowId} wurde erfolgreich aus Tabelle ${tableId} gelöscht (Endpunkt: ${endpoint})` 
-				};
-			} catch (error: any) {
-				lastError = error;
-				// 405 = Method Not Allowed, 404 = Not Found - beide bedeuten "Endpunkt existiert nicht"
-				if (error.status && (error.status === 405 || error.status === 404)) {
-					continue; // Nächsten Endpunkt probieren
-				}
-				// Bei anderen Fehlern (403, 500, etc.) sofort abbrechen
-				break;
-			}
-		}
-
-		// Wenn alle Endpunkte fehlschlagen
-		throw new Error(`DELETE für Zeilen wird von der Nextcloud Tables API nicht unterstützt. Letzter Fehler: ${lastError?.message || 'Unbekannt'}`);
-	}
-
-	/**
 	 * Formatiert eine einzelne Zeile für bessere Ausgabe
 	 */
 	private static formatRowForOutput(row: Row, columns: Column[]): any {
@@ -541,10 +511,328 @@ export class RowHandler {
 	 * Formatiert einen Wert für die Ausgabe basierend auf Spaltentyp
 	 */
 	private static formatValueForOutput(value: any, column?: Column): any {
-		if (!column || value === null || value === undefined) {
+		if (value === null || value === undefined) {
+			return null;
+		}
+
+		if (!column) {
 			return value;
 		}
 
-		return DataFormatter.convertForExport([{ data: [{ columnId: column.id, value }] }], [column])[0][column.title];
+		// Formatierung basierend auf Spalten-Typ
+		switch (column.type) {
+			case 'datetime':
+				// Datum formatieren
+				if (typeof value === 'string' && value) {
+					try {
+						return new Date(value).toISOString();
+					} catch {
+						return value;
+					}
+				}
+				return value;
+			case 'number':
+				// Nummer formatieren
+				if (typeof value === 'string' && value) {
+					const num = parseFloat(value);
+					return isNaN(num) ? value : num;
+				}
+				return value;
+			case 'selection':
+				// Selection-Werte sind normalerweise schon korrekt formatiert
+				return value;
+			default:
+				return value;
+		}
+	}
+
+	// ==============================================
+	// AI-FRIENDLY METHODS - Optimiert für KI Agents
+	// ==============================================
+
+	/**
+	 * AI-Friendly Zeile erstellen
+	 * Alle Parameter sind durch fixedCollection gleichzeitig verfügbar
+	 */
+	private static async createAIFriendly(context: IExecuteFunctions, itemIndex: number): Promise<Row> {
+		try {
+			// Extrahiere Source-Konfiguration
+			const sourceConfig = context.getNodeParameter('sourceConfig', itemIndex) as {
+				source?: {
+					type: 'table' | 'view';
+					tableId?: string;
+					viewId?: string;
+				};
+			};
+
+			if (!sourceConfig?.source) {
+				throw new Error('Datenquelle-Konfiguration ist erforderlich');
+			}
+
+			const { source } = sourceConfig;
+			let endpoint: string;
+			let tableId: number;
+
+			// Bestimme API-Endpunkt basierend auf Quell-Typ
+			if (source.type === 'table') {
+				if (!source.tableId) {
+					throw new Error('Tabellen-ID ist erforderlich wenn type="table"');
+				}
+				tableId = parseInt(source.tableId);
+				endpoint = `/tables/${tableId}/rows`;
+			} else if (source.type === 'view') {
+				if (!source.viewId) {
+					throw new Error('View-ID ist erforderlich wenn type="view"');
+				}
+				const viewId = parseInt(source.viewId);
+				endpoint = `/views/${viewId}/rows`;
+				
+				// Für Views müssen wir die Tabellen-ID ermitteln
+				const view = await ApiHelper.makeApiRequest<any>(context, 'GET', `/views/${viewId}`);
+				tableId = view.tableId;
+			} else {
+				throw new Error(`Ungültiger Quell-Typ: ${source.type}`);
+			}
+
+			// Extrahiere Zeilen-Daten
+			const rowDataConfig = context.getNodeParameter('rowDataConfig', itemIndex) as {
+				data?: {
+					columns?: Array<{
+						column?: {
+							columnId: string;
+							value: string;
+						};
+					}>;
+				};
+			};
+
+			if (!rowDataConfig?.data?.columns || rowDataConfig.data.columns.length === 0) {
+				throw new Error('Mindestens eine Spalte mit Daten ist erforderlich');
+			}
+
+			// Konvertiere AI-Friendly Format zu Nextcloud API Format
+			const data: Record<string, any> = {};
+			for (const columnEntry of rowDataConfig.data.columns) {
+				if (columnEntry.column?.columnId) {
+					data[columnEntry.column.columnId] = columnEntry.column.value || '';
+				}
+			}
+
+			// Erstelle Zeile
+			const response = await ApiHelper.makeApiRequest<Row>(
+				context,
+				'POST',
+				endpoint,
+				{ data }
+			);
+
+			// Formatiere Ausgabe mit Spalten-Informationen
+			const columns = await ApiHelper.getTableColumns(context, tableId);
+			return this.formatRowForOutput(response, columns);
+		} catch (error) {
+			ApiHelper.handleApiError(error);
+		}
+	}
+
+	/**
+	 * AI-Friendly Alle Zeilen abrufen mit erweiterten Optionen
+	 * Alle Filter/Sortierung/Suche Parameter gleichzeitig verfügbar
+	 */
+	private static async getAllAIFriendly(context: IExecuteFunctions, itemIndex: number): Promise<Row[]> {
+		try {
+			// Extrahiere Source-Konfiguration
+			const sourceConfig = context.getNodeParameter('sourceConfig', itemIndex) as {
+				source?: {
+					type: 'table' | 'view';
+					tableId?: string;
+					viewId?: string;
+				};
+			};
+
+			if (!sourceConfig?.source) {
+				throw new Error('Datenquelle-Konfiguration ist erforderlich');
+			}
+
+			const { source } = sourceConfig;
+			let endpoint: string;
+			let tableId: number;
+
+			// Bestimme API-Endpunkt basierend auf Quell-Typ
+			if (source.type === 'table') {
+				if (!source.tableId) {
+					throw new Error('Tabellen-ID ist erforderlich wenn type="table"');
+				}
+				tableId = parseInt(source.tableId);
+				endpoint = `/tables/${tableId}/rows`;
+			} else if (source.type === 'view') {
+				if (!source.viewId) {
+					throw new Error('View-ID ist erforderlich wenn type="view"');
+				}
+				const viewId = parseInt(source.viewId);
+				endpoint = `/views/${viewId}/rows`;
+				
+				// Für Views müssen wir die Tabellen-ID ermitteln
+				const view = await ApiHelper.makeApiRequest<any>(context, 'GET', `/views/${viewId}`);
+				tableId = view.tableId;
+			} else {
+				throw new Error(`Ungültiger Quell-Typ: ${source.type}`);
+			}
+
+			// Extrahiere Query-Optionen
+			const queryConfig = context.getNodeParameter('queryConfig', itemIndex, {}) as {
+				query?: {
+					pagination?: { settings?: { limit?: number; offset?: number } };
+					filters?: Array<{ filter?: { columnId: string; operator: string; value: string } }>;
+					sorting?: Array<{ sort?: { columnId: string; direction: 'ASC' | 'DESC' } }>;
+					search?: { settings?: { term?: string; columns?: string; caseSensitive?: boolean } };
+				};
+			};
+
+			// Baue Query-Parameter
+			const queryParams: Record<string, string> = {};
+
+			// Pagination
+			if (queryConfig.query?.pagination?.settings) {
+				const { limit, offset } = queryConfig.query.pagination.settings;
+				if (limit !== undefined) queryParams.limit = limit.toString();
+				if (offset !== undefined) queryParams.offset = offset.toString();
+			} else {
+				// Standard-Werte
+				queryParams.limit = '50';
+				queryParams.offset = '0';
+			}
+
+			// Filter
+			if (queryConfig.query?.filters && queryConfig.query.filters.length > 0) {
+				const filters = queryConfig.query.filters
+					.map(f => f.filter)
+					.filter(f => f?.columnId && f?.operator);
+				this.applyFilters(queryParams, filters);
+			}
+
+			// Sortierung
+			if (queryConfig.query?.sorting && queryConfig.query.sorting.length > 0) {
+				const sorting = queryConfig.query.sorting
+					.map(s => s.sort)
+					.filter(s => s?.columnId && s?.direction);
+				this.applySorting(queryParams, sorting);
+			}
+
+			// Suche
+			if (queryConfig.query?.search?.settings?.term) {
+				const searchSettings = queryConfig.query.search.settings;
+				const search = {
+					term: searchSettings.term,
+					searchColumns: searchSettings.columns ? searchSettings.columns.split(',').map(id => id.trim()) : [],
+					caseSensitive: searchSettings.caseSensitive
+				};
+				this.applySearch(queryParams, search);
+			}
+
+			// Führe API-Abfrage aus - mit useQueryParams = true
+			const rows = await ApiHelper.makeApiRequest<Row[]>(
+				context,
+				'GET',
+				endpoint,
+				queryParams,
+				true // useQueryParams für GET-Request
+			);
+
+			// Spalten-Info laden für bessere Datenformatierung
+			const columns = await ApiHelper.getTableColumns(context, tableId);
+
+			// Client-seitige Nachbearbeitung falls erforderlich
+			let processedRows = rows;
+			
+			// Client-seitige Filterung falls Server-API nicht alle Filter unterstützt
+			if (queryConfig.query?.filters && queryConfig.query.filters.length > 0) {
+				const filters = queryConfig.query.filters
+					.map(f => f.filter)
+					.filter(f => f?.columnId && f?.operator);
+				processedRows = this.applyClientSideFilters(processedRows, filters, columns);
+			}
+
+			// Client-seitige Suche falls Server-API nicht alle Suchoptionen unterstützt
+			if (queryConfig.query?.search?.settings?.term) {
+				const searchSettings = queryConfig.query.search.settings;
+				const search = {
+					term: searchSettings.term,
+					searchColumns: searchSettings.columns ? searchSettings.columns.split(',').map(id => id.trim()) : [],
+					caseSensitive: searchSettings.caseSensitive
+				};
+				processedRows = this.applyClientSideSearch(processedRows, search, columns);
+			}
+
+			// Zeilen für bessere Lesbarkeit formatieren
+			return this.formatRowsForOutput(processedRows, columns);
+		} catch (error) {
+			ApiHelper.handleApiError(error);
+		}
+	}
+
+	/**
+	 * AI-Friendly Zeile aktualisieren
+	 * Alle Parameter durch fixedCollection gleichzeitig verfügbar
+	 */
+	private static async updateAIFriendly(context: IExecuteFunctions, itemIndex: number): Promise<Row> {
+		try {
+			// Extrahiere Update-Konfiguration
+			const updateDataConfig = context.getNodeParameter('updateDataConfig', itemIndex) as {
+				update?: {
+					rowId: string;
+					tableId: string;
+					columns?: Array<{
+						column?: {
+							columnId: string;
+							value: string;
+						};
+					}>;
+				};
+			};
+
+			if (!updateDataConfig?.update) {
+				throw new Error('Update-Konfiguration ist erforderlich');
+			}
+
+			const { update } = updateDataConfig;
+
+			if (!update.rowId) {
+				throw new Error('Zeilen-ID ist erforderlich');
+			}
+
+			if (!update.tableId) {
+				throw new Error('Tabellen-ID ist erforderlich');
+			}
+
+			if (!update.columns || update.columns.length === 0) {
+				throw new Error('Mindestens eine Spalte mit Daten ist erforderlich');
+			}
+
+			const tableId = parseInt(update.tableId);
+			const rowId = parseInt(update.rowId);
+
+			// Konvertiere AI-Friendly Format zu Nextcloud API Format
+			const data: Record<string, any> = {};
+			for (const columnEntry of update.columns) {
+				if (columnEntry.column?.columnId) {
+					data[columnEntry.column.columnId] = columnEntry.column.value || '';
+				}
+			}
+
+			// Aktualisiere Zeile
+			const endpoint = `/tables/${tableId}/rows/${rowId}`;
+			const response = await ApiHelper.makeApiRequest<Row>(
+				context,
+				'PUT',
+				endpoint,
+				{ data }
+			);
+
+			// Formatiere Ausgabe mit Spalten-Informationen
+			const columns = await ApiHelper.getTableColumns(context, tableId);
+			return this.formatRowForOutput(response, columns);
+		} catch (error) {
+			ApiHelper.handleApiError(error);
+		}
 	}
 } 

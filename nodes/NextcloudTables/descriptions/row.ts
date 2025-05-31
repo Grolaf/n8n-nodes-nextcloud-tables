@@ -31,16 +31,28 @@ export const rowOperations: INodeProperties[] = [
 				action: 'Zeile erstellen',
 			},
 			{
+				name: 'Zeile Erstellen (KI-Friendly)',
+				value: 'createAIFriendly',
+				description: 'Eine neue Zeile erstellen - optimiert für KI Agents',
+				action: 'Zeile erstellen (KI-Friendly)',
+			},
+			{
+				name: 'Alle Zeilen Abrufen (KI-Friendly)',
+				value: 'getAllAIFriendly',
+				description: 'Zeilen mit erweiterten Filter/Sortierung-Optionen - optimiert für KI Agents',
+				action: 'Alle Zeilen abrufen (KI-Friendly)',
+			},
+			{
 				name: 'Zeile Aktualisieren',
 				value: 'update',
 				description: 'Eine Zeile aktualisieren',
 				action: 'Zeile aktualisieren',
 			},
 			{
-				name: 'Zeile Löschen (Experimentell)',
-				value: 'delete',
-				description: 'Eine Zeile löschen - Testet verschiedene API-Endpunkte',
-				action: 'Zeile löschen',
+				name: 'Zeile Aktualisieren (KI-Friendly)',
+				value: 'updateAIFriendly',
+				description: 'Eine Zeile aktualisieren - optimiert für KI Agents',
+				action: 'Zeile aktualisieren (KI-Friendly)',
 			},
 		],
 		default: 'getAll',
@@ -48,6 +60,449 @@ export const rowOperations: INodeProperties[] = [
 ];
 
 export const rowFields: INodeProperties[] = [
+	// ==============================================
+	// KI-FRIENDLY OPERATIONS - Alle Parameter verfügbar
+	// ==============================================
+
+	// Quelle für AI-Friendly Operationen
+	{
+		displayName: 'Datenquelle (AI-Friendly)',
+		name: 'sourceConfig',
+		type: 'fixedCollection',
+		required: true,
+		displayOptions: {
+			show: {
+				resource: ['row'],
+				operation: ['createAIFriendly', 'getAllAIFriendly', 'updateAIFriendly'],
+			},
+		},
+		default: {},
+		options: [
+			{
+				displayName: 'Quelle',
+				name: 'source',
+				values: [
+					{
+						displayName: 'Quell-Typ',
+						name: 'type',
+						type: 'options',
+						required: true,
+						options: [
+							{
+								name: 'Tabelle',
+								value: 'table',
+								description: 'Zeilen direkt aus einer Tabelle',
+							},
+							{
+								name: 'View',
+								value: 'view',
+								description: 'Zeilen aus einer View',
+							},
+						],
+						default: 'table',
+						description: 'Wählen Sie ob Sie mit einer Tabelle oder View arbeiten',
+					},
+					{
+						displayName: 'Tabellen-ID',
+						name: 'tableId',
+						type: 'string',
+						default: '',
+						description: 'Die ID der Tabelle (nur wenn Typ = "table")',
+						placeholder: '123',
+					},
+					{
+						displayName: 'View-ID',
+						name: 'viewId',
+						type: 'string',
+						default: '',
+						description: 'Die ID der View (nur wenn Typ = "view")',
+						placeholder: '456',
+					},
+				],
+			},
+		],
+		description: 'Konfiguration der Datenquelle für die Operation',
+	},
+
+	// Zeilen-Daten für createAIFriendly
+	{
+		displayName: 'Zeilen-Daten (AI-Friendly)',
+		name: 'rowDataConfig',
+		type: 'fixedCollection',
+		required: true,
+		displayOptions: {
+			show: {
+				resource: ['row'],
+				operation: ['createAIFriendly'],
+			},
+		},
+		default: {},
+		options: [
+			{
+				displayName: 'Daten',
+				name: 'data',
+				values: [
+					{
+						displayName: 'Spalten-Daten',
+						name: 'columns',
+						type: 'fixedCollection',
+						typeOptions: {
+							multipleValues: true,
+						},
+						placeholder: 'Spalte hinzufügen',
+						default: {},
+						options: [
+							{
+								displayName: 'Spalte',
+								name: 'column',
+								values: [
+									{
+										displayName: 'Spalten-ID',
+										name: 'columnId',
+										type: 'string',
+										required: true,
+										default: '',
+										description: 'Die ID der Spalte',
+										placeholder: '1',
+									},
+									{
+										displayName: 'Wert',
+										name: 'value',
+										type: 'string',
+										default: '',
+										description: 'Der Wert für diese Spalte',
+										placeholder: 'Wert eingeben...',
+									},
+								],
+							},
+						],
+						description: 'Die Spalten-Daten für die neue Zeile',
+					},
+				],
+			},
+		],
+		description: 'Konfiguration der Zeilen-Daten',
+	},
+
+	// Update-Daten für updateAIFriendly
+	{
+		displayName: 'Update-Daten (AI-Friendly)',
+		name: 'updateDataConfig',
+		type: 'fixedCollection',
+		required: true,
+		displayOptions: {
+			show: {
+				resource: ['row'],
+				operation: ['updateAIFriendly'],
+			},
+		},
+		default: {},
+		options: [
+			{
+				displayName: 'Update-Konfiguration',
+				name: 'update',
+				values: [
+					{
+						displayName: 'Zeilen-ID',
+						name: 'rowId',
+						type: 'string',
+						required: true,
+						default: '',
+						description: 'Die ID der zu aktualisierenden Zeile',
+						placeholder: '123',
+					},
+					{
+						displayName: 'Tabellen-ID',
+						name: 'tableId',
+						type: 'string',
+						required: true,
+						default: '',
+						description: 'Die ID der Tabelle (erforderlich für API-Pfad)',
+						placeholder: '456',
+					},
+					{
+						displayName: 'Spalten-Daten',
+						name: 'columns',
+						type: 'fixedCollection',
+						typeOptions: {
+							multipleValues: true,
+						},
+						placeholder: 'Spalte hinzufügen',
+						default: {},
+						options: [
+							{
+								displayName: 'Spalte',
+								name: 'column',
+								values: [
+									{
+										displayName: 'Spalten-ID',
+										name: 'columnId',
+										type: 'string',
+										required: true,
+										default: '',
+										description: 'Die ID der Spalte',
+										placeholder: '1',
+									},
+									{
+										displayName: 'Neuer Wert',
+										name: 'value',
+										type: 'string',
+										default: '',
+										description: 'Der neue Wert für diese Spalte',
+										placeholder: 'Neuer Wert...',
+									},
+								],
+							},
+						],
+						description: 'Die zu aktualisierenden Spalten-Daten',
+					},
+				],
+			},
+		],
+		description: 'Konfiguration für Zeilen-Update',
+	},
+
+	// Query-Optionen für getAllAIFriendly  
+	{
+		displayName: 'Abfrage-Optionen (AI-Friendly)',
+		name: 'queryConfig',
+		type: 'fixedCollection',
+		displayOptions: {
+			show: {
+				resource: ['row'],
+				operation: ['getAllAIFriendly'],
+			},
+		},
+		default: {},
+		options: [
+			{
+				displayName: 'Abfrage-Konfiguration',
+				name: 'query',
+				values: [
+					{
+						displayName: 'Pagination',
+						name: 'pagination',
+						type: 'fixedCollection',
+						default: {},
+						options: [
+							{
+								displayName: 'Pagination-Einstellungen',
+								name: 'settings',
+								values: [
+									{
+										displayName: 'Limit',
+										name: 'limit',
+										type: 'number',
+										default: 50,
+										description: 'Maximale Anzahl Zeilen',
+									},
+									{
+										displayName: 'Offset',
+										name: 'offset',
+										type: 'number',
+										default: 0,
+										description: 'Anzahl zu überspringender Zeilen',
+									},
+								],
+							},
+						],
+						description: 'Pagination-Einstellungen',
+					},
+					{
+						displayName: 'Filter',
+						name: 'filters',
+						type: 'fixedCollection',
+						typeOptions: {
+							multipleValues: true,
+						},
+						placeholder: 'Filter hinzufügen',
+						default: {},
+						options: [
+							{
+								displayName: 'Filter-Regel',
+								name: 'filter',
+								values: [
+									{
+										displayName: 'Spalten-ID',
+										name: 'columnId',
+										type: 'string',
+										required: true,
+										default: '',
+										description: 'Die ID der zu filternden Spalte',
+										placeholder: '1',
+									},
+									{
+										displayName: 'Operator',
+										name: 'operator',
+										type: 'options',
+										options: [
+											{
+												name: 'Gleich (=)',
+												value: 'equals',
+												description: 'Exakte Übereinstimmung',
+											},
+											{
+												name: 'Ungleich (!=)',
+												value: 'not_equals',
+												description: 'Nicht gleich',
+											},
+											{
+												name: 'Größer (>)',
+												value: 'greater_than',
+												description: 'Größer als',
+											},
+											{
+												name: 'Größer gleich (>=)',
+												value: 'greater_equal',
+												description: 'Größer oder gleich',
+											},
+											{
+												name: 'Kleiner (<)',
+												value: 'less_than',
+												description: 'Kleiner als',
+											},
+											{
+												name: 'Kleiner gleich (<=)',
+												value: 'less_equal',
+												description: 'Kleiner oder gleich',
+											},
+											{
+												name: 'Enthält (LIKE)',
+												value: 'contains',
+												description: 'Text enthält Begriff',
+											},
+											{
+												name: 'Beginnt mit',
+												value: 'starts_with',
+												description: 'Text beginnt mit',
+											},
+											{
+												name: 'Endet mit',
+												value: 'ends_with',
+												description: 'Text endet mit',
+											},
+											{
+												name: 'Ist leer',
+												value: 'is_empty',
+												description: 'Feld ist leer',
+											},
+											{
+												name: 'Ist nicht leer',
+												value: 'is_not_empty',
+												description: 'Feld hat einen Wert',
+											},
+										],
+										default: 'equals',
+										description: 'Der Filter-Operator',
+									},
+									{
+										displayName: 'Wert',
+										name: 'value',
+										type: 'string',
+										default: '',
+										description: 'Der Filter-Wert',
+										placeholder: 'Filter-Wert...',
+									},
+								],
+							},
+						],
+						description: 'Filter-Regeln für die Abfrage',
+					},
+					{
+						displayName: 'Sortierung',
+						name: 'sorting',
+						type: 'fixedCollection',
+						typeOptions: {
+							multipleValues: true,
+						},
+						placeholder: 'Sortierung hinzufügen',
+						default: {},
+						options: [
+							{
+								displayName: 'Sortier-Regel',
+								name: 'sort',
+								values: [
+									{
+										displayName: 'Spalten-ID',
+										name: 'columnId',
+										type: 'string',
+										required: true,
+										default: '',
+										description: 'Die ID der zu sortierenden Spalte',
+										placeholder: '1',
+									},
+									{
+										displayName: 'Richtung',
+										name: 'direction',
+										type: 'options',
+										options: [
+											{
+												name: 'Aufsteigend (A-Z, 1-9)',
+												value: 'ASC',
+												description: 'Von klein zu groß',
+											},
+											{
+												name: 'Absteigend (Z-A, 9-1)',
+												value: 'DESC',
+												description: 'Von groß zu klein',
+											},
+										],
+										default: 'ASC',
+										description: 'Die Sortierrichtung',
+									},
+								],
+							},
+						],
+						description: 'Sortier-Regeln für die Abfrage',
+					},
+					{
+						displayName: 'Suche',
+						name: 'search',
+						type: 'fixedCollection',
+						default: {},
+						options: [
+							{
+								displayName: 'Such-Einstellungen',
+								name: 'settings',
+								values: [
+									{
+										displayName: 'Suchbegriff',
+										name: 'term',
+										type: 'string',
+										default: '',
+										description: 'Der Suchbegriff',
+										placeholder: 'Suchbegriff...',
+									},
+									{
+										displayName: 'Spalten-IDs für Suche',
+										name: 'columns',
+										type: 'string',
+										default: '',
+										description: 'Spalten-IDs durch Komma getrennt (leer = alle)',
+										placeholder: '1,3,5',
+									},
+									{
+										displayName: 'Groß-/Kleinschreibung beachten',
+										name: 'caseSensitive',
+										type: 'boolean',
+										default: false,
+										description: 'Ob Groß-/Kleinschreibung beachtet wird',
+									},
+								],
+							},
+						],
+						description: 'Such-Konfiguration',
+					},
+				],
+			},
+		],
+		description: 'Erweiterte Abfrage-Optionen für Zeilen-Abruf',
+	},
+
+	// ==============================================
+	// ORIGINAL OPERATIONS - Für normale UI Nutzer
+	// ==============================================
+
 	// Node Collection für getAll, create
 	{
 		displayName: 'Quelle',
@@ -212,7 +667,7 @@ export const rowFields: INodeProperties[] = [
 		description: 'Die Daten für die neue Zeile',
 	},
 
-	// Zeilen-ID für get, update, delete
+	// Zeilen-ID für get, update
 	{
 		displayName: 'Zeilen-ID',
 		name: 'rowId',
@@ -221,7 +676,7 @@ export const rowFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['row'],
-				operation: ['get', 'update', 'delete'],
+				operation: ['get', 'update'],
 			},
 		},
 		default: '',
@@ -232,7 +687,7 @@ export const rowFields: INodeProperties[] = [
 		},
 	},
 
-	// Tabellen-ID für get, update, delete (benötigt für API-Pfad)
+	// Tabellen-ID für get, update (benötigt für API-Pfad)
 	{
 		displayName: 'Tabelle',
 		name: 'tableId',
@@ -270,7 +725,7 @@ export const rowFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['row'],
-				operation: ['get', 'update', 'delete'],
+				operation: ['get', 'update'],
 			},
 		},
 	},

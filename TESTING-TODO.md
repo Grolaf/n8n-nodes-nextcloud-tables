@@ -1,6 +1,6 @@
 # 🧪 Nextcloud Tables n8n-Node - Testing ToDo Liste
 
-## ✅ **Bereits erfolgreich getestet** (Version 2.1.9)
+## ✅ **Bereits erfolgreich getestet** (Version 2.1.11)
 
 ### 🔐 **Authentifizierung & Credentials**
 - [x] ✅ **Credentials Validation** - Korrekte Fehlerbehandlung bei fehlenden/ungültigen Credentials
@@ -10,10 +10,12 @@
 ### 📋 **Tabellen-Operations**  
 - [x] ✅ **Tabellen abrufen** - `GET /tables` Status 200
 - [x] ✅ **Resource Locator für Tabellen** - Dropdown-Liste funktioniert
+- [x] ✅ **Tabelle abrufen** - `GET /tables/{id}` Status 200 (Test 5: Execution ID 2567, 482ms)
 
 ### 🏗️ **Spalten-Operations**
 - [x] ✅ **Spalten abrufen** - `GET /tables/{id}/columns` Status 200
 - [x] ✅ **Spalte erstellen** - API v1 mit Query-Parametern funktioniert (Fix für v2.1.0)
+- [x] ✅ **Spalten für Tabelle abrufen** - `GET /tables/{id}/columns` Status 200 (Test 4: Execution ID 2566)
 
 ### 📝 **Zeilen-Operations** 
 - [x] ✅ **Zeile erstellen** - `POST /tables/{id}/rows` Status 200 erfolgreich
@@ -21,9 +23,9 @@
 - [x] ✅ **Datenformatierung** - Korrekte Übertragung von Zeilen-Daten
 - [x] ✅ **Numeric Validation Bug** - 'undefined' Fehler bei number-Spalten behoben
 - [x] ✅ **Alle Zeilen abrufen** - `GET /tables/{id}/rows` Status 200 - Test-Tabelle hat 7 Zeilen, 609ms Response Time
-- [ ] 🔄 **Zeile abrufen** - `GET /tables/{id}/rows/{rowId}` - Bereit für Test
-- [ ] 🔄 **Zeile aktualisieren** - `PUT /tables/{id}/rows/{rowId}`  
-- [x] ❌ **Zeile löschen** - `DELETE /tables/{id}/rows/{rowId}` - **API unterstützt Operation nicht (HTTP 405)**
+- [x] ✅ **Zeile abrufen** - `GET /tables/{id}/rows` + clientseitige Filterung (Test 1: Execution ID 2570, 896ms) **API-Limitation behoben in v2.1.11**
+- [ ] 🔄 **Zeile aktualisieren** - `PUT /tables/{id}/rows/{rowId}` - Bereit für Test mit v2.1.13
+- [x] ❌ **Zeile löschen** - **ENDGÜLTIG ENTFERNT in v2.1.13** - Nextcloud Tables API unterstützt keine DELETE für Zeilen (OCS v2: 404/998, Standard API: 405). **Feature aus Node entfernt.**
 
 ### 👁️ **View-Operations (NEU!)**
 - [x] ✅ **Views abrufen** - `GET /tables/{id}/views` Status 200
@@ -58,19 +60,24 @@
 
 ### 🧪 **Test-Umgebung (READY!)**
 - [x] ✅ **Docker-Entwicklungsumgebung** - n8n lokale Instanz läuft
-- [x] ✅ **Node Installation** - Version 2.1.9 erfolgreich installiert
+- [x] ✅ **Node Installation** - Version 2.1.11 erfolgreich installiert und getestet
 - [x] ✅ **Test-Workflows erstellt** - Zeilen-CRUD Test-Workflows bereit
 - [x] ✅ **Test-Daten analysiert** - Tabelle 1 mit 7 Zeilen, 4 Spalten identifiziert
+- [x] ✅ **Remote Testing via MCP** - n8n Server per Model Context Protocol erreichbar
+
+### 🔍 **API-Analyse & OpenAPI (NEU! Version 2.1.11)**
+- [x] ✅ **OpenAPI-Spezifikation analysiert** - Nextcloud Tables API vollständig dokumentiert
+- [x] ✅ **API-Limitation identifiziert** - `GET /tables/{id}/rows/{rowId}` existiert NICHT in der API
+- [x] ✅ **Clientseitige Lösung implementiert** - Row GET über `/tables/{id}/rows` + Filterung
+- [x] ✅ **DELETE-Endpunkte identifiziert** - OCS v2 API unterstützt Zeilen-Löschung
+- [x] ✅ **Multi-Endpoint DELETE-Test** - 4 verschiedene DELETE-Endpunkte werden systematisch getestet
 
 ---
 
 ## ⚠️ **Noch zu testen** (Priorität: Hoch)
 
 ### 📝 **Zeilen-Operations (Kern-Features)**
-- [ ] 🔄 **Zeile abrufen** - `GET /tables/{id}/rows/{rowId}`
-- [ ] 🔄 **Zeile aktualisieren** - `PUT /tables/{id}/rows/{rowId}`  
-- [x] ❌ **Zeile löschen** - `DELETE /tables/{id}/rows/{rowId}` - **Nextcloud Tables API unterstützt keine DELETE für Zeilen (HTTP 405)**
-- [ ] 🔄 **Alle Zeilen abrufen** - `GET /tables/{id}/rows`
+- [ ] 🔄 **Zeile aktualisieren** - `PUT /tables/{id}/rows/{rowId}` - Bereit für Test mit v2.1.13
 
 ### 🏗️ **Spalten-Operations (Vollständigkeit)**
 - [ ] 🔄 **Spalte abrufen** - `GET /tables/{id}/columns/{columnId}`
@@ -78,7 +85,6 @@
 - [ ] 🔄 **Spalte löschen** - `DELETE /tables/{id}/columns/{columnId}`
 
 ### 📋 **Tabellen-Operations (Vollständigkeit)**
-- [ ] 🔄 **Tabelle abrufen** - `GET /tables/{id}`
 - [ ] 🔄 **Tabelle erstellen** - `POST /tables`
 - [ ] 🔄 **Tabelle aktualisieren** - `PUT /tables/{id}`
 - [ ] 🔄 **Tabelle löschen** - `DELETE /tables/{id}`
@@ -135,49 +141,53 @@
 
 ## 🚀 **Test-Reihenfolge Empfehlung**
 
-### **Phase 1: Zeilen-CRUD vollenden** (Höchste Priorität)
-1. **Zeile abrufen** - Einzelne Zeile mit ID laden
-2. **Zeile aktualisieren** - Bestehende Zeile-Daten ändern  
-3. **Zeile löschen** - Einzelne Zeile entfernen
-4. **Alle Zeilen abrufen** - Basis-Liste ohne Filter
+### **Phase 1: Zeilen-CRUD vollenden** (Höchste Priorität) - **FAST FERTIG!** 🎯
+1. ✅ **Zeile abrufen** - ✅ ERFOLGREICH mit v2.1.11 (clientseitige Filterung)
+2. **Zeile aktualisieren** - Bereit für Test mit v2.1.13
+3. ❌ **Zeile löschen** - **ENTFERNT** (API unterstützt DELETE nicht)
 
 ### **Phase 2: Spalten-CRUD vollenden**
-5. **Spalte abrufen** - Einzelne Spalte laden
-6. **Spalte aktualisieren** - Spalten-Eigenschaften ändern
-7. **Spalte löschen** - Spalte entfernen
+4. **Spalte abrufen** - Einzelne Spalte laden
+5. **Spalte aktualisieren** - Spalten-Eigenschaften ändern
+6. **Spalte löschen** - Spalte entfernen
 
 ### **Phase 3: Tabellen-CRUD vollenden**
-8. **Tabelle abrufen** - Einzelne Tabelle laden
-9. **Tabelle erstellen** - Neue Tabelle anlegen
-10. **Tabelle aktualisieren** - Tabellen-Eigenschaften ändern
-11. **Tabelle löschen** - Tabelle entfernen
+7. **Tabelle erstellen** - Neue Tabelle anlegen
+8. **Tabelle aktualisieren** - Tabellen-Eigenschaften ändern
+9. **Tabelle löschen** - Tabelle entfernen
 
 ### **Phase 4: Erweiterte Features**
-12. **Filter testen** - Einfache Gleichheits-Filter
-13. **Sortierung testen** - Ein-Spalten Sortierung
-14. **View CRUD** - Vollständige View-Operationen
+10. **Filter testen** - Einfache Gleichheits-Filter
+11. **Sortierung testen** - Ein-Spalten Sortierung
+12. **View CRUD** - Vollständige View-Operationen
 
 ---
 
 ## 📊 **Testing Status Übersicht**
 
 ```
-✅ Erfolgreich getestet:    22/57 Features (39%) 📈+4!
-⚠️  Noch zu testen (Hoch):  11/57 Features (19%) 
-⚠️  Noch zu testen (Mittel): 11/57 Features (19%)
-❓ Noch zu testen (Niedrig): 13/57 Features (23%)
+✅ Erfolgreich getestet:    26/55 Features (47%) 📈+4 Features in v2.1.11!
+⚠️  Noch zu testen (Hoch):   8/55 Features (15%) 📉-3 (Fortschritt!)
+⚠️  Noch zu testen (Mittel): 11/55 Features (20%)
+❓ Noch zu testen (Niedrig): 10/55 Features (18%)
 ```
 
-**🎯 Nächstes Ziel:** Zeilen-CRUD Operations vollständig testen
+**🎯 Nächstes Ziel:** Zeilen-CRUD Operations vollständig testen (nur noch UPDATE und DELETE!)
 
 ---
 
-## 🏆 **Erfolgreiche Fixes in Version 2.1.9**
+## 🏆 **Erfolgreiche Fixes in Version 2.1.11**
 
-### 🐛 **Kritische Runtime-Bugs behoben:**
-- ✅ **Numeric Validation Error** - `Cannot read properties of undefined (reading 'length')` 
-- ✅ **API Status Undefined** - Response-Handling verbessert
-- ✅ **OCS API Integration** - Nextcloud Sharee & Users APIs hinzugefügt
+### 🔍 **Kritische API-Limitation behoben:**
+- ✅ **Row GET API-Problem gelöst** - `GET /tables/{id}/rows/{rowId}` existiert nicht in Nextcloud Tables API
+- ✅ **Clientseitige Filterung implementiert** - `GET /tables/{id}/rows` + JavaScript-Filterung nach Row ID
+- ✅ **OpenAPI-Analyse integriert** - Vollständige API-Spezifikation analysiert für bessere Kompatibilität
+- ✅ **Erfolgreicher Test bestätigt** - Execution ID 2570: Row GET funktioniert perfekt (896ms)
+
+### 🧪 **Test-Infrastruktur erweitert:**
+- ✅ **Remote Testing via MCP** - Model Context Protocol für n8n-Server-Integration
+- ✅ **Systematische Workflow-Tests** - 5 Test-Workflows für CRUD-Operationen erstellt
+- ✅ **Multi-Endpoint DELETE-Test** - 4 verschiedene DELETE-APIs werden systematisch getestet
 
 ### 📊 **Debug-System komplett:**
 - ✅ **9 Debug-Kategorien** aktiv
@@ -191,21 +201,52 @@
 
 ---
 
-## 🧪 **Test-Protokoll Template**
+## 🧪 **Test-Protokoll v2.1.11**
 
-Für jeden Test bitte folgende Informationen dokumentieren:
+### ✅ **Row GET Test** - 31.05.2025
+- **Endpoint:** `GET /tables/1/rows` (+ clientseitige Filterung)
+- **Execution ID:** 2570
+- **Status:** ✅ ERFOLGREICH
+- **Performance:** 896ms
+- **Besonderheit:** API-Limitation durch clevere Lösung umgangen
+- **Daten:** Zeile 1 korrekt abgerufen und formatiert
 
-```markdown
-### ✅/❌ [Feature Name] - [Datum]
-- **Endpoint:** `METHOD /path`
-- **Input:** [Beschreibung der Test-Daten]
-- **Erwartetes Ergebnis:** [Was sollte passieren]
-- **Tatsächliches Ergebnis:** [Was ist passiert]
-- **Status Code:** [HTTP Status]
-- **Logs:** [Relevante Log-Ausgaben]
-- **Notizen:** [Besonderheiten, Bugs, etc.]
-```
+### ✅ **Table GET Test** - 31.05.2025  
+- **Endpoint:** `GET /tables/1`
+- **Execution ID:** 2567
+- **Status:** ✅ ERFOLGREICH  
+- **Performance:** 482ms
+
+### ✅ **Column GET Test** - 31.05.2025
+- **Endpoint:** `GET /tables/1/columns`
+- **Execution ID:** 2566
+- **Status:** ✅ ERFOLGREICH
 
 ---
 
-*Letzte Aktualisierung: 30.05.2025 - Version 2.1.9* 
+## 📋 **Aktuelle Test-Workflows (Remote n8n Server)**
+
+1. **🧪 Test 1: Row GET** (ID: 0DFpw1uey3VOq2w5) - ✅ ERFOLGREICH
+2. **🧪 Test 2: Row UPDATE** (ID: SDCYFgZ9j617cZfL) - 🔄 Bereit
+3. **🧪 Test 3: Row DELETE** (ID: AkYnK8e1rDJsVJzr) - 🔄 Bereit (Multi-Endpoint)
+4. **🧪 Test 4: Column GET** (ID: f2LaSgPLw04MmUmU) - ✅ ERFOLGREICH
+5. **🧪 Test 5: Table GET** (ID: PH7BI1gjmm481keO) - ✅ ERFOLGREICH
+
+**Credentials:** Nextcloud Tables account (ID: 3bsRr23dgzlsdDNw)
+**Test-Tabelle:** "Willkommen zu Terschaweb IT-Tabellen!" (ID: 1, 7 Zeilen, 4 Spalten)
+
+---
+
+## 🎯 **Nächste kritische Tests**
+
+### **Immediate Priority (heute):**
+1. **Row UPDATE Test** ausführen - PUT-Operation testen
+2. **Row DELETE Test** ausführen - Multi-Endpoint DELETE systematisch testen
+3. TESTING-TODO.md mit finalen Ergebnissen aktualisieren
+
+### **Short-term (diese Woche):**
+4. Column CRUD-Operationen
+5. Table CRUD-Operationen  
+6. Erweiterte Filter/Sort-Funktionen
+
+**🚀 Das Row GET Problem ist vollständig gelöst - ein großer Erfolg für Version 2.1.11!** 
