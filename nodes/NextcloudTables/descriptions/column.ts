@@ -43,6 +43,12 @@ export const columnOperations: INodeProperties[] = [
 				action: 'Spalte aktualisieren',
 			},
 			{
+				name: 'Spalte Aktualisieren (KI-Friendly)',
+				value: 'updateAIFriendly',
+				description: 'Eine Spalte komplett aktualisieren - optimiert für KI Agents',
+				action: 'Spalte aktualisieren (KI-Friendly)',
+			},
+			{
 				name: 'Spalte Löschen',
 				value: 'delete',
 				description: 'Eine Spalte löschen',
@@ -58,12 +64,12 @@ export const columnFields: INodeProperties[] = [
 	// KI-FRIENDLY OPERATIONS - ALLE Parameter verfügbar
 	// ==============================================
 
-	// Tabellen-ID (String-Eingabe für KI Agents)
+	// Tabellen-ID (String-Eingabe für KI Agents - nur für CREATE)
 	{
 		displayName: 'Tabellen-ID (AI-Friendly)',
 		name: 'tableIdAI',
 		type: 'string',
-		required: true,
+		required: false,
 		displayOptions: {
 			show: {
 				resource: ['column'],
@@ -79,7 +85,7 @@ export const columnFields: INodeProperties[] = [
 		displayName: 'Spaltentyp (AI-Friendly)',
 		name: 'columnType',
 		type: 'options',
-		required: true,
+		required: false,
 		displayOptions: {
 			show: {
 				resource: ['column'],
@@ -113,21 +119,21 @@ export const columnFields: INodeProperties[] = [
 			},
 		],
 		default: 'text',
-		description: 'Der Typ der neuen Spalte (nur für createAIFriendly Operation verwendet, wird bei anderen ignoriert)',
+		description: 'Der Typ der Spalte (erforderlich für createAIFriendly, optional für updateAIFriendly, wird bei anderen ignoriert)',
 	},
 
 	{
 		displayName: 'Spalten-Titel (AI-Friendly)',
 		name: 'columnTitle',
 		type: 'string',
-		required: true,
+		required: false,
 		displayOptions: {
 			show: {
 				resource: ['column'],
 			},
 		},
 		default: '',
-		description: 'Der Titel der neuen Spalte (nur für createAIFriendly Operation verwendet, wird bei anderen ignoriert)',
+		description: 'Der Titel der Spalte (erforderlich für createAIFriendly, optional für updateAIFriendly, wird bei anderen ignoriert)',
 		placeholder: 'Meine Spalte',
 	},
 
@@ -141,7 +147,7 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Optionale Beschreibung für die Spalte (nur für createAIFriendly Operation verwendet, wird bei anderen ignoriert)',
+		description: 'Optionale Beschreibung für die Spalte (für createAIFriendly/updateAIFriendly Operationen verwendet, wird bei anderen ignoriert)',
 		placeholder: 'Beschreibung der Spalte...',
 	},
 
@@ -155,13 +161,13 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: false,
-		description: 'Ob diese Spalte ein Pflichtfeld ist (nur für createAIFriendly Operation verwendet, wird bei anderen ignoriert)',
+		description: 'Ob diese Spalte ein Pflichtfeld ist (für createAIFriendly/updateAIFriendly Operationen verwendet, wird bei anderen ignoriert)',
 	},
 
-	// TEXT-Parameter (immer verfügbar - nur relevant wenn columnType="text")
+	// TEXT-parameter (immer verfügbar - nur relevant wenn columnType="text")
 	{
 		displayName: 'Text-Subtyp (nur für Typ "text")',
-		name: 'textSubtype',
+		name: 'textSubtypeAI',
 		type: 'options',
 		displayOptions: {
 			show: {
@@ -181,12 +187,12 @@ export const columnFields: INodeProperties[] = [
 			},
 		],
 		default: 'line',
-		description: 'Subtyp für Text-Spalten (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation verwendet)',
+		description: 'Subtyp für Text-Spalten (wird ignoriert bei anderen Typen, für createAIFriendly/updateAIFriendly Operationen verwendet)',
 	},
 
 	{
 		displayName: 'Text-Standard-Wert (nur für Typ "text")',
-		name: 'textDefault',
+		name: 'textDefaultAI',
 		type: 'string',
 		displayOptions: {
 			show: {
@@ -194,13 +200,13 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Standard-Wert für neue Zeilen (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation verwendet)',
+		description: 'Standard-Wert für neue Zeilen (wird ignoriert bei anderen Typen, für createAIFriendly/updateAIFriendly Operationen verwendet)',
 		placeholder: 'Standard-Text...',
 	},
 
 	{
 		displayName: 'Text-Maximale Länge (nur für Typ "text")',
-		name: 'textMaxLength',
+		name: 'textMaxLengthAI',
 		type: 'number',
 		displayOptions: {
 			show: {
@@ -208,12 +214,12 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: 255,
-		description: 'Maximale Zeichen-Anzahl (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation verwendet)',
+		description: 'Maximale Zeichen-Anzahl (wird ignoriert bei anderen Typen, für createAIFriendly/updateAIFriendly Operationen verwendet)',
 	},
 
 	{
 		displayName: 'Text-Validierungs-Pattern (nur für Typ "text")',
-		name: 'textPattern',
+		name: 'textPatternAI',
 		type: 'string',
 		displayOptions: {
 			show: {
@@ -221,14 +227,14 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Regex-Pattern zur Validierung (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation verwendet)',
+		description: 'Regex-Pattern zur Validierung (wird ignoriert bei anderen Typen, für createAIFriendly/updateAIFriendly Operationen verwendet)',
 		placeholder: '^[A-Za-z0-9]+$',
 	},
 
-	// NUMBER-Parameter (immer verfügbar - nur relevant wenn columnType="number")
+	// NUMBER-parameter (immer verfügbar - nur relevant wenn columnType="number")
 	{
 		displayName: 'Zahlen-Standard-Wert (nur für Typ "number")',
-		name: 'numberDefault',
+		name: 'numberDefaultAI',
 		type: 'number',
 		displayOptions: {
 			show: {
@@ -236,12 +242,12 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: 0,
-		description: 'Standard-Wert für neue Zeilen (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation verwendet)',
+		description: 'Standard-Wert für neue Zeilen (wird ignoriert bei anderen Typen, für createAIFriendly/updateAIFriendly Operationen verwendet)',
 	},
 
 	{
 		displayName: 'Zahlen-Minimum (nur für Typ "number")',
-		name: 'numberMin',
+		name: 'numberMinAI',
 		type: 'number',
 		displayOptions: {
 			show: {
@@ -249,12 +255,12 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Kleinster erlaubter Wert (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation verwendet)',
+		description: 'Kleinster erlaubter Wert (wird ignoriert bei anderen Typen, für createAIFriendly/updateAIFriendly Operationen verwendet)',
 	},
 
 	{
 		displayName: 'Zahlen-Maximum (nur für Typ "number")',
-		name: 'numberMax',
+		name: 'numberMaxAI',
 		type: 'number',
 		displayOptions: {
 			show: {
@@ -262,12 +268,12 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Größter erlaubter Wert (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation verwendet)',
+		description: 'Größter erlaubter Wert (wird ignoriert bei anderen Typen, für createAIFriendly/updateAIFriendly Operationen verwendet)',
 	},
 
 	{
 		displayName: 'Zahlen-Dezimalstellen (nur für Typ "number")',
-		name: 'numberDecimals',
+		name: 'numberDecimalsAI',
 		type: 'number',
 		displayOptions: {
 			show: {
@@ -275,12 +281,12 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: 0,
-		description: 'Anzahl der Dezimalstellen (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation verwendet)',
+		description: 'Anzahl der Dezimalstellen (wird ignoriert bei anderen Typen, für createAIFriendly/updateAIFriendly Operationen verwendet)',
 	},
 
 	{
 		displayName: 'Zahlen-Präfix (nur für Typ "number")',
-		name: 'numberPrefix',
+		name: 'numberPrefixAI',
 		type: 'string',
 		displayOptions: {
 			show: {
@@ -288,13 +294,13 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Text vor der Zahl, z.B. "€" (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation verwendet)',
+		description: 'Text vor der Zahl, z.B. "€" (wird ignoriert bei anderen Typen, für createAIFriendly/updateAIFriendly Operationen verwendet)',
 		placeholder: '€',
 	},
 
 	{
 		displayName: 'Zahlen-Suffix (nur für Typ "number")',
-		name: 'numberSuffix',
+		name: 'numberSuffixAI',
 		type: 'string',
 		displayOptions: {
 			show: {
@@ -302,14 +308,14 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Text nach der Zahl, z.B. "kg" (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation verwendet)',
+		description: 'Text nach der Zahl, z.B. "kg" (wird ignoriert bei anderen Typen, für createAIFriendly/updateAIFriendly Operationen verwendet)',
 		placeholder: 'kg',
 	},
 
-	// DATETIME-Parameter (immer verfügbar - nur relevant wenn columnType="datetime")
+	// DATETIME-parameter (immer verfügbar - nur relevant wenn columnType="datetime")
 	{
 		displayName: 'Datum-Standard-Wert (nur für Typ "datetime")',
-		name: 'datetimeDefault',
+		name: 'datetimeDefaultAI',
 		type: 'string',
 		displayOptions: {
 			show: {
@@ -317,14 +323,14 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Standard-Datum/Zeit in ISO 8601 Format oder "today" (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation verwendet)',
+		description: 'Standard-Datum/Zeit in ISO 8601 Format oder "today" (wird ignoriert bei anderen Typen, für createAIFriendly/updateAIFriendly Operationen verwendet)',
 		placeholder: '2024-01-01T12:00:00Z oder "today"',
 	},
 
-	// SELECTION-Parameter (immer verfügbar - nur relevant wenn columnType="selection")
+	// SELECTION-parameter (immer verfügbar - nur relevant wenn columnType="selection")
 	{
 		displayName: 'Auswahl-Optionen JSON (nur für Typ "selection")',
-		name: 'selectionOptions',
+		name: 'selectionOptionsAI',
 		type: 'string',
 		displayOptions: {
 			show: {
@@ -332,13 +338,13 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'JSON-Array mit Auswahl-Optionen, z.B. ["Option 1", "Option 2"] (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation verwendet)',
+		description: 'JSON-Array mit Auswahl-Optionen, z.B. ["Option 1", "Option 2"] (wird ignoriert bei anderen Typen, für createAIFriendly/updateAIFriendly Operationen verwendet)',
 		placeholder: '["Option 1", "Option 2", "Option 3"]',
 	},
 
 	{
 		displayName: 'Auswahl-Standard-Wert (nur für Typ "selection")',
-		name: 'selectionDefault',
+		name: 'selectionDefaultAI',
 		type: 'string',
 		displayOptions: {
 			show: {
@@ -346,13 +352,13 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Standard-Auswahl (muss in den Optionen enthalten sein, wird ignoriert bei anderen Typen, nur für createAIFriendly Operation verwendet)',
+		description: 'Standard-Auswahl (muss in den Optionen enthalten sein, wird ignoriert bei anderen Typen, für createAIFriendly/updateAIFriendly Operationen verwendet)',
 		placeholder: 'Option 1',
 	},
 
 	{
 		displayName: 'Mehrfach-Auswahl (nur für Typ "selection")',
-		name: 'selectionMultiple',
+		name: 'selectionMultipleAI',
 		type: 'boolean',
 		displayOptions: {
 			show: {
@@ -360,13 +366,13 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: false,
-		description: 'Ob mehrere Optionen gleichzeitig ausgewählt werden können (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation verwendet)',
+		description: 'Ob mehrere Optionen gleichzeitig ausgewählt werden können (wird ignoriert bei anderen Typen, für createAIFriendly/updateAIFriendly Operationen verwendet)',
 	},
 
-	// USERGROUP-Parameter (immer verfügbar - nur relevant wenn columnType="usergroup")
+	// USERGROUP-parameter (immer verfügbar - nur relevant wenn columnType="usergroup")
 	{
 		displayName: 'Benutzer/Gruppen-Typ (nur für Typ "usergroup")',
-		name: 'usergroupType',
+		name: 'usergroupTypeAI',
 		type: 'options',
 		displayOptions: {
 			show: {
@@ -386,12 +392,12 @@ export const columnFields: INodeProperties[] = [
 			},
 		],
 		default: 'user',
-		description: 'Art der Benutzer/Gruppen-Auswahl (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation verwendet)',
+		description: 'Art der Benutzer/Gruppen-Auswahl (wird ignoriert bei anderen Typen, für createAIFriendly/updateAIFriendly Operationen verwendet)',
 	},
 
 	{
 		displayName: 'Benutzer/Gruppen-Standard-Wert (nur für Typ "usergroup")',
-		name: 'usergroupDefault',
+		name: 'usergroupDefaultAI',
 		type: 'string',
 		displayOptions: {
 			show: {
@@ -399,13 +405,13 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Standard-Benutzer/Gruppe (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation verwendet)',
+		description: 'Standard-Benutzer/Gruppe (wird ignoriert bei anderen Typen, für createAIFriendly/updateAIFriendly Operationen verwendet)',
 		placeholder: 'admin',
 	},
 
 	{
 		displayName: 'Mehrfach-Auswahl Benutzer/Gruppen (nur für Typ "usergroup")',
-		name: 'usergroupMultiple',
+		name: 'usergroupMultipleAI',
 		type: 'boolean',
 		displayOptions: {
 			show: {
@@ -413,7 +419,23 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: false,
-		description: 'Ob mehrere Benutzer/Gruppen gleichzeitig ausgewählt werden können (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation verwendet)',
+		description: 'Ob mehrere Benutzer/Gruppen gleichzeitig ausgewählt werden können (wird ignoriert bei anderen Typen, für createAIFriendly/updateAIFriendly Operationen verwendet)',
+	},
+
+	// SPALTEN-ID für updateAIFriendly (String-Eingabe für KI Agents)
+	{
+		displayName: 'Spalten-ID (AI-Friendly Update)',
+		name: 'columnIdAI',
+		type: 'string',
+		required: false,
+		displayOptions: {
+			show: {
+				resource: ['column'],
+			},
+		},
+		default: '',
+		description: 'Die ID der Spalte die aktualisiert werden soll (nur für updateAIFriendly Operation verwendet, wird bei anderen ignoriert)',
+		placeholder: '456',
 	},
 
 	// ==============================================

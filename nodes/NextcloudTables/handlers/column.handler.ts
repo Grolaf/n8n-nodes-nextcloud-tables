@@ -15,6 +15,8 @@ export class ColumnHandler {
 				return this.createAIFriendly(context, itemIndex);
 			case 'update':
 				return this.update(context, itemIndex);
+			case 'updateAIFriendly':
+				return this.updateAIFriendly(context, itemIndex);
 			case 'delete':
 				return this.delete(context, itemIndex);
 			default:
@@ -102,7 +104,14 @@ export class ColumnHandler {
 	 * Alle Parameter sind direkt verfügbar ohne verschachtelte Strukturen
 	 */
 	private static async createAIFriendly(context: IExecuteFunctions, itemIndex: number): Promise<Column> {
-		const tableId = ApiHelper.getResourceId(context.getNodeParameter('tableIdAI', itemIndex));
+		const tableIdAI = context.getNodeParameter('tableIdAI', itemIndex, '') as string;
+		
+		// Validierung: tableIdAI ist für createAIFriendly erforderlich
+		if (!tableIdAI) {
+			throw new Error('tableIdAI ist für createAIFriendly Operation erforderlich');
+		}
+		
+		const tableId = ApiHelper.getResourceId(tableIdAI);
 		
 		// Basis-Parameter direkt abrufen (alle immer verfügbar)
 		const type = context.getNodeParameter('columnType', itemIndex) as string;
@@ -203,6 +212,85 @@ export class ColumnHandler {
 		);
 
 		return { success: true, message: `Spalte ${columnId} wurde erfolgreich gelöscht` };
+	}
+
+	/**
+	 * Eine Spalte komplett aktualisieren (KI-Friendly Version)
+	 * Alle Parameter sind direkt verfügbar, KI kann Spalten-Typ und alle Eigenschaften ändern
+	 */
+	private static async updateAIFriendly(context: IExecuteFunctions, itemIndex: number): Promise<Column> {
+		const columnIdAI = context.getNodeParameter('columnIdAI', itemIndex, '') as string;
+		
+		// Validierung: columnIdAI ist für updateAIFriendly erforderlich
+		if (!columnIdAI) {
+			throw new Error('columnIdAI ist für updateAIFriendly Operation erforderlich');
+		}
+		
+		const columnId = ApiHelper.getResourceId(columnIdAI);
+		
+		// Basis-Parameter direkt abrufen (alle immer verfügbar)
+		const type = context.getNodeParameter('columnType', itemIndex, '') as string;
+		const title = context.getNodeParameter('columnTitle', itemIndex, '') as string;
+		const description = context.getNodeParameter('columnDescription', itemIndex, '') as string;
+		const mandatory = context.getNodeParameter('columnMandatory', itemIndex, false) as boolean;
+
+		const body: any = {};
+
+		// Nur setzen was wirklich angegeben wurde
+		if (type) {
+			body.type = type;
+		}
+
+		if (title) {
+			body.title = title;
+		}
+
+		if (description !== undefined) {
+			body.description = description;
+		}
+
+		if (mandatory !== undefined) {
+			body.mandatory = mandatory;
+		}
+
+		// Typ-spezifische Parameter direkt aus den flachen Parametern hinzufügen
+		// Aber nur wenn ein Typ gesetzt wurde
+		if (type) {
+			switch (type) {
+				case 'text':
+					this.addTextParametersAIFriendly(context, itemIndex, body);
+					break;
+				case 'number':
+					this.addNumberParametersAIFriendly(context, itemIndex, body);
+					break;
+				case 'datetime':
+					this.addDateTimeParametersAIFriendly(context, itemIndex, body);
+					break;
+				case 'selection':
+					this.addSelectionParametersAIFriendly(context, itemIndex, body);
+					break;
+				case 'usergroup':
+					this.addUserGroupParametersAIFriendly(context, itemIndex, body);
+					break;
+			}
+		}
+
+		// Verbesserte Validierung: Mindestens ein sinnvolles Feld muss für Update angegeben werden
+		if (Object.keys(body).length === 0) {
+			throw new Error('Mindestens ein Feld muss für die Aktualisierung angegeben werden (type, title, description, mandatory oder typ-spezifische Parameter)');
+		}
+
+		// Zusätzliche Validierung: Bei Typ-Änderung sollte auch mindestens ein typ-spezifischer Parameter gesetzt werden
+		if (type && !title && Object.keys(body).length === 1) {
+			throw new Error('Bei einer Typ-Änderung sollte auch mindestens der Titel oder typ-spezifische Parameter angegeben werden');
+		}
+
+		return ApiHelper.makeApiRequest<Column>(
+			context,
+			'PUT',
+			`/columns/${columnId}`,
+			body,
+		);
 	}
 
 	/**
@@ -424,10 +512,10 @@ export class ColumnHandler {
 	 * Text-spezifische Parameter für AI-Friendly Version (flache Parameter)
 	 */
 	private static addTextParametersAIFriendly(context: IExecuteFunctions, itemIndex: number, body: any): void {
-		const subtype = context.getNodeParameter('textSubtype', itemIndex, 'line') as string;
-		const textDefault = context.getNodeParameter('textDefault', itemIndex, '') as string;
-		const textMaxLength = context.getNodeParameter('textMaxLength', itemIndex, 255) as number;
-		const textPattern = context.getNodeParameter('textPattern', itemIndex, '') as string;
+		const subtype = context.getNodeParameter('textSubtypeAI', itemIndex, 'line') as string;
+		const textDefault = context.getNodeParameter('textDefaultAI', itemIndex, '') as string;
+		const textMaxLength = context.getNodeParameter('textMaxLengthAI', itemIndex, 255) as number;
+		const textPattern = context.getNodeParameter('textPatternAI', itemIndex, '') as string;
 
 		// Subtype ist erforderlich für die API
 		body.subtype = subtype;
@@ -449,12 +537,12 @@ export class ColumnHandler {
 	 * Number-spezifische Parameter für AI-Friendly Version (flache Parameter)
 	 */
 	private static addNumberParametersAIFriendly(context: IExecuteFunctions, itemIndex: number, body: any): void {
-		const numberDefault = context.getNodeParameter('numberDefault', itemIndex, 0) as number;
-		const numberMin = context.getNodeParameter('numberMin', itemIndex, null) as number | null;
-		const numberMax = context.getNodeParameter('numberMax', itemIndex, null) as number | null;
-		const numberDecimals = context.getNodeParameter('numberDecimals', itemIndex, 0) as number;
-		const numberPrefix = context.getNodeParameter('numberPrefix', itemIndex, '') as string;
-		const numberSuffix = context.getNodeParameter('numberSuffix', itemIndex, '') as string;
+		const numberDefault = context.getNodeParameter('numberDefaultAI', itemIndex, 0) as number;
+		const numberMin = context.getNodeParameter('numberMinAI', itemIndex, null) as number | null;
+		const numberMax = context.getNodeParameter('numberMaxAI', itemIndex, null) as number | null;
+		const numberDecimals = context.getNodeParameter('numberDecimalsAI', itemIndex, 0) as number;
+		const numberPrefix = context.getNodeParameter('numberPrefixAI', itemIndex, '') as string;
+		const numberSuffix = context.getNodeParameter('numberSuffixAI', itemIndex, '') as string;
 
 		if (numberDefault !== undefined && numberDefault !== null) {
 			body.numberDefault = numberDefault;
@@ -485,7 +573,7 @@ export class ColumnHandler {
 	 * DateTime-spezifische Parameter für AI-Friendly Version (flache Parameter)
 	 */
 	private static addDateTimeParametersAIFriendly(context: IExecuteFunctions, itemIndex: number, body: any): void {
-		const datetimeDefault = context.getNodeParameter('datetimeDefault', itemIndex, '') as string;
+		const datetimeDefault = context.getNodeParameter('datetimeDefaultAI', itemIndex, '') as string;
 
 		if (datetimeDefault) {
 			body.datetimeDefault = datetimeDefault;
@@ -496,9 +584,9 @@ export class ColumnHandler {
 	 * Selection-spezifische Parameter für AI-Friendly Version (flache Parameter)
 	 */
 	private static addSelectionParametersAIFriendly(context: IExecuteFunctions, itemIndex: number, body: any): void {
-		const selectionOptions = context.getNodeParameter('selectionOptions', itemIndex, '') as string;
-		const selectionDefault = context.getNodeParameter('selectionDefault', itemIndex, '') as string;
-		const selectionMultiple = context.getNodeParameter('selectionMultiple', itemIndex, false) as boolean;
+		const selectionOptions = context.getNodeParameter('selectionOptionsAI', itemIndex, '') as string;
+		const selectionDefault = context.getNodeParameter('selectionDefaultAI', itemIndex, '') as string;
+		const selectionMultiple = context.getNodeParameter('selectionMultipleAI', itemIndex, false) as boolean;
 
 		if (selectionOptions) {
 			try {
@@ -507,10 +595,10 @@ export class ColumnHandler {
 				if (Array.isArray(options)) {
 					body.selectionOptions = JSON.stringify(options);
 				} else {
-					throw new Error('selectionOptions muss ein JSON-Array sein');
+					throw new Error('selectionOptionsAI muss ein JSON-Array sein');
 				}
 			} catch (error) {
-				throw new Error(`Ungültiges JSON in selectionOptions: ${error.message}`);
+				throw new Error(`Ungültiges JSON in selectionOptionsAI: ${error.message}`);
 			}
 		}
 
@@ -527,9 +615,9 @@ export class ColumnHandler {
 	 * UserGroup-spezifische Parameter für AI-Friendly Version (flache Parameter)
 	 */
 	private static addUserGroupParametersAIFriendly(context: IExecuteFunctions, itemIndex: number, body: any): void {
-		const usergroupType = context.getNodeParameter('usergroupType', itemIndex, 'user') as string;
-		const usergroupDefault = context.getNodeParameter('usergroupDefault', itemIndex, '') as string;
-		const usergroupMultiple = context.getNodeParameter('usergroupMultiple', itemIndex, false) as boolean;
+		const usergroupType = context.getNodeParameter('usergroupTypeAI', itemIndex, 'user') as string;
+		const usergroupDefault = context.getNodeParameter('usergroupDefaultAI', itemIndex, '') as string;
+		const usergroupMultiple = context.getNodeParameter('usergroupMultipleAI', itemIndex, false) as boolean;
 
 		if (usergroupDefault) {
 			body.usergroupDefault = usergroupDefault;
