@@ -252,10 +252,15 @@ export class ApiHelper {
 			keys: typeof resourceLocator === 'object' ? Object.keys(resourceLocator || {}) : [],
 		});
 
-		// Prüfe auf null/undefined zuerst
-		if (resourceLocator === null || resourceLocator === undefined) {
-			DebugHelper.logError('getResourceId', new Error('Resource Locator ist null oder undefined'));
-			throw new Error('Resource Locator ist erforderlich aber nicht gesetzt');
+		// ULTIMATE FIX: Alle möglichen NaN-Quellen abfangen
+		if (resourceLocator === null || resourceLocator === undefined || 
+			resourceLocator === 'null' || resourceLocator === 'undefined' ||
+			resourceLocator === 'NaN' || 
+			(typeof resourceLocator === 'number' && isNaN(resourceLocator))) {
+			
+			const errorMsg = `Resource Locator ist ungültig: ${JSON.stringify(resourceLocator)} (type: ${typeof resourceLocator})`;
+			DebugHelper.logError('getResourceId.invalidInput', new Error(errorMsg));
+			throw new Error('Resource Locator ist erforderlich aber nicht gesetzt oder ungültig');
 		}
 
 		if (typeof resourceLocator === 'number') {
