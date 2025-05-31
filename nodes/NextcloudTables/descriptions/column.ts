@@ -66,7 +66,7 @@ export const columnFields: INodeProperties[] = [
 
 	// Tabellen-ID (String-Eingabe für KI Agents - nur für CREATE)
 	{
-		displayName: 'Tabellen-ID (AI-Friendly)',
+		displayName: 'tableIdAI',
 		name: 'tableIdAI',
 		type: 'string',
 		required: false,
@@ -83,7 +83,7 @@ export const columnFields: INodeProperties[] = [
 
 	// Basis-Parameter (immer verfügbar)
 	{
-		displayName: 'Spaltentyp (AI-Friendly)',
+		displayName: 'columnType',
 		name: 'columnType',
 		type: 'string',
 		required: false,
@@ -99,7 +99,7 @@ export const columnFields: INodeProperties[] = [
 	},
 
 	{
-		displayName: 'Spalten-Titel (AI-Friendly)',
+		displayName: 'columnTitle',
 		name: 'columnTitle',
 		type: 'string',
 		required: false,
@@ -115,7 +115,7 @@ export const columnFields: INodeProperties[] = [
 	},
 
 	{
-		displayName: 'Beschreibung (AI-Friendly)',
+		displayName: 'columnDescription',
 		name: 'columnDescription',
 		type: 'string',
 		displayOptions: {
@@ -130,7 +130,7 @@ export const columnFields: INodeProperties[] = [
 	},
 
 	{
-		displayName: 'Pflichtfeld (AI-Friendly)',
+		displayName: 'columnMandatory',
 		name: 'columnMandatory',
 		type: 'boolean',
 		displayOptions: {
@@ -145,7 +145,7 @@ export const columnFields: INodeProperties[] = [
 
 	// TEXT-parameter (immer verfügbar - nur relevant wenn columnType="text")
 	{
-		displayName: 'Text-Subtyp (nur für Typ "text")',
+		displayName: 'textSubtypeAI',
 		name: 'textSubtypeAI',
 		type: 'string',
 		displayOptions: {
@@ -160,7 +160,7 @@ export const columnFields: INodeProperties[] = [
 	},
 
 	{
-		displayName: 'Text-Standard-Wert (nur für Typ "text")',
+		displayName: 'textDefaultAI',
 		name: 'textDefaultAI',
 		type: 'string',
 		displayOptions: {
@@ -175,7 +175,7 @@ export const columnFields: INodeProperties[] = [
 	},
 
 	{
-		displayName: 'Text-Maximale Länge (nur für Typ "text")',
+		displayName: 'textMaxLengthAI',
 		name: 'textMaxLengthAI',
 		type: 'number',
 		displayOptions: {
@@ -189,7 +189,7 @@ export const columnFields: INodeProperties[] = [
 	},
 
 	{
-		displayName: 'Text-Validierungs-Pattern (nur für Typ "text")',
+		displayName: 'textPatternAI',
 		name: 'textPatternAI',
 		type: 'string',
 		displayOptions: {
@@ -205,7 +205,7 @@ export const columnFields: INodeProperties[] = [
 
 	// NUMBER-parameter (immer verfügbar - nur relevant wenn columnType="number")
 	{
-		displayName: 'Zahlen-Standard-Wert (nur für Typ "number")',
+		displayName: 'numberDefaultAI',
 		name: 'numberDefaultAI',
 		type: 'number',
 		displayOptions: {
@@ -219,7 +219,7 @@ export const columnFields: INodeProperties[] = [
 	},
 
 	{
-		displayName: 'Zahlen-Minimum (nur für Typ "number")',
+		displayName: 'numberMinAI',
 		name: 'numberMinAI',
 		type: 'number',
 		displayOptions: {
@@ -233,7 +233,7 @@ export const columnFields: INodeProperties[] = [
 	},
 
 	{
-		displayName: 'Zahlen-Maximum (nur für Typ "number")',
+		displayName: 'numberMaxAI',
 		name: 'numberMaxAI',
 		type: 'number',
 		displayOptions: {
@@ -247,7 +247,7 @@ export const columnFields: INodeProperties[] = [
 	},
 
 	{
-		displayName: 'Zahlen-Dezimalstellen (nur für Typ "number")',
+		displayName: 'numberDecimalsAI',
 		name: 'numberDecimalsAI',
 		type: 'number',
 		displayOptions: {
@@ -261,7 +261,7 @@ export const columnFields: INodeProperties[] = [
 	},
 
 	{
-		displayName: 'Zahlen-Präfix (nur für Typ "number")',
+		displayName: 'numberPrefixAI',
 		name: 'numberPrefixAI',
 		type: 'string',
 		displayOptions: {
@@ -276,7 +276,7 @@ export const columnFields: INodeProperties[] = [
 	},
 
 	{
-		displayName: 'Zahlen-Suffix (nur für Typ "number")',
+		displayName: 'numberSuffixAI',
 		name: 'numberSuffixAI',
 		type: 'string',
 		displayOptions: {
@@ -292,7 +292,7 @@ export const columnFields: INodeProperties[] = [
 
 	// DATETIME-parameter (immer verfügbar - nur relevant wenn columnType="datetime")
 	{
-		displayName: 'Datum-Standard-Wert (nur für Typ "datetime")',
+		displayName: 'datetimeDefaultAI',
 		name: 'datetimeDefaultAI',
 		type: 'string',
 		displayOptions: {
@@ -308,7 +308,7 @@ export const columnFields: INodeProperties[] = [
 
 	// SELECTION-parameter (immer verfügbar - nur relevant wenn columnType="selection")
 	{
-		displayName: 'Auswahl-Optionen JSON (nur für Typ "selection")',
+		displayName: 'selectionOptionsAI',
 		name: 'selectionOptionsAI',
 		type: 'string',
 		displayOptions: {
@@ -323,7 +323,7 @@ export const columnFields: INodeProperties[] = [
 	},
 
 	{
-		displayName: 'Auswahl-Standard-Wert (nur für Typ "selection")',
+		displayName: 'selectionDefaultAI',
 		name: 'selectionDefaultAI',
 		type: 'string',
 		displayOptions: {
@@ -338,7 +338,7 @@ export const columnFields: INodeProperties[] = [
 	},
 
 	{
-		displayName: 'Mehrfach-Auswahl (nur für Typ "selection")',
+		displayName: 'selectionMultipleAI',
 		name: 'selectionMultipleAI',
 		type: 'boolean',
 		displayOptions: {
@@ -353,7 +353,7 @@ export const columnFields: INodeProperties[] = [
 
 	// USERGROUP-parameter (immer verfügbar - nur relevant wenn columnType="usergroup")
 	{
-		displayName: 'Benutzer/Gruppen-Typ (nur für Typ "usergroup")',
+		displayName: 'usergroupTypeAI',
 		name: 'usergroupTypeAI',
 		type: 'string',
 		displayOptions: {
@@ -368,7 +368,7 @@ export const columnFields: INodeProperties[] = [
 	},
 
 	{
-		displayName: 'Benutzer/Gruppen-Standard-Wert (nur für Typ "usergroup")',
+		displayName: 'usergroupDefaultAI',
 		name: 'usergroupDefaultAI',
 		type: 'string',
 		displayOptions: {
@@ -383,7 +383,7 @@ export const columnFields: INodeProperties[] = [
 	},
 
 	{
-		displayName: 'Mehrfach-Auswahl Benutzer/Gruppen (nur für Typ "usergroup")',
+		displayName: 'usergroupMultipleAI',
 		name: 'usergroupMultipleAI',
 		type: 'boolean',
 		displayOptions: {
@@ -398,7 +398,7 @@ export const columnFields: INodeProperties[] = [
 
 	// SPALTEN-ID für updateAIFriendly (String-Eingabe für KI Agents)
 	{
-		displayName: 'Spalten-ID (AI-Friendly Update)',
+		displayName: 'columnIdAI',
 		name: 'columnIdAI',
 		type: 'string',
 		required: false,
