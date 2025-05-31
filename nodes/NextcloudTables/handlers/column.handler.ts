@@ -99,17 +99,16 @@ export class ColumnHandler {
 
 	/**
 	 * Eine neue Spalte erstellen (KI-Friendly Version) 
-	 * Alle Parameter sind immer verfügbar durch fixedCollection
+	 * Alle Parameter sind direkt verfügbar ohne verschachtelte Strukturen
 	 */
 	private static async createAIFriendly(context: IExecuteFunctions, itemIndex: number): Promise<Column> {
-		const tableId = ApiHelper.getResourceId(context.getNodeParameter('tableId', itemIndex));
+		const tableId = ApiHelper.getResourceId(context.getNodeParameter('tableIdAI', itemIndex));
 		
-		// Basis-Konfiguration extrahieren
-		const columnConfig = context.getNodeParameter('columnConfig.basic', itemIndex, {}) as any;
-		const type = columnConfig.type;
-		const title = columnConfig.title;
-		const description = columnConfig.description || '';
-		const mandatory = columnConfig.mandatory || false;
+		// Basis-Parameter direkt abrufen (alle immer verfügbar)
+		const type = context.getNodeParameter('columnType', itemIndex) as string;
+		const title = context.getNodeParameter('columnTitle', itemIndex) as string;
+		const description = context.getNodeParameter('columnDescription', itemIndex, '') as string;
+		const mandatory = context.getNodeParameter('columnMandatory', itemIndex, false) as boolean;
 
 		if (!type || !title) {
 			throw new Error('Spaltentyp und Titel sind erforderlich');
@@ -125,22 +124,23 @@ export class ColumnHandler {
 			body.description = description;
 		}
 
-		// Typ-spezifische Parameter aus den jeweiligen Konfigurationen hinzufügen
+		// Typ-spezifische Parameter direkt aus den flachen Parametern hinzufügen
+		// KI Agent kann alle Parameter sehen, aber nur die relevanten werden verwendet
 		switch (type) {
 			case 'text':
-				this.addTextParametersFromConfig(context, itemIndex, body);
+				this.addTextParametersAIFriendly(context, itemIndex, body);
 				break;
 			case 'number':
-				this.addNumberParametersFromConfig(context, itemIndex, body);
+				this.addNumberParametersAIFriendly(context, itemIndex, body);
 				break;
 			case 'datetime':
-				this.addDateTimeParametersFromConfig(context, itemIndex, body);
+				this.addDateTimeParametersAIFriendly(context, itemIndex, body);
 				break;
 			case 'selection':
-				this.addSelectionParametersFromConfig(context, itemIndex, body);
+				this.addSelectionParametersAIFriendly(context, itemIndex, body);
 				break;
 			case 'usergroup':
-				this.addUserGroupParametersFromConfig(context, itemIndex, body);
+				this.addUserGroupParametersAIFriendly(context, itemIndex, body);
 				break;
 		}
 
@@ -414,5 +414,144 @@ export class ColumnHandler {
 		body.usergroupSelectGroups = usergroupConfig.usergroupSelectGroups !== undefined ? usergroupConfig.usergroupSelectGroups : true;
 		body.usergroupSelectTeams = usergroupConfig.usergroupSelectTeams || false;
 		body.showUserStatus = usergroupConfig.showUserStatus || false;
+	}
+
+	// =======================================================
+	// AI-FRIENDLY Parameter-Methoden (flache Struktur)
+	// =======================================================
+
+	/**
+	 * Text-spezifische Parameter für AI-Friendly Version (flache Parameter)
+	 */
+	private static addTextParametersAIFriendly(context: IExecuteFunctions, itemIndex: number, body: any): void {
+		const subtype = context.getNodeParameter('textSubtype', itemIndex, 'line') as string;
+		const textDefault = context.getNodeParameter('textDefault', itemIndex, '') as string;
+		const textMaxLength = context.getNodeParameter('textMaxLength', itemIndex, 255) as number;
+		const textPattern = context.getNodeParameter('textPattern', itemIndex, '') as string;
+
+		// Subtype ist erforderlich für die API
+		body.subtype = subtype;
+
+		if (textDefault) {
+			body.textDefault = textDefault;
+		}
+
+		if (textMaxLength && textMaxLength > 0) {
+			body.textMaxLength = textMaxLength;
+		}
+
+		if (textPattern) {
+			body.textAllowedPattern = textPattern;
+		}
+	}
+
+	/**
+	 * Number-spezifische Parameter für AI-Friendly Version (flache Parameter)
+	 */
+	private static addNumberParametersAIFriendly(context: IExecuteFunctions, itemIndex: number, body: any): void {
+		const numberDefault = context.getNodeParameter('numberDefault', itemIndex, 0) as number;
+		const numberMin = context.getNodeParameter('numberMin', itemIndex, null) as number | null;
+		const numberMax = context.getNodeParameter('numberMax', itemIndex, null) as number | null;
+		const numberDecimals = context.getNodeParameter('numberDecimals', itemIndex, 0) as number;
+		const numberPrefix = context.getNodeParameter('numberPrefix', itemIndex, '') as string;
+		const numberSuffix = context.getNodeParameter('numberSuffix', itemIndex, '') as string;
+
+		if (numberDefault !== undefined && numberDefault !== null) {
+			body.numberDefault = numberDefault;
+		}
+
+		if (numberMin !== undefined && numberMin !== null) {
+			body.numberMin = numberMin;
+		}
+
+		if (numberMax !== undefined && numberMax !== null) {
+			body.numberMax = numberMax;
+		}
+
+		if (numberDecimals !== undefined && numberDecimals >= 0) {
+			body.numberDecimals = numberDecimals;
+		}
+
+		if (numberPrefix) {
+			body.numberPrefix = numberPrefix;
+		}
+
+		if (numberSuffix) {
+			body.numberSuffix = numberSuffix;
+		}
+	}
+
+	/**
+	 * DateTime-spezifische Parameter für AI-Friendly Version (flache Parameter)
+	 */
+	private static addDateTimeParametersAIFriendly(context: IExecuteFunctions, itemIndex: number, body: any): void {
+		const datetimeDefault = context.getNodeParameter('datetimeDefault', itemIndex, '') as string;
+
+		if (datetimeDefault) {
+			body.datetimeDefault = datetimeDefault;
+		}
+	}
+
+	/**
+	 * Selection-spezifische Parameter für AI-Friendly Version (flache Parameter)
+	 */
+	private static addSelectionParametersAIFriendly(context: IExecuteFunctions, itemIndex: number, body: any): void {
+		const selectionOptions = context.getNodeParameter('selectionOptions', itemIndex, '') as string;
+		const selectionDefault = context.getNodeParameter('selectionDefault', itemIndex, '') as string;
+		const selectionMultiple = context.getNodeParameter('selectionMultiple', itemIndex, false) as boolean;
+
+		if (selectionOptions) {
+			try {
+				// KI Agent gibt JSON-Array als String
+				const options = JSON.parse(selectionOptions);
+				if (Array.isArray(options)) {
+					body.selectionOptions = JSON.stringify(options);
+				} else {
+					throw new Error('selectionOptions muss ein JSON-Array sein');
+				}
+			} catch (error) {
+				throw new Error(`Ungültiges JSON in selectionOptions: ${error.message}`);
+			}
+		}
+
+		if (selectionDefault) {
+			body.selectionDefault = selectionDefault;
+		}
+
+		if (selectionMultiple !== undefined) {
+			body.selectionMultiple = selectionMultiple;
+		}
+	}
+
+	/**
+	 * UserGroup-spezifische Parameter für AI-Friendly Version (flache Parameter)
+	 */
+	private static addUserGroupParametersAIFriendly(context: IExecuteFunctions, itemIndex: number, body: any): void {
+		const usergroupType = context.getNodeParameter('usergroupType', itemIndex, 'user') as string;
+		const usergroupDefault = context.getNodeParameter('usergroupDefault', itemIndex, '') as string;
+		const usergroupMultiple = context.getNodeParameter('usergroupMultiple', itemIndex, false) as boolean;
+
+		if (usergroupDefault) {
+			body.usergroupDefault = usergroupDefault;
+		}
+
+		// Basierend auf usergroupType die entsprechenden Flags setzen
+		body.usergroupMultipleItems = usergroupMultiple;
+		
+		if (usergroupType === 'user') {
+			body.usergroupSelectUsers = true;
+			body.usergroupSelectGroups = false;
+		} else if (usergroupType === 'group') {
+			body.usergroupSelectUsers = false;
+			body.usergroupSelectGroups = true;
+		} else {
+			// Fallback: beide erlauben
+			body.usergroupSelectUsers = true;
+			body.usergroupSelectGroups = true;
+		}
+		
+		// Standardwerte für andere Optionen
+		body.usergroupSelectTeams = false;
+		body.showUserStatus = false;
 	}
 } 
