@@ -70,7 +70,7 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Die ID der Tabelle in der die Spalte erstellt werden soll (nur für createAIFriendly Operation)',
+		description: 'Die ID der Tabelle in der die Spalte erstellt werden soll (nur für createAIFriendly Operation verwendet, wird bei anderen ignoriert)',
 		placeholder: '123',
 	},
 
@@ -113,7 +113,7 @@ export const columnFields: INodeProperties[] = [
 			},
 		],
 		default: 'text',
-		description: 'Der Typ der neuen Spalte (nur für createAIFriendly Operation)',
+		description: 'Der Typ der neuen Spalte (nur für createAIFriendly Operation verwendet, wird bei anderen ignoriert)',
 	},
 
 	{
@@ -127,7 +127,7 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Der Titel der neuen Spalte (nur für createAIFriendly Operation)',
+		description: 'Der Titel der neuen Spalte (nur für createAIFriendly Operation verwendet, wird bei anderen ignoriert)',
 		placeholder: 'Meine Spalte',
 	},
 
@@ -141,7 +141,7 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Optionale Beschreibung für die Spalte (nur für createAIFriendly Operation)',
+		description: 'Optionale Beschreibung für die Spalte (nur für createAIFriendly Operation verwendet, wird bei anderen ignoriert)',
 		placeholder: 'Beschreibung der Spalte...',
 	},
 
@@ -155,7 +155,7 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: false,
-		description: 'Ob diese Spalte ein Pflichtfeld ist (nur für createAIFriendly Operation)',
+		description: 'Ob diese Spalte ein Pflichtfeld ist (nur für createAIFriendly Operation verwendet, wird bei anderen ignoriert)',
 	},
 
 	// TEXT-Parameter (immer verfügbar - nur relevant wenn columnType="text")
@@ -181,7 +181,7 @@ export const columnFields: INodeProperties[] = [
 			},
 		],
 		default: 'line',
-		description: 'Subtyp für Text-Spalten (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation)',
+		description: 'Subtyp für Text-Spalten (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation verwendet)',
 	},
 
 	{
@@ -194,7 +194,7 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Standard-Wert für neue Zeilen (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation)',
+		description: 'Standard-Wert für neue Zeilen (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation verwendet)',
 		placeholder: 'Standard-Text...',
 	},
 
@@ -208,7 +208,7 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: 255,
-		description: 'Maximale Zeichen-Anzahl (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation)',
+		description: 'Maximale Zeichen-Anzahl (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation verwendet)',
 	},
 
 	{
@@ -221,7 +221,7 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Regex-Pattern zur Validierung (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation)',
+		description: 'Regex-Pattern zur Validierung (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation verwendet)',
 		placeholder: '^[A-Za-z0-9]+$',
 	},
 
@@ -236,7 +236,7 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: 0,
-		description: 'Standard-Wert für neue Zeilen (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation)',
+		description: 'Standard-Wert für neue Zeilen (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation verwendet)',
 	},
 
 	{
@@ -249,7 +249,7 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Kleinster erlaubter Wert (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation)',
+		description: 'Kleinster erlaubter Wert (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation verwendet)',
 	},
 
 	{
@@ -262,7 +262,7 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Größter erlaubter Wert (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation)',
+		description: 'Größter erlaubter Wert (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation verwendet)',
 	},
 
 	{
@@ -275,7 +275,7 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: 0,
-		description: 'Anzahl der Dezimalstellen (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation)',
+		description: 'Anzahl der Dezimalstellen (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation verwendet)',
 	},
 
 	{
@@ -288,7 +288,7 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Text vor der Zahl, z.B. "€" (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation)',
+		description: 'Text vor der Zahl, z.B. "€" (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation verwendet)',
 		placeholder: '€',
 	},
 
@@ -302,7 +302,7 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Text nach der Zahl, z.B. "kg" (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation)',
+		description: 'Text nach der Zahl, z.B. "kg" (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation verwendet)',
 		placeholder: 'kg',
 	},
 
@@ -317,7 +317,7 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Standard-Datum/Zeit in ISO 8601 Format oder "today" (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation)',
+		description: 'Standard-Datum/Zeit in ISO 8601 Format oder "today" (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation verwendet)',
 		placeholder: '2024-01-01T12:00:00Z oder "today"',
 	},
 
@@ -332,7 +332,7 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'JSON-Array mit Auswahl-Optionen, z.B. ["Option 1", "Option 2"] (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation)',
+		description: 'JSON-Array mit Auswahl-Optionen, z.B. ["Option 1", "Option 2"] (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation verwendet)',
 		placeholder: '["Option 1", "Option 2", "Option 3"]',
 	},
 
@@ -346,7 +346,7 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Standard-Auswahl (muss in den Optionen enthalten sein, wird ignoriert bei anderen Typen, nur für createAIFriendly Operation)',
+		description: 'Standard-Auswahl (muss in den Optionen enthalten sein, wird ignoriert bei anderen Typen, nur für createAIFriendly Operation verwendet)',
 		placeholder: 'Option 1',
 	},
 
@@ -360,7 +360,7 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: false,
-		description: 'Ob mehrere Optionen gleichzeitig ausgewählt werden können (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation)',
+		description: 'Ob mehrere Optionen gleichzeitig ausgewählt werden können (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation verwendet)',
 	},
 
 	// USERGROUP-Parameter (immer verfügbar - nur relevant wenn columnType="usergroup")
@@ -386,7 +386,7 @@ export const columnFields: INodeProperties[] = [
 			},
 		],
 		default: 'user',
-		description: 'Art der Benutzer/Gruppen-Auswahl (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation)',
+		description: 'Art der Benutzer/Gruppen-Auswahl (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation verwendet)',
 	},
 
 	{
@@ -399,7 +399,7 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Standard-Benutzer/Gruppe (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation)',
+		description: 'Standard-Benutzer/Gruppe (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation verwendet)',
 		placeholder: 'admin',
 	},
 
@@ -413,7 +413,7 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: false,
-		description: 'Ob mehrere Benutzer/Gruppen gleichzeitig ausgewählt werden können (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation)',
+		description: 'Ob mehrere Benutzer/Gruppen gleichzeitig ausgewählt werden können (wird ignoriert bei anderen Typen, nur für createAIFriendly Operation verwendet)',
 	},
 
 	// ==============================================
