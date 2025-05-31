@@ -73,6 +73,7 @@ export const columnFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['column'],
+				operation: ['createAIFriendly'],
 			},
 		},
 		default: '',
@@ -89,6 +90,7 @@ export const columnFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['column'],
+				operation: ['createAIFriendly', 'updateAIFriendly'],
 			},
 		},
 		options: [
@@ -130,6 +132,7 @@ export const columnFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['column'],
+				operation: ['createAIFriendly', 'updateAIFriendly'],
 			},
 		},
 		default: '',
@@ -144,6 +147,7 @@ export const columnFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['column'],
+				operation: ['createAIFriendly', 'updateAIFriendly'],
 			},
 		},
 		default: '',
@@ -158,6 +162,7 @@ export const columnFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['column'],
+				operation: ['createAIFriendly', 'updateAIFriendly'],
 			},
 		},
 		default: false,
@@ -172,6 +177,7 @@ export const columnFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['column'],
+				operation: ['createAIFriendly', 'updateAIFriendly'],
 			},
 		},
 		options: [
@@ -197,6 +203,7 @@ export const columnFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['column'],
+				operation: ['createAIFriendly', 'updateAIFriendly'],
 			},
 		},
 		default: '',
@@ -211,6 +218,7 @@ export const columnFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['column'],
+				operation: ['createAIFriendly', 'updateAIFriendly'],
 			},
 		},
 		default: 255,
@@ -224,6 +232,7 @@ export const columnFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['column'],
+				operation: ['createAIFriendly', 'updateAIFriendly'],
 			},
 		},
 		default: '',
@@ -239,6 +248,7 @@ export const columnFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['column'],
+				operation: ['createAIFriendly', 'updateAIFriendly'],
 			},
 		},
 		default: 0,
@@ -252,6 +262,7 @@ export const columnFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['column'],
+				operation: ['createAIFriendly', 'updateAIFriendly'],
 			},
 		},
 		default: '',
@@ -265,6 +276,7 @@ export const columnFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['column'],
+				operation: ['createAIFriendly', 'updateAIFriendly'],
 			},
 		},
 		default: '',
@@ -278,6 +290,7 @@ export const columnFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['column'],
+				operation: ['createAIFriendly', 'updateAIFriendly'],
 			},
 		},
 		default: 0,
@@ -291,6 +304,7 @@ export const columnFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['column'],
+				operation: ['createAIFriendly', 'updateAIFriendly'],
 			},
 		},
 		default: '',
@@ -305,6 +319,7 @@ export const columnFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['column'],
+				operation: ['createAIFriendly', 'updateAIFriendly'],
 			},
 		},
 		default: '',
@@ -320,6 +335,7 @@ export const columnFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['column'],
+				operation: ['createAIFriendly', 'updateAIFriendly'],
 			},
 		},
 		default: '',
@@ -335,6 +351,7 @@ export const columnFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['column'],
+				operation: ['createAIFriendly', 'updateAIFriendly'],
 			},
 		},
 		default: '',
@@ -349,6 +366,7 @@ export const columnFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['column'],
+				operation: ['createAIFriendly', 'updateAIFriendly'],
 			},
 		},
 		default: '',
@@ -363,6 +381,7 @@ export const columnFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['column'],
+				operation: ['createAIFriendly', 'updateAIFriendly'],
 			},
 		},
 		default: false,
@@ -377,6 +396,7 @@ export const columnFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['column'],
+				operation: ['createAIFriendly', 'updateAIFriendly'],
 			},
 		},
 		options: [
@@ -402,6 +422,7 @@ export const columnFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['column'],
+				operation: ['createAIFriendly', 'updateAIFriendly'],
 			},
 		},
 		default: '',
@@ -416,6 +437,7 @@ export const columnFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['column'],
+				operation: ['createAIFriendly', 'updateAIFriendly'],
 			},
 		},
 		default: false,
@@ -431,6 +453,7 @@ export const columnFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['column'],
+				operation: ['updateAIFriendly'],
 			},
 		},
 		default: '',
