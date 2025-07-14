@@ -9,148 +9,157 @@ export interface FormatOptions {
 }
 
 /**
- * Datenformatierer für Nextcloud Tables Row-Daten
+ * Data formatter for Nextcloud Tables row data
  */
 export class DataFormatter {
 	/**
-	 * Formatiert Row-Daten basierend auf Spaltentypen
+	 * Formats row data based on column types
 	 */
 	static formatRowData(
-		data: Record<string, any>, 
-		columns?: Column[], 
-		options: FormatOptions = {}
+		data: Record<string, any>,
+		columns?: Column[],
+		options: FormatOptions = {},
 	): Record<string, any> {
 		const formattedData: Record<string, any> = {};
-		
+
 		for (const [columnKey, value] of Object.entries(data)) {
-			// Leere Werte überspringen
+			// Skip empty values
 			if (value === undefined || value === null || value === '') {
 				continue;
 			}
 
 			const columnId = parseInt(columnKey, 10);
-			const column = columns?.find(col => col.id === columnId);
-			
+			const column = columns?.find((col) => col.id === columnId);
+
 			if (column) {
-				// Spezifische Formatierung basierend auf Spaltentyp
+				// Specific formatting based on column type
 				formattedData[columnKey] = this.formatColumnValue(value, column, options);
 			} else {
-				// Fallback: Basis-Formatierung ohne Spalten-Info
+				// Fallback: basic formatting without column info
 				formattedData[columnKey] = this.formatGenericValue(value);
 			}
 		}
-		
+
 		return formattedData;
 	}
 
 	/**
-	 * Formatiert einen Wert basierend auf dem Spaltentyp
+	 * Formats a value based on the column type
 	 */
 	private static formatColumnValue(value: any, column: Column, options: FormatOptions): any {
 		switch (column.type) {
 			case 'text':
 				return this.formatTextValue(value, column);
-			
+
 			case 'number':
 				return this.formatNumberValue(value, column);
-			
+
 			case 'datetime':
 				return this.formatDateTimeValue(value, column, options);
-			
+
 			case 'selection':
 				return this.formatSelectionValue(value, column, options);
-			
+
 			case 'usergroup':
 				return this.formatUserGroupValue(value, column, options);
-			
+
 			case 'file':
 				return this.formatFileValue(value, column);
-			
+
 			default:
 				return this.formatGenericValue(value);
 		}
 	}
 
 	/**
-	 * Formatiert Text-Spalten
+	 * Formats text columns
 	 */
 	private static formatTextValue(value: any, column: Column): string {
 		const stringValue = String(value);
-		
-		// Max-Länge prüfen
+
+		// Check max length
 		if (column.textMaxLength && stringValue.length > column.textMaxLength) {
-			throw new Error(`Text zu lang: ${stringValue.length} Zeichen, Maximum: ${column.textMaxLength}`);
+			throw new Error(
+				`Text too long: ${stringValue.length} characters, maximum: ${column.textMaxLength}`,
+			);
 		}
-		
-		// Pattern-Validierung
+
+		// Pattern validation
 		if (column.textAllowedPattern) {
 			const regex = new RegExp(column.textAllowedPattern);
 			if (!regex.test(stringValue)) {
-				throw new Error(`Text entspricht nicht dem erlaubten Muster: ${column.textAllowedPattern}`);
+				throw new Error(
+					`Text does not match the allowed pattern: ${column.textAllowedPattern}`,
+				);
 			}
 		}
-		
+
 		return stringValue;
 	}
 
 	/**
-	 * Formatiert Zahlen-Spalten
+	 * Formats number columns
 	 */
 	private static formatNumberValue(value: any, column: Column): number {
 		const numValue = parseFloat(value);
-		
+
 		if (isNaN(numValue)) {
-			throw new Error(`Ungültiger Zahlenwert: ${value}`);
+			throw new Error(`Invalid number value: ${value}`);
 		}
-		
-		// Min/Max-Prüfung - nur wenn Werte gesetzt sind (nicht null oder undefined)
-		if (column.numberMin !== undefined && column.numberMin !== null && numValue < column.numberMin) {
-			throw new Error(`Zahl zu klein: ${numValue}, Minimum: ${column.numberMin}`);
+
+		// Min/Max checks
+		if (
+			column.numberMin !== undefined &&
+			column.numberMin !== null &&
+			numValue < column.numberMin
+		) {
+			throw new Error(`Number too small: ${numValue}, minimum: ${column.numberMin}`);
 		}
-		
-		if (column.numberMax !== undefined && column.numberMax !== null && numValue > column.numberMax) {
-			throw new Error(`Zahl zu groß: ${numValue}, Maximum: ${column.numberMax}`);
+
+		if (
+			column.numberMax !== undefined &&
+			column.numberMax !== null &&
+			numValue > column.numberMax
+		) {
+			throw new Error(`Number too large: ${numValue}, maximum: ${column.numberMax}`);
 		}
-		
-		// Dezimalstellen
+
+		// Decimal places
 		if (column.numberDecimals !== undefined) {
 			return parseFloat(numValue.toFixed(column.numberDecimals));
 		}
-		
+
 		return numValue;
 	}
 
 	/**
-	 * Formatiert DateTime-Spalten
+	 * Formats datetime columns
 	 */
 	private static formatDateTimeValue(value: any, column: Column, options: FormatOptions): string {
 		let dateValue: Date;
-		
-		// Verschiedene Eingabeformate verarbeiten
+
+		// Handle different input formats
 		if (value instanceof Date) {
 			dateValue = value;
 		} else if (typeof value === 'string') {
-			// ISO-Format, Unix-Timestamp oder andere Formate
 			if (/^\d+$/.test(value)) {
-				// Unix-Timestamp
+				// Unix timestamp
 				dateValue = new Date(parseInt(value, 10) * 1000);
 			} else {
 				dateValue = new Date(value);
 			}
 		} else if (typeof value === 'number') {
-			// Unix-Timestamp in Sekunden oder Millisekunden
 			dateValue = new Date(value > 1e10 ? value : value * 1000);
 		} else {
-			throw new Error(`Ungültiger DateTime-Wert: ${value}`);
+			throw new Error(`Invalid DateTime value: ${value}`);
 		}
-		
+
 		if (isNaN(dateValue.getTime())) {
-			throw new Error(`Ungültiges Datum: ${value}`);
+			throw new Error(`Invalid date: ${value}`);
 		}
-		
-		// Standard-Format für Nextcloud Tables: ISO 8601
+
 		const format = options.dateTimeFormat || 'iso';
-		
+
 		switch (format) {
 			case 'iso':
 				return dateValue.toISOString();
@@ -164,211 +173,203 @@ export class DataFormatter {
 	}
 
 	/**
-	 * Formatiert Selection-Spalten
+	 * Formats selection columns
 	 */
-	private static formatSelectionValue(value: any, column: Column, options: FormatOptions): string | string[] {
+	private static formatSelectionValue(
+		value: any,
+		column: Column,
+		options: FormatOptions,
+	): string | string[] {
 		if (!value) {
 			return column.selectionDefault || '';
 		}
-		
-		// Optionen validieren falls verfügbar
+
+		// Validate options if enabled
 		if (options.validateSelections && column.selectionOptions) {
 			const availableOptions = this.parseSelectionOptions(column.selectionOptions);
 			const valueArray = Array.isArray(value) ? value : [value];
-			
+
 			for (const val of valueArray) {
 				if (!availableOptions.includes(String(val))) {
-					throw new Error(`Ungültige Auswahl: ${val}. Erlaubt: ${availableOptions.join(', ')}`);
+					throw new Error(
+						`Invalid selection: ${val}. Allowed: ${availableOptions.join(', ')}`,
+					);
 				}
 			}
 		}
-		
-		// Mehrfachauswahl oder Einfachauswahl
+
 		if (Array.isArray(value)) {
-			return value.map(v => String(v));
+			return value.map((v) => String(v));
 		}
-		
+
 		return String(value);
 	}
 
 	/**
-	 * Formatiert UserGroup-Spalten
+	 * Formats user group columns
 	 */
-	private static formatUserGroupValue(value: any, column: Column, options: FormatOptions): string | string[] {
+	private static formatUserGroupValue(
+		value: any,
+		column: Column,
+		options: FormatOptions,
+	): string | string[] {
 		if (!value) {
 			return column.usergroupDefault || '';
 		}
-		
-		// TODO: User/Group-ID-Auflösung implementieren wenn resolveUserGroups aktiviert
+
+		// TODO: Implement user/group ID resolution if enabled
 		if (options.resolveUserGroups) {
-			// Hier würde die Auflösung von User-IDs zu Benutzernamen stattfinden
-			// Das erfordert zusätzliche API-Calls
+			// Would resolve user IDs to usernames here
+			// Requires additional API calls
 		}
-		
-		// Mehrfachauswahl unterstützen
+
 		if (column.usergroupMultipleItems) {
 			if (Array.isArray(value)) {
-				return value.map(v => String(v));
+				return value.map((v) => String(v));
 			}
 			return [String(value)];
 		}
-		
+
 		return String(value);
 	}
 
 	/**
-	 * Formatiert File-Spalten (für zukünftige Implementierung)
+	 * Formats file columns (for future implementation)
 	 */
 	private static formatFileValue(value: any, column: Column): any {
-		// TODO: File-Attachment-Formatierung implementieren
-		// Dies erfordert spezielle Behandlung von File-Uploads
-		
+		// TODO: Implement file attachment formatting
+
 		if (typeof value === 'string' && value.length > 0) {
-			// Annahme: File-ID oder File-Path
 			return value;
 		}
-		
+
 		if (typeof value === 'object' && value.fileId) {
-			// File-Objekt mit ID
 			return value.fileId;
 		}
-		
+
 		return value;
 	}
 
 	/**
-	 * Generische Wert-Formatierung ohne Spalten-Info
+	 * Generic value formatting without column info
 	 */
 	private static formatGenericValue(value: any): any {
-		// Basis-Sanitization
 		if (typeof value === 'string') {
 			return value.trim();
 		}
-		
-		if (typeof value === 'number') {
+
+		if (typeof value === 'number' || typeof value === 'boolean') {
 			return value;
 		}
-		
-		if (typeof value === 'boolean') {
-			return value;
-		}
-		
+
 		if (Array.isArray(value)) {
-			return value.map(v => this.formatGenericValue(v));
+			return value.map((v) => this.formatGenericValue(v));
 		}
-		
+
 		if (value instanceof Date) {
 			return value.toISOString();
 		}
-		
+
 		return value;
 	}
 
 	/**
-	 * Parst Selection-Optionen aus dem String-Format
+	 * Parses selection options from string
 	 */
 	private static parseSelectionOptions(optionsString: string): string[] {
 		try {
-			// Nextcloud Tables speichert Optionen oft als JSON-Array-String
 			if (optionsString.startsWith('[') && optionsString.endsWith(']')) {
 				return JSON.parse(optionsString);
 			}
-			
-			// Oder als komma-getrennte Liste
-			return optionsString.split(',').map(opt => opt.trim());
+			return optionsString.split(',').map((opt) => opt.trim());
 		} catch (error) {
-			// Fallback: Als einzelne Option behandeln
 			return [optionsString];
 		}
 	}
 
 	/**
-	 * Validiert Bulk-Row-Daten
+	 * Validates bulk row data
 	 */
 	static validateBulkData(rows: Record<string, any>[], columns?: Column[]): string[] {
 		const errors: string[] = [];
-		
+
 		rows.forEach((row, index) => {
 			try {
 				this.formatRowData(row, columns, { validateSelections: true });
 			} catch (error) {
-				errors.push(`Zeile ${index + 1}: ${(error as Error).message}`);
+				errors.push(`Row ${index + 1}: ${(error as Error).message}`);
 			}
 		});
-		
+
 		return errors;
 	}
 
 	/**
-	 * Konvertiert Row-Daten für Export
+	 * Converts row data for export
 	 */
-	static convertForExport(
-		rows: any[], 
-		columns?: Column[], 
-		format: 'csv' | 'json' = 'json'
-	): any {
-		const convertedRows = rows.map(row => {
+	static convertForExport(rows: any[], columns?: Column[], format: 'csv' | 'json' = 'json'): any {
+		const convertedRows = rows.map((row) => {
 			const converted: Record<string, any> = {};
-			
+
 			if (row.data && Array.isArray(row.data)) {
 				for (const item of row.data) {
-					const column = columns?.find(col => col.id === item.columnId);
+					const column = columns?.find((col) => col.id === item.columnId);
 					const columnName = column?.title || `column_${item.columnId}`;
-					
+
 					converted[columnName] = this.convertValueForExport(item.value, column);
 				}
 			}
-			
+
 			return converted;
 		});
-		
+
 		if (format === 'csv') {
 			return this.convertToCsv(convertedRows);
 		}
-		
+
 		return convertedRows;
 	}
 
 	/**
-	 * Konvertiert einen Wert für Export
+	 * Converts a value for export
 	 */
 	private static convertValueForExport(value: any, column?: Column): any {
 		if (!column) {
 			return value;
 		}
-		
+
 		switch (column.type) {
 			case 'datetime':
 				if (value && !isNaN(new Date(value).getTime())) {
 					return new Date(value).toLocaleString();
 				}
 				return value;
-			
+
 			case 'selection':
 			case 'usergroup':
 				if (Array.isArray(value)) {
 					return value.join(', ');
 				}
 				return value;
-			
+
 			default:
 				return value;
 		}
 	}
 
 	/**
-	 * Konvertiert Daten zu CSV-Format
+	 * Converts data to CSV format
 	 */
 	private static convertToCsv(data: Record<string, any>[]): string {
 		if (data.length === 0) {
 			return '';
 		}
-		
+
 		const headers = Object.keys(data[0]);
 		const csvRows = [headers.join(',')];
-		
+
 		for (const row of data) {
-			const values = headers.map(header => {
+			const values = headers.map((header) => {
 				const value = row[header];
 				if (typeof value === 'string' && (value.includes(',') || value.includes('"'))) {
 					return `"${value.replace(/"/g, '""')}"`;
@@ -377,7 +378,8 @@ export class DataFormatter {
 			});
 			csvRows.push(values.join(','));
 		}
-		
+
 		return csvRows.join('\n');
 	}
-} 
+}
+

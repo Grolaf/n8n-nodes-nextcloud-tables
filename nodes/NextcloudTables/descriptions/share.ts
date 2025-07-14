@@ -13,28 +13,28 @@ export const shareOperations: INodeProperties[] = [
 		},
 		options: [
 			{
-				name: 'Alle Shares Abrufen',
+				name: 'Get All Shares',
 				value: 'getAll',
-				description: 'Alle Shares einer Tabelle abrufen',
-				action: 'Alle Shares abrufen',
+				description: 'Retrieve all shares of a table',
+				action: 'Get all shares',
 			},
 			{
-				name: 'Share Erstellen',
+				name: 'Create Share',
 				value: 'create',
-				description: 'Einen neuen Share erstellen',
-				action: 'Share erstellen',
+				description: 'Create a new share',
+				action: 'Create share',
 			},
 			{
-				name: 'Share Aktualisieren',
+				name: 'Update Share',
 				value: 'update',
-				description: 'Berechtigungen eines Shares aktualisieren',
-				action: 'Share aktualisieren',
+				description: 'Update permissions of a share',
+				action: 'Update share',
 			},
 			{
-				name: 'Share Löschen',
+				name: 'Delete Share',
 				value: 'delete',
-				description: 'Einen Share löschen',
-				action: 'Share löschen',
+				description: 'Delete a share',
+				action: 'Delete share',
 			},
 		],
 		default: 'getAll',
@@ -42,17 +42,17 @@ export const shareOperations: INodeProperties[] = [
 ];
 
 export const shareFields: INodeProperties[] = [
-	// Tabellen-ID für getAll, create
+	// Table ID for getAll, create
 	{
-		displayName: 'Tabelle',
+		displayName: 'Table',
 		name: 'tableId',
 		type: 'resourceLocator',
 		default: { mode: 'list', value: '' },
 		required: true,
-		description: 'Wählen Sie eine Tabelle aus der Liste oder geben Sie deren ID an',
+		description: 'Select a table from the list or enter its ID',
 		modes: [
 			{
-				displayName: 'Liste',
+				displayName: 'List',
 				name: 'list',
 				type: 'list',
 				typeOptions: {
@@ -65,7 +65,7 @@ export const shareFields: INodeProperties[] = [
 				displayName: 'ID',
 				name: 'id',
 				type: 'string',
-				placeholder: 'Tabellen-ID',
+				placeholder: 'Table ID',
 			},
 		],
 		displayOptions: {
@@ -76,9 +76,9 @@ export const shareFields: INodeProperties[] = [
 		},
 	},
 
-	// Share-ID für update, delete
+	// Share ID for update, delete
 	{
-		displayName: 'Share-ID',
+		displayName: 'Share ID',
 		name: 'shareId',
 		type: 'string',
 		required: true,
@@ -89,13 +89,13 @@ export const shareFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Die ID des Shares (Zahl)',
-		placeholder: 'Share-ID eingeben...',
+		description: 'The ID of the share (number)',
+		placeholder: 'Enter Share ID...',
 	},
 
-	// Share-Typ für create
+	// Share Type for create
 	{
-		displayName: 'Share-Typ',
+		displayName: 'Share Type',
 		name: 'shareType',
 		type: 'options',
 		required: true,
@@ -107,23 +107,23 @@ export const shareFields: INodeProperties[] = [
 		},
 		options: [
 			{
-				name: 'Benutzer',
+				name: 'User',
 				value: 'user',
-				description: 'Mit einem spezifischen Benutzer teilen',
+				description: 'Share with a specific user',
 			},
 			{
-				name: 'Gruppe',
+				name: 'Group',
 				value: 'group',
-				description: 'Mit einer Benutzergruppe teilen',
+				description: 'Share with a user group',
 			},
 		],
 		default: 'user',
-		description: 'Der Typ des Shares',
+		description: 'The type of share',
 	},
 
-	// Empfänger für create - Benutzer
+	// Recipient for create - User
 	{
-		displayName: 'Benutzer',
+		displayName: 'User',
 		name: 'userReceiver',
 		type: 'options',
 		required: true,
@@ -138,13 +138,13 @@ export const shareFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Wählen Sie den Benutzer für den Share aus',
-		hint: 'Alle verfügbaren Nextcloud-Benutzer in Ihrer Instanz',
+		description: 'Select the user to share with',
+		hint: 'All available Nextcloud users in your instance',
 	},
 
-	// Empfänger für create - Gruppe
+	// Recipient for create - Group
 	{
-		displayName: 'Gruppe',
+		displayName: 'Group',
 		name: 'groupReceiver',
 		type: 'options',
 		required: true,
@@ -159,13 +159,13 @@ export const shareFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Wählen Sie die Gruppe für den Share aus',
-		hint: 'Alle verfügbaren Nextcloud-Gruppen in Ihrer Instanz',
+		description: 'Select the group to share with',
+		hint: 'All available Nextcloud groups in your instance',
 	},
 
-	// Berechtigungen für create und update
+	// Permissions for create and update
 	{
-		displayName: 'Berechtigungen',
+		displayName: 'Permissions',
 		name: 'permissions',
 		type: 'fixedCollection',
 		required: true,
@@ -178,56 +178,56 @@ export const shareFields: INodeProperties[] = [
 		default: {},
 		options: [
 			{
-				displayName: 'Berechtigungen',
+				displayName: 'Permissions',
 				name: 'permission',
 				values: [
 					{
-						displayName: 'Lesen',
+						displayName: 'Read',
 						name: 'read',
 						type: 'boolean',
 						default: true,
-						description: 'Berechtigung zum Lesen der Tabellendaten',
+						description: 'Permission to read table data',
 					},
 					{
-						displayName: 'Erstellen',
+						displayName: 'Create',
 						name: 'create',
 						type: 'boolean',
 						default: false,
-						description: 'Berechtigung zum Erstellen neuer Zeilen',
+						description: 'Permission to create new rows',
 					},
 					{
-						displayName: 'Aktualisieren',
+						displayName: 'Update',
 						name: 'update',
 						type: 'boolean',
 						default: false,
-						description: 'Berechtigung zum Bearbeiten bestehender Zeilen',
+						description: 'Permission to edit existing rows',
 					},
 					{
-						displayName: 'Löschen',
+						displayName: 'Delete',
 						name: 'delete',
 						type: 'boolean',
 						default: false,
-						description: 'Berechtigung zum Löschen von Zeilen',
+						description: 'Permission to delete rows',
 					},
 					{
-						displayName: 'Verwalten',
+						displayName: 'Manage',
 						name: 'manage',
 						type: 'boolean',
 						default: false,
-						description: 'Vollzugriff: Struktur ändern, Shares verwalten, etc.',
+						description: 'Full access: modify structure, manage shares, etc.',
 					},
 				],
 			},
 		],
-		description: 'Die Berechtigungen für diesen Share',
+		description: 'Permissions for this share',
 	},
 
-	// Zusätzliche Optionen für create
+	// Additional Options for create
 	{
-		displayName: 'Zusätzliche Optionen',
+		displayName: 'Additional Options',
 		name: 'additionalOptions',
 		type: 'collection',
-		placeholder: 'Option hinzufügen',
+		placeholder: 'Add Option',
 		displayOptions: {
 			show: {
 				resource: ['share'],
@@ -237,13 +237,14 @@ export const shareFields: INodeProperties[] = [
 		default: {},
 		options: [
 			{
-				displayName: 'Anzeigename',
+				displayName: 'Display Name',
 				name: 'displayName',
 				type: 'string',
 				default: '',
-				description: 'Optionaler Anzeigename für den Share',
-				placeholder: 'Anzeigename eingeben...',
+				description: 'Optional display name for the share',
+				placeholder: 'Enter display name...',
 			},
 		],
 	},
-]; 
+];
+

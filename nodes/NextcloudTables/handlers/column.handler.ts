@@ -3,7 +3,11 @@ import { ApiHelper } from '../helpers/api.helper';
 import { Column } from '../interfaces';
 
 export class ColumnHandler {
-	static async execute(context: IExecuteFunctions, operation: string, itemIndex: number): Promise<any> {
+	static async execute(
+		context: IExecuteFunctions,
+		operation: string,
+		itemIndex: number,
+	): Promise<any> {
 		switch (operation) {
 			case 'getAll':
 				return this.getAll(context, itemIndex);
@@ -20,38 +24,30 @@ export class ColumnHandler {
 			case 'delete':
 				return this.delete(context, itemIndex);
 			default:
-				throw new Error(`Unbekannte Operation: ${operation}`);
+				throw new Error(`Unknown operation: ${operation}`);
 		}
 	}
 
 	/**
-	 * Alle Spalten einer Tabelle abrufen
+	 * Fetch all columns of a table
 	 */
 	private static async getAll(context: IExecuteFunctions, itemIndex: number): Promise<Column[]> {
 		const tableId = ApiHelper.getResourceId(context.getNodeParameter('tableId', itemIndex));
-		
-		return ApiHelper.makeApiRequest<Column[]>(
-			context,
-			'GET',
-			`/tables/${tableId}/columns`,
-		);
+
+		return ApiHelper.makeApiRequest<Column[]>(context, 'GET', `/tables/${tableId}/columns`);
 	}
 
 	/**
-	 * Eine spezifische Spalte abrufen
+	 * Fetch a specific column
 	 */
 	private static async get(context: IExecuteFunctions, itemIndex: number): Promise<Column> {
 		const columnId = ApiHelper.getResourceId(context.getNodeParameter('columnId', itemIndex));
-		
-		return ApiHelper.makeApiRequest<Column>(
-			context,
-			'GET',
-			`/columns/${columnId}`,
-		);
+
+		return ApiHelper.makeApiRequest<Column>(context, 'GET', `/columns/${columnId}`);
 	}
 
 	/**
-	 * Eine neue Spalte erstellen
+	 * Create a new column
 	 */
 	private static async create(context: IExecuteFunctions, itemIndex: number): Promise<Column> {
 		const tableId = ApiHelper.getResourceId(context.getNodeParameter('tableId', itemIndex));
@@ -70,7 +66,7 @@ export class ColumnHandler {
 			body.description = description;
 		}
 
-		// Typ-spezifische Parameter hinzufügen
+		// Add type-specific parameters
 		switch (type) {
 			case 'text':
 				this.addTextParameters(context, itemIndex, body);
@@ -89,7 +85,7 @@ export class ColumnHandler {
 				break;
 		}
 
-		// API v1 mit Query-Parametern verwenden (wie in Community-Lösung)
+		// Use API v1 with query parameters (like community solution)
 		return ApiHelper.makeApiRequest<Column>(
 			context,
 			'POST',
@@ -100,20 +96,23 @@ export class ColumnHandler {
 	}
 
 	/**
-	 * Eine neue Spalte erstellen (KI-Friendly Version) 
-	 * Alle Parameter sind direkt verfügbar ohne verschachtelte Strukturen
+	 * Create a new column (AI-Friendly version)
+	 * All parameters available directly without nested structures
 	 */
-	private static async createAIFriendly(context: IExecuteFunctions, itemIndex: number): Promise<Column> {
+	private static async createAIFriendly(
+		context: IExecuteFunctions,
+		itemIndex: number,
+	): Promise<Column> {
 		const tableIdAI = context.getNodeParameter('tableIdAI', itemIndex, '') as string;
-		
-		// Validierung: tableIdAI ist für createAIFriendly erforderlich
+
+		// Validation: tableIdAI is required for createAIFriendly
 		if (!tableIdAI) {
-			throw new Error('tableIdAI ist für createAIFriendly Operation erforderlich');
+			throw new Error('tableIdAI is required for createAIFriendly operation');
 		}
-		
+
 		const tableId = ApiHelper.getResourceId(tableIdAI);
-		
-		// Basis-Parameter direkt abrufen (alle immer verfügbar)
+
+		// Retrieve base parameters directly (all always available)
 		const type = context.getNodeParameter('columnType', itemIndex) as string;
 		const title = context.getNodeParameter('columnTitle', itemIndex) as string;
 		const description = context.getNodeParameter('columnDescription', itemIndex, '') as string;
@@ -133,8 +132,8 @@ export class ColumnHandler {
 			body.description = description;
 		}
 
-		// Typ-spezifische Parameter direkt aus den flachen Parametern hinzufügen
-		// KI Agent kann alle Parameter sehen, aber nur die relevanten werden verwendet
+		// Add type-specific parameters directly from flat parameters
+		// AI agent can see all parameters but only relevant ones are used
 		switch (type) {
 			case 'text':
 				this.addTextParametersAIFriendly(context, itemIndex, body);
@@ -153,7 +152,7 @@ export class ColumnHandler {
 				break;
 		}
 
-		// API v1 mit Query-Parametern verwenden (wie in Community-Lösung)
+		// Use API v1 with query parameters (like community solution)
 		return ApiHelper.makeApiRequest<Column>(
 			context,
 			'POST',
@@ -164,7 +163,7 @@ export class ColumnHandler {
 	}
 
 	/**
-	 * Eine Spalte aktualisieren
+	 * Update a column
 	 */
 	private static async update(context: IExecuteFunctions, itemIndex: number): Promise<Column> {
 		const columnId = ApiHelper.getResourceId(context.getNodeParameter('columnId', itemIndex));
@@ -186,49 +185,46 @@ export class ColumnHandler {
 			body.mandatory = mandatory;
 		}
 
-		// Nur aktualisieren, wenn es Änderungen gibt
+		// Only update if there are changes
 		if (Object.keys(body).length === 0) {
-			throw new Error('Mindestens ein Feld muss für die Aktualisierung angegeben werden');
+			throw new Error('At least one field must be specified for update');
 		}
 
-		return ApiHelper.makeApiRequest<Column>(
-			context,
-			'PUT',
-			`/columns/${columnId}`,
-			body,
-		);
+		return ApiHelper.makeApiRequest<Column>(context, 'PUT', `/columns/${columnId}`, body);
 	}
 
 	/**
-	 * Eine Spalte löschen
+	 * Delete a column
 	 */
-	private static async delete(context: IExecuteFunctions, itemIndex: number): Promise<{ success: boolean; message?: string }> {
+	private static async delete(
+		context: IExecuteFunctions,
+		itemIndex: number,
+	): Promise<{ success: boolean; message?: string }> {
 		const columnId = ApiHelper.getResourceId(context.getNodeParameter('columnId', itemIndex));
 
-		await ApiHelper.makeApiRequest(
-			context,
-			'DELETE',
-			`/columns/${columnId}`,
-		);
+		await ApiHelper.makeApiRequest(context, 'DELETE', `/columns/${columnId}`);
 
-		return { success: true, message: `Spalte ${columnId} wurde erfolgreich gelöscht` };
+		return { success: true, message: `Column ${columnId} was successfully deleted` };
 	}
 
 	/**
-	 * Eine Spalte komplett aktualisieren (KI-Friendly Version)
-	 * Alle Parameter sind direkt verfügbar, KI kann Spalten-Typ und alle Eigenschaften ändern
+	 * Fully update a column (AI-Friendly version)
+	 * All parameters available directly; AI can change type and all properties
 	 */
-	private static async updateAIFriendly(context: IExecuteFunctions, itemIndex: number): Promise<Column> {
+	private static async updateAIFriendly(
+		context: IExecuteFunctions,
+		itemIndex: number,
+	): Promise<Column> {
 		const columnIdAI = context.getNodeParameter('columnIdAI', itemIndex, '') as string;
-		
-		// Validierung: columnIdAI ist für updateAIFriendly erforderlich
+
+		// Validation: columnIdAI is required for updateAIFriendly
 		if (!columnIdAI) {
-			throw new Error('columnIdAI ist für updateAIFriendly Operation erforderlich');
+			throw new Error('columnIdAI is required for updateAIFriendly operation');
 		}
-		
+
 		const columnId = ApiHelper.getResourceId(columnIdAI);
-		
-		// Basis-Parameter direkt abrufen (alle immer verfügbar)
+
+		// Retrieve base parameters directly (all always available)
 		const type = context.getNodeParameter('columnType', itemIndex, '') as string;
 		const title = context.getNodeParameter('columnTitle', itemIndex, '') as string;
 		const description = context.getNodeParameter('columnDescription', itemIndex, '') as string;
@@ -236,7 +232,7 @@ export class ColumnHandler {
 
 		const body: any = {};
 
-		// Nur setzen was wirklich angegeben wurde
+		// Only set what was actually provided
 		if (type) {
 			body.type = type;
 		}
@@ -253,8 +249,8 @@ export class ColumnHandler {
 			body.mandatory = mandatory;
 		}
 
-		// Typ-spezifische Parameter direkt aus den flachen Parametern hinzufügen
-		// Aber nur wenn ein Typ gesetzt wurde
+		// Add type-specific parameters directly from flat parameters
+		// But only if a type is set
 		if (type) {
 			switch (type) {
 				case 'text':
@@ -275,35 +271,44 @@ export class ColumnHandler {
 			}
 		}
 
-		// Verbesserte Validierung: Mindestens ein sinnvolles Feld muss für Update angegeben werden
+		// Improved validation: At least one meaningful field must be specified for update
 		if (Object.keys(body).length === 0) {
-			throw new Error('Mindestens ein Feld muss für die Aktualisierung angegeben werden (type, title, description, mandatory oder typ-spezifische Parameter)');
+			throw new Error(
+				'At least one field must be specified for update (type, title, description, mandatory or type-specific parameters)',
+			);
 		}
 
-		// Zusätzliche Validierung: Bei Typ-Änderung sollte auch mindestens ein typ-spezifischer Parameter gesetzt werden
+		// Additional validation: On type change, at least one type-specific parameter should also be set
 		if (type && !title && Object.keys(body).length === 1) {
-			throw new Error('Bei einer Typ-Änderung sollte auch mindestens der Titel oder typ-spezifische Parameter angegeben werden');
+			throw new Error(
+				'On a type change, at least the title or type-specific parameters should be provided',
+			);
 		}
 
-		return ApiHelper.makeApiRequest<Column>(
-			context,
-			'PUT',
-			`/columns/${columnId}`,
-			body,
-		);
+		return ApiHelper.makeApiRequest<Column>(context, 'PUT', `/columns/${columnId}`, body);
 	}
 
 	/**
-	 * Text-spezifische Parameter hinzufügen
+	 * Add text-specific parameters
 	 */
-	private static addTextParameters(context: IExecuteFunctions, itemIndex: number, body: any): void {
-		// KRITISCH: subtype ist für Text-Spalten erforderlich!
+	private static addTextParameters(
+		context: IExecuteFunctions,
+		itemIndex: number,
+		body: any,
+	): void {
+		// CRITICAL: subtype is required for text columns!
 		const subtype = context.getNodeParameter('subtype', itemIndex, 'line') as string;
 		const textDefault = context.getNodeParameter('textDefault', itemIndex, '') as string;
-		const textMaxLength = context.getNodeParameter('textMaxLength', itemIndex, null) as number | null;
-		const textAllowedPattern = context.getNodeParameter('textAllowedPattern', itemIndex, '') as string;
+		const textMaxLength = context.getNodeParameter('textMaxLength', itemIndex, null) as
+			| number
+			| null;
+		const textAllowedPattern = context.getNodeParameter(
+			'textAllowedPattern',
+			itemIndex,
+			'',
+		) as string;
 
-		// Subtype ist erforderlich für die API
+		// Subtype is required for the API
 		body.subtype = subtype;
 
 		if (textDefault) {
@@ -320,10 +325,16 @@ export class ColumnHandler {
 	}
 
 	/**
-	 * Number-spezifische Parameter hinzufügen
+	 * Add number-specific parameters
 	 */
-	private static addNumberParameters(context: IExecuteFunctions, itemIndex: number, body: any): void {
-		const numberDefault = context.getNodeParameter('numberDefault', itemIndex, null) as number | null;
+	private static addNumberParameters(
+		context: IExecuteFunctions,
+		itemIndex: number,
+		body: any,
+	): void {
+		const numberDefault = context.getNodeParameter('numberDefault', itemIndex, null) as
+			| number
+			| null;
 		const numberMin = context.getNodeParameter('numberMin', itemIndex, null) as number | null;
 		const numberMax = context.getNodeParameter('numberMax', itemIndex, null) as number | null;
 		const numberDecimals = context.getNodeParameter('numberDecimals', itemIndex, 0) as number;
@@ -356,10 +367,18 @@ export class ColumnHandler {
 	}
 
 	/**
-	 * DateTime-spezifische Parameter hinzufügen
+	 * Add datetime-specific parameters
 	 */
-	private static addDateTimeParameters(context: IExecuteFunctions, itemIndex: number, body: any): void {
-		const datetimeDefault = context.getNodeParameter('datetimeDefault', itemIndex, '') as string;
+	private static addDateTimeParameters(
+		context: IExecuteFunctions,
+		itemIndex: number,
+		body: any,
+	): void {
+		const datetimeDefault = context.getNodeParameter(
+			'datetimeDefault',
+			itemIndex,
+			'',
+		) as string;
 
 		if (datetimeDefault) {
 			body.datetimeDefault = datetimeDefault;
@@ -367,15 +386,27 @@ export class ColumnHandler {
 	}
 
 	/**
-	 * Selection-spezifische Parameter hinzufügen
+	 * Add selection-specific parameters
 	 */
-	private static addSelectionParameters(context: IExecuteFunctions, itemIndex: number, body: any): void {
-		const selectionOptions = context.getNodeParameter('selectionOptions', itemIndex, '') as string;
-		const selectionDefault = context.getNodeParameter('selectionDefault', itemIndex, '') as string;
+	private static addSelectionParameters(
+		context: IExecuteFunctions,
+		itemIndex: number,
+		body: any,
+	): void {
+		const selectionOptions = context.getNodeParameter(
+			'selectionOptions',
+			itemIndex,
+			'',
+		) as string;
+		const selectionDefault = context.getNodeParameter(
+			'selectionDefault',
+			itemIndex,
+			'',
+		) as string;
 
 		if (selectionOptions) {
-			// Optionen in Format konvertieren: Zeilen in JSON-Array
-			const options = selectionOptions.split('\n').filter(line => line.trim() !== '');
+			// Convert options to JSON array format
+			const options = selectionOptions.split('\n').filter((line) => line.trim() !== '');
 			body.selectionOptions = JSON.stringify(options);
 		}
 
@@ -385,15 +416,43 @@ export class ColumnHandler {
 	}
 
 	/**
-	 * UserGroup-spezifische Parameter hinzufügen
+	 * Add usergroup-specific parameters
 	 */
-	private static addUserGroupParameters(context: IExecuteFunctions, itemIndex: number, body: any): void {
-		const usergroupDefault = context.getNodeParameter('usergroupDefault', itemIndex, '') as string;
-		const usergroupMultipleItems = context.getNodeParameter('usergroupMultipleItems', itemIndex, false) as boolean;
-		const usergroupSelectUsers = context.getNodeParameter('usergroupSelectUsers', itemIndex, true) as boolean;
-		const usergroupSelectGroups = context.getNodeParameter('usergroupSelectGroups', itemIndex, true) as boolean;
-		const usergroupSelectTeams = context.getNodeParameter('usergroupSelectTeams', itemIndex, false) as boolean;
-		const showUserStatus = context.getNodeParameter('showUserStatus', itemIndex, false) as boolean;
+	private static addUserGroupParameters(
+		context: IExecuteFunctions,
+		itemIndex: number,
+		body: any,
+	): void {
+		const usergroupDefault = context.getNodeParameter(
+			'usergroupDefault',
+			itemIndex,
+			'',
+		) as string;
+		const usergroupMultipleItems = context.getNodeParameter(
+			'usergroupMultipleItems',
+			itemIndex,
+			false,
+		) as boolean;
+		const usergroupSelectUsers = context.getNodeParameter(
+			'usergroupSelectUsers',
+			itemIndex,
+			true,
+		) as boolean;
+		const usergroupSelectGroups = context.getNodeParameter(
+			'usergroupSelectGroups',
+			itemIndex,
+			true,
+		) as boolean;
+		const usergroupSelectTeams = context.getNodeParameter(
+			'usergroupSelectTeams',
+			itemIndex,
+			false,
+		) as boolean;
+		const showUserStatus = context.getNodeParameter(
+			'showUserStatus',
+			itemIndex,
+			false,
+		) as boolean;
 
 		if (usergroupDefault) {
 			body.usergroupDefault = usergroupDefault;
@@ -407,12 +466,16 @@ export class ColumnHandler {
 	}
 
 	/**
-	 * Text-spezifische Parameter aus fixedCollection extrahieren
+	 * Extract text-specific parameters from fixedCollection
 	 */
-	private static addTextParametersFromConfig(context: IExecuteFunctions, itemIndex: number, body: any): void {
+	private static addTextParametersFromConfig(
+		context: IExecuteFunctions,
+		itemIndex: number,
+		body: any,
+	): void {
 		const textConfig = context.getNodeParameter('textConfig.settings', itemIndex, {}) as any;
-		
-		// Subtype ist erforderlich für die API
+
+		// Subtype is required for the API
 		body.subtype = textConfig.subtype || 'line';
 
 		if (textConfig.textDefault) {
@@ -429,10 +492,18 @@ export class ColumnHandler {
 	}
 
 	/**
-	 * Number-spezifische Parameter aus fixedCollection extrahieren
+	 * Extract number-specific parameters from fixedCollection
 	 */
-	private static addNumberParametersFromConfig(context: IExecuteFunctions, itemIndex: number, body: any): void {
-		const numberConfig = context.getNodeParameter('numberConfig.settings', itemIndex, {}) as any;
+	private static addNumberParametersFromConfig(
+		context: IExecuteFunctions,
+		itemIndex: number,
+		body: any,
+	): void {
+		const numberConfig = context.getNodeParameter(
+			'numberConfig.settings',
+			itemIndex,
+			{},
+		) as any;
 
 		if (numberConfig.numberDefault !== undefined && numberConfig.numberDefault !== null) {
 			body.numberDefault = numberConfig.numberDefault;
@@ -460,10 +531,18 @@ export class ColumnHandler {
 	}
 
 	/**
-	 * DateTime-spezifische Parameter aus fixedCollection extrahieren
+	 * Extract datetime-specific parameters from fixedCollection
 	 */
-	private static addDateTimeParametersFromConfig(context: IExecuteFunctions, itemIndex: number, body: any): void {
-		const datetimeConfig = context.getNodeParameter('datetimeConfig.settings', itemIndex, {}) as any;
+	private static addDateTimeParametersFromConfig(
+		context: IExecuteFunctions,
+		itemIndex: number,
+		body: any,
+	): void {
+		const datetimeConfig = context.getNodeParameter(
+			'datetimeConfig.settings',
+			itemIndex,
+			{},
+		) as any;
 
 		if (datetimeConfig.datetimeDefault) {
 			body.datetimeDefault = datetimeConfig.datetimeDefault;
@@ -471,14 +550,24 @@ export class ColumnHandler {
 	}
 
 	/**
-	 * Selection-spezifische Parameter aus fixedCollection extrahieren
+	 * Extract selection-specific parameters from fixedCollection
 	 */
-	private static addSelectionParametersFromConfig(context: IExecuteFunctions, itemIndex: number, body: any): void {
-		const selectionConfig = context.getNodeParameter('selectionConfig.settings', itemIndex, {}) as any;
+	private static addSelectionParametersFromConfig(
+		context: IExecuteFunctions,
+		itemIndex: number,
+		body: any,
+	): void {
+		const selectionConfig = context.getNodeParameter(
+			'selectionConfig.settings',
+			itemIndex,
+			{},
+		) as any;
 
 		if (selectionConfig.selectionOptions) {
-			// Optionen in Format konvertieren: Zeilen in JSON-Array
-			const options = selectionConfig.selectionOptions.split('\n').filter((line: string) => line.trim() !== '');
+			// Convert options to JSON array format
+			const options = selectionConfig.selectionOptions
+				.split('\n')
+				.filter((line: string) => line.trim() !== '');
 			body.selectionOptions = JSON.stringify(options);
 		}
 
@@ -488,36 +577,54 @@ export class ColumnHandler {
 	}
 
 	/**
-	 * UserGroup-spezifische Parameter aus fixedCollection extrahieren
+	 * Extract usergroup-specific parameters from fixedCollection
 	 */
-	private static addUserGroupParametersFromConfig(context: IExecuteFunctions, itemIndex: number, body: any): void {
-		const usergroupConfig = context.getNodeParameter('usergroupConfig.settings', itemIndex, {}) as any;
+	private static addUserGroupParametersFromConfig(
+		context: IExecuteFunctions,
+		itemIndex: number,
+		body: any,
+	): void {
+		const usergroupConfig = context.getNodeParameter(
+			'usergroupConfig.settings',
+			itemIndex,
+			{},
+		) as any;
 
 		if (usergroupConfig.usergroupDefault) {
 			body.usergroupDefault = usergroupConfig.usergroupDefault;
 		}
 
 		body.usergroupMultipleItems = usergroupConfig.usergroupMultipleItems || false;
-		body.usergroupSelectUsers = usergroupConfig.usergroupSelectUsers !== undefined ? usergroupConfig.usergroupSelectUsers : true;
-		body.usergroupSelectGroups = usergroupConfig.usergroupSelectGroups !== undefined ? usergroupConfig.usergroupSelectGroups : true;
+		body.usergroupSelectUsers =
+			usergroupConfig.usergroupSelectUsers !== undefined
+				? usergroupConfig.usergroupSelectUsers
+				: true;
+		body.usergroupSelectGroups =
+			usergroupConfig.usergroupSelectGroups !== undefined
+				? usergroupConfig.usergroupSelectGroups
+				: true;
 		body.usergroupSelectTeams = usergroupConfig.usergroupSelectTeams || false;
 		body.showUserStatus = usergroupConfig.showUserStatus || false;
 	}
 
 	// =======================================================
-	// AI-FRIENDLY Parameter-Methoden (flache Struktur)
+	// AI-FRIENDLY parameter methods (flat structure)
 	// =======================================================
 
 	/**
-	 * Text-spezifische Parameter für AI-Friendly Version (flache Parameter)
+	 * Text-specific parameters for AI-Friendly version (flat parameters)
 	 */
-	private static addTextParametersAIFriendly(context: IExecuteFunctions, itemIndex: number, body: any): void {
+	private static addTextParametersAIFriendly(
+		context: IExecuteFunctions,
+		itemIndex: number,
+		body: any,
+	): void {
 		const subtype = context.getNodeParameter('textSubtypeAI', itemIndex, 'line') as string;
 		const textDefault = context.getNodeParameter('textDefaultAI', itemIndex, '') as string;
 		const textMaxLength = context.getNodeParameter('textMaxLengthAI', itemIndex, 255) as number;
 		const textPattern = context.getNodeParameter('textPatternAI', itemIndex, '') as string;
 
-		// Subtype ist erforderlich für die API
+		// Subtype is required for the API
 		body.subtype = subtype;
 
 		if (textDefault) {
@@ -534,9 +641,13 @@ export class ColumnHandler {
 	}
 
 	/**
-	 * Number-spezifische Parameter für AI-Friendly Version (flache Parameter)
+	 * Number-specific parameters for AI-Friendly version (flat parameters)
 	 */
-	private static addNumberParametersAIFriendly(context: IExecuteFunctions, itemIndex: number, body: any): void {
+	private static addNumberParametersAIFriendly(
+		context: IExecuteFunctions,
+		itemIndex: number,
+		body: any,
+	): void {
 		const numberDefault = context.getNodeParameter('numberDefaultAI', itemIndex, 0) as number;
 		const numberMin = context.getNodeParameter('numberMinAI', itemIndex, null) as number | null;
 		const numberMax = context.getNodeParameter('numberMaxAI', itemIndex, null) as number | null;
@@ -570,10 +681,18 @@ export class ColumnHandler {
 	}
 
 	/**
-	 * DateTime-spezifische Parameter für AI-Friendly Version (flache Parameter)
+	 * Datetime-specific parameters for AI-Friendly version (flat parameters)
 	 */
-	private static addDateTimeParametersAIFriendly(context: IExecuteFunctions, itemIndex: number, body: any): void {
-		const datetimeDefault = context.getNodeParameter('datetimeDefaultAI', itemIndex, '') as string;
+	private static addDateTimeParametersAIFriendly(
+		context: IExecuteFunctions,
+		itemIndex: number,
+		body: any,
+	): void {
+		const datetimeDefault = context.getNodeParameter(
+			'datetimeDefaultAI',
+			itemIndex,
+			'',
+		) as string;
 
 		if (datetimeDefault) {
 			body.datetimeDefault = datetimeDefault;
@@ -581,12 +700,28 @@ export class ColumnHandler {
 	}
 
 	/**
-	 * Selection-spezifische Parameter für AI-Friendly Version (flache Parameter)
+	 * Selection-specific parameters for AI-Friendly version (flat parameters)
 	 */
-	private static addSelectionParametersAIFriendly(context: IExecuteFunctions, itemIndex: number, body: any): void {
-		const selectionOptions = context.getNodeParameter('selectionOptionsAI', itemIndex, '') as string;
-		const selectionDefault = context.getNodeParameter('selectionDefaultAI', itemIndex, '') as string;
-		const selectionMultiple = context.getNodeParameter('selectionMultipleAI', itemIndex, false) as boolean;
+	private static addSelectionParametersAIFriendly(
+		context: IExecuteFunctions,
+		itemIndex: number,
+		body: any,
+	): void {
+		const selectionOptions = context.getNodeParameter(
+			'selectionOptionsAI',
+			itemIndex,
+			'',
+		) as string;
+		const selectionDefault = context.getNodeParameter(
+			'selectionDefaultAI',
+			itemIndex,
+			'',
+		) as string;
+		const selectionMultiple = context.getNodeParameter(
+			'selectionMultipleAI',
+			itemIndex,
+			false,
+		) as boolean;
 
 		if (selectionOptions) {
 			try {
@@ -595,10 +730,10 @@ export class ColumnHandler {
 				if (Array.isArray(options)) {
 					body.selectionOptions = JSON.stringify(options);
 				} else {
-					throw new Error('selectionOptionsAI muss ein JSON-Array sein');
+					throw new Error('selectionOptionsAI must be a JSON array');
 				}
 			} catch (error) {
-				throw new Error(`Ungültiges JSON in selectionOptionsAI: ${error.message}`);
+				throw new Error(`Invalid JSON in selectionOptionsAI: ${error.message}`);
 			}
 		}
 
@@ -612,12 +747,28 @@ export class ColumnHandler {
 	}
 
 	/**
-	 * UserGroup-spezifische Parameter für AI-Friendly Version (flache Parameter)
+	 * Usergroup-specific parameters for AI-Friendly version (flat parameters)
 	 */
-	private static addUserGroupParametersAIFriendly(context: IExecuteFunctions, itemIndex: number, body: any): void {
-		const usergroupType = context.getNodeParameter('usergroupTypeAI', itemIndex, 'user') as string;
-		const usergroupDefault = context.getNodeParameter('usergroupDefaultAI', itemIndex, '') as string;
-		const usergroupMultiple = context.getNodeParameter('usergroupMultipleAI', itemIndex, false) as boolean;
+	private static addUserGroupParametersAIFriendly(
+		context: IExecuteFunctions,
+		itemIndex: number,
+		body: any,
+	): void {
+		const usergroupType = context.getNodeParameter(
+			'usergroupTypeAI',
+			itemIndex,
+			'user',
+		) as string;
+		const usergroupDefault = context.getNodeParameter(
+			'usergroupDefaultAI',
+			itemIndex,
+			'',
+		) as string;
+		const usergroupMultiple = context.getNodeParameter(
+			'usergroupMultipleAI',
+			itemIndex,
+			false,
+		) as boolean;
 
 		if (usergroupDefault) {
 			body.usergroupDefault = usergroupDefault;
@@ -625,7 +776,7 @@ export class ColumnHandler {
 
 		// Basierend auf usergroupType die entsprechenden Flags setzen
 		body.usergroupMultipleItems = usergroupMultiple;
-		
+
 		if (usergroupType === 'user') {
 			body.usergroupSelectUsers = true;
 			body.usergroupSelectGroups = false;
@@ -637,9 +788,10 @@ export class ColumnHandler {
 			body.usergroupSelectUsers = true;
 			body.usergroupSelectGroups = true;
 		}
-		
+
 		// Standardwerte für andere Optionen
 		body.usergroupSelectTeams = false;
 		body.showUserStatus = false;
 	}
-} 
+}
+

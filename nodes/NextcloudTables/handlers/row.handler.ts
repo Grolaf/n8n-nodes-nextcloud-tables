@@ -1,10 +1,14 @@
 import { IExecuteFunctions } from 'n8n-workflow';
 import { ApiHelper } from '../helpers/api.helper';
-import { Row, Column } from '../interfaces';
-import { DataFormatter, FormatOptions } from '../helpers/data.formatter';
+import { FormatOptions } from '../helpers/data.formatter';
+import { Column, Row } from '../interfaces';
 
 export class RowHandler {
-	static async execute(context: IExecuteFunctions, operation: string, itemIndex: number): Promise<any> {
+	static async execute(
+		context: IExecuteFunctions,
+		operation: string,
+		itemIndex: number,
+	): Promise<any> {
 		switch (operation) {
 			case 'getAll':
 				return this.getAll(context, itemIndex);
@@ -21,46 +25,54 @@ export class RowHandler {
 			case 'updateAIFriendly':
 				return this.updateAIFriendly(context, itemIndex);
 			default:
-				throw new Error(`Unbekannte Operation: ${operation}`);
+				throw new Error(`Unknown operation: ${operation}`);
 		}
 	}
 
 	/**
-	 * Alle Zeilen abrufen
+	 * Retrieve all rows
 	 */
 	private static async getAll(context: IExecuteFunctions, itemIndex: number): Promise<Row[]> {
 		const nodeCollection = context.getNodeParameter('nodeCollection', itemIndex) as string;
-		const additionalOptions = context.getNodeParameter('additionalOptions', itemIndex, {}) as any;
+		const additionalOptions = context.getNodeParameter(
+			'additionalOptions',
+			itemIndex,
+			{},
+		) as any;
 		const limit = additionalOptions.limit || 50;
 		const offset = additionalOptions.offset || 0;
 
 		let endpoint: string;
 		let tableId: number;
-		
+
 		if (nodeCollection === 'tables') {
 			tableId = ApiHelper.getResourceId(context.getNodeParameter('tableId', itemIndex));
 			endpoint = `/tables/${tableId}/rows`;
 		} else {
 			const viewId = ApiHelper.getResourceId(context.getNodeParameter('viewId', itemIndex));
 			endpoint = `/views/${viewId}/rows`;
-			
-			// Für Views müssen wir die Tabellen-ID ermitteln für Spalten-Info
+
+			// For views, determine the table ID for column info
 			try {
-				const view = await ApiHelper.makeApiRequest<any>(context, 'GET', `/views/${viewId}`);
+				const view = await ApiHelper.makeApiRequest<any>(
+					context,
+					'GET',
+					`/views/${viewId}`,
+				);
 				tableId = view.tableId;
 			} catch (error) {
-				// Fallback ohne Spalten-Info
+				// Fallback without column info
 				tableId = 0;
 			}
 		}
 
-		// Basis Query-Parameter
+		// Basic query parameters
 		const queryParams: Record<string, string> = {
 			limit: limit.toString(),
 			offset: offset.toString(),
 		};
 
-		// Erweiterte Filter, Sortierung und Suche
+		// Advanced filters, sorting and search
 		if (additionalOptions.useFilters) {
 			const filters = context.getNodeParameter('filters.filter', itemIndex, []) as any[];
 			this.applyFilters(queryParams, filters);
@@ -84,28 +96,28 @@ export class RowHandler {
 				queryParams,
 			);
 
-			// Optional: Spalten-Info laden für bessere Datenformatierung bei der Ausgabe
+			// Optionally load column info for better data formatting in output
 			let columns: Column[] = [];
 			if (tableId > 0) {
 				columns = await ApiHelper.getTableColumns(context, tableId);
 			}
 
-			// Client-seitige Nachbearbeitung falls erforderlich
+			// Client-side post-processing if necessary
 			let processedRows = rows;
-			
-			// Client-seitige Filterung falls Server-API nicht alle Filter unterstützt
+
+			// Client-side filtering if the server API doesn't support all filters
 			if (additionalOptions.useFilters) {
 				const filters = context.getNodeParameter('filters.filter', itemIndex, []) as any[];
 				processedRows = this.applyClientSideFilters(processedRows, filters, columns);
 			}
 
-			// Client-seitige Suche falls Server-API nicht alle Suchoptionen unterstützt
+			// Client-side search if the server API doesn't support all search options
 			if (additionalOptions.useSearch) {
 				const search = context.getNodeParameter('search', itemIndex, {}) as any;
 				processedRows = this.applyClientSideSearch(processedRows, search, columns);
 			}
 
-			// Zeilen für bessere Lesbarkeit formatieren
+			// Format rows for better readability
 			return this.formatRowsForOutput(processedRows, columns);
 		} catch (error) {
 			ApiHelper.handleApiError(error);
@@ -113,20 +125,20 @@ export class RowHandler {
 	}
 
 	/**
-	 * Wendet Filter auf Query-Parameter an
+	 * Apply filters to query parameters
 	 */
 	private static applyFilters(queryParams: Record<string, string>, filters: any[]): void {
 		if (!filters || filters.length === 0) {
 			return;
 		}
 
-		// Nextcloud Tables API Filter-Format (falls unterstützt)
+		// Nextcloud Tables API filter format (if supported)
 		const filterQueries: string[] = [];
-		
+
 		for (const filter of filters) {
 			if (filter.columnId && filter.operator) {
 				let filterQuery = '';
-				
+
 				switch (filter.operator) {
 					case 'equals':
 						filterQuery = `${filter.columnId}=${encodeURIComponent(filter.value || '')}`;
@@ -156,20 +168,20 @@ export class RowHandler {
 						filterQuery = `${filter.columnId}!=null`;
 						break;
 				}
-				
+
 				if (filterQuery) {
 					filterQueries.push(filterQuery);
 				}
 			}
 		}
-		
+
 		if (filterQueries.length > 0) {
 			queryParams['filter'] = filterQueries.join('&');
 		}
 	}
 
 	/**
-	 * Wendet Sortierung auf Query-Parameter an
+	 * Apply sorting to query parameters
 	 */
 	private static applySorting(queryParams: Record<string, string>, sorting: any[]): void {
 		if (!sorting || sorting.length === 0) {
@@ -177,21 +189,21 @@ export class RowHandler {
 		}
 
 		const sortQueries: string[] = [];
-		
+
 		for (const sort of sorting) {
 			if (sort.columnId && sort.direction) {
 				const direction = sort.direction === 'DESC' ? '-' : '';
 				sortQueries.push(`${direction}${sort.columnId}`);
 			}
 		}
-		
+
 		if (sortQueries.length > 0) {
 			queryParams['sort'] = sortQueries.join(',');
 		}
 	}
 
 	/**
-	 * Wendet Suche auf Query-Parameter an
+	 * Apply search to query parameters
 	 */
 	private static applySearch(queryParams: Record<string, string>, search: any): void {
 		if (!search || !search.term) {
@@ -199,32 +211,32 @@ export class RowHandler {
 		}
 
 		queryParams['search'] = encodeURIComponent(search.term);
-		
+
 		if (search.searchColumns && search.searchColumns.length > 0) {
 			queryParams['searchColumns'] = search.searchColumns.join(',');
 		}
-		
+
 		if (search.caseSensitive) {
 			queryParams['caseSensitive'] = 'true';
 		}
 	}
 
 	/**
-	 * Client-seitige Filterung für erweiterte Filter-Optionen
+	 * Client-side filtering for advanced filter options
 	 */
 	private static applyClientSideFilters(rows: Row[], filters: any[], columns: Column[]): Row[] {
 		if (!filters || filters.length === 0) {
 			return rows;
 		}
 
-		return rows.filter(row => {
-			return filters.every(filter => {
+		return rows.filter((row) => {
+			return filters.every((filter) => {
 				if (!filter.columnId || !filter.operator) {
 					return true;
 				}
 
 				const columnId = parseInt(filter.columnId, 10);
-				const rowData = row.data?.find(d => d.columnId === columnId);
+				const rowData = row.data?.find((d) => d.columnId === columnId);
 				const value = rowData?.value;
 				const filterValue = filter.value;
 
@@ -234,7 +246,7 @@ export class RowHandler {
 	}
 
 	/**
-	 * Client-seitige Suche für erweiterte Suchoptionen
+	 * Client-side search for advanced search options
 	 */
 	private static applyClientSideSearch(rows: Row[], search: any, columns: Column[]): Row[] {
 		if (!search || !search.term) {
@@ -244,28 +256,30 @@ export class RowHandler {
 		const searchTerm = search.caseSensitive ? search.term : search.term.toLowerCase();
 		const searchColumns = search.searchColumns || [];
 
-		return rows.filter(row => {
+		return rows.filter((row) => {
 			if (!row.data) {
 				return false;
 			}
 
-			// Bestimme welche Spalten durchsucht werden sollen
+			// Determine which columns to search
 			let columnsToSearch = columns;
 			if (searchColumns.length > 0) {
-				columnsToSearch = columns.filter(col => searchColumns.includes(col.id.toString()));
+				columnsToSearch = columns.filter((col) =>
+					searchColumns.includes(col.id.toString()),
+				);
 			}
 
-			// Durchsuche nur Text-Spalten
-			const textColumns = columnsToSearch.filter(col => col.type === 'text');
+			// Search only text columns
+			const textColumns = columnsToSearch.filter((col) => col.type === 'text');
 
-			return textColumns.some(column => {
-				const rowData = row.data!.find(d => d.columnId === column.id);
+			return textColumns.some((column) => {
+				const rowData = row.data!.find((d) => d.columnId === column.id);
 				if (!rowData || !rowData.value) {
 					return false;
 				}
 
-				const cellValue = search.caseSensitive 
-					? String(rowData.value) 
+				const cellValue = search.caseSensitive
+					? String(rowData.value)
 					: String(rowData.value).toLowerCase();
 
 				return cellValue.includes(searchTerm);
@@ -274,7 +288,7 @@ export class RowHandler {
 	}
 
 	/**
-	 * Evaluiert eine Filter-Bedingung
+	 * Evaluates a filter condition
 	 */
 	private static evaluateFilter(value: any, operator: string, filterValue: any): boolean {
 		switch (operator) {
@@ -291,11 +305,17 @@ export class RowHandler {
 			case 'less_equal':
 				return this.compareValues(value, filterValue) <= 0;
 			case 'contains':
-				return String(value || '').toLowerCase().includes(String(filterValue || '').toLowerCase());
+				return String(value || '')
+					.toLowerCase()
+					.includes(String(filterValue || '').toLowerCase());
 			case 'starts_with':
-				return String(value || '').toLowerCase().startsWith(String(filterValue || '').toLowerCase());
+				return String(value || '')
+					.toLowerCase()
+					.startsWith(String(filterValue || '').toLowerCase());
 			case 'ends_with':
-				return String(value || '').toLowerCase().endsWith(String(filterValue || '').toLowerCase());
+				return String(value || '')
+					.toLowerCase()
+					.endsWith(String(filterValue || '').toLowerCase());
 			case 'is_empty':
 				return value === null || value === undefined || value === '';
 			case 'is_not_empty':
@@ -306,56 +326,56 @@ export class RowHandler {
 	}
 
 	/**
-	 * Vergleicht zwei Werte für numerische/alphanumerische Sortierung
+	 * Compares two values for numeric/alphanumeric sorting
 	 */
 	private static compareValues(a: any, b: any): number {
-		// Numerischer Vergleich falls beide Zahlen sind
+		// Numeric comparison if both are numbers
 		const numA = parseFloat(a);
 		const numB = parseFloat(b);
-		
+
 		if (!isNaN(numA) && !isNaN(numB)) {
 			return numA - numB;
 		}
-		
-		// Datum-Vergleich falls beide Daten sind
+
+		// Date comparison if both are dates
 		const dateA = new Date(a);
 		const dateB = new Date(b);
-		
+
 		if (!isNaN(dateA.getTime()) && !isNaN(dateB.getTime())) {
 			return dateA.getTime() - dateB.getTime();
 		}
-		
-		// String-Vergleich
+
+		// String comparison
 		return String(a || '').localeCompare(String(b || ''));
 	}
 
 	/**
-	 * Eine einzelne Zeile abrufen (über clientseitige Filterung)
-	 * Da die Nextcloud Tables API keinen direkten Einzelzeilen-Abruf unterstützt,
-	 * werden alle Zeilen abgerufen und dann gefiltert.
+	 * Retrieve a single row (using client-side filtering)
+	 * Since the Nextcloud Tables API does not support direct single-row retrieval,
+	 * all rows are fetched and then filtered locally.
 	 */
 	private static async get(context: IExecuteFunctions, itemIndex: number): Promise<Row> {
 		const tableId = ApiHelper.getResourceId(context.getNodeParameter('tableId', itemIndex));
 		const rowId = ApiHelper.validateRowId(context.getNodeParameter('rowId', itemIndex));
-		
+
 		try {
-			// Alle Zeilen der Tabelle abrufen
+			// Fetch all rows from the table
 			const allRows = await ApiHelper.makeApiRequest<Row[]>(
 				context,
 				'GET',
 				`/tables/${tableId}/rows`,
 			);
 
-			// Die gewünschte Zeile finden
-			const targetRow = allRows.find(row => row.id === rowId);
-			
+			// Find the desired row
+			const targetRow = allRows.find((row) => row.id === rowId);
+
 			if (!targetRow) {
-				throw new Error(`Zeile mit ID ${rowId} wurde in Tabelle ${tableId} nicht gefunden`);
+				throw new Error(`Row with ID ${rowId} not found in table ${tableId}`);
 			}
 
-			// Spalten-Info für bessere Formatierung laden
+			// Load column info for better formatting
 			const columns = await ApiHelper.getTableColumns(context, tableId);
-			
+
 			return this.formatRowForOutput(targetRow, columns);
 		} catch (error) {
 			ApiHelper.handleApiError(error);
@@ -363,13 +383,13 @@ export class RowHandler {
 	}
 
 	/**
-	 * Eine neue Zeile erstellen
+	 * Create a new row
 	 */
 	private static async create(context: IExecuteFunctions, itemIndex: number): Promise<Row> {
 		const nodeCollection = context.getNodeParameter('nodeCollection', itemIndex) as string;
 		const dataArray = context.getNodeParameter('data.column', itemIndex, []) as any[];
 
-		// Formatiere die Daten für die API
+		// Format data for the API
 		const data: Record<string, any> = {};
 		for (const item of dataArray) {
 			if (item.columnId && item.value !== undefined) {
@@ -379,48 +399,46 @@ export class RowHandler {
 
 		let endpoint: string;
 		let tableId: number;
-		
+
 		if (nodeCollection === 'tables') {
 			tableId = ApiHelper.getResourceId(context.getNodeParameter('tableId', itemIndex));
 			endpoint = `/tables/${tableId}/rows`;
 		} else {
 			const viewId = ApiHelper.getResourceId(context.getNodeParameter('viewId', itemIndex));
 			endpoint = `/views/${viewId}/rows`;
-			
-			// Für Views müssen wir die Tabellen-ID ermitteln
+
+			// For views, we need to determine the table ID
 			try {
-				const view = await ApiHelper.makeApiRequest<any>(context, 'GET', `/views/${viewId}`);
+				const view = await ApiHelper.makeApiRequest<any>(
+					context,
+					'GET',
+					`/views/${viewId}`,
+				);
 				tableId = view.tableId;
 			} catch (error) {
-				// Fallback: Erstellen ohne Spalten-Info
+				// Fallback: create without column info
 				const formattedData = ApiHelper.formatRowDataSimple(data);
-				return await ApiHelper.makeApiRequest<Row>(
-					context,
-					'POST',
-					endpoint,
-					{ data: formattedData },
-				);
+				return await ApiHelper.makeApiRequest<Row>(context, 'POST', endpoint, {
+					data: formattedData,
+				});
 			}
 		}
 
-		// Spalten-Info laden für korrekte Datenformatierung
+		// Load column info for correct data formatting
 		const columns = await ApiHelper.getTableColumns(context, tableId);
-		
-		// Erweiterte Formatierung mit Validierung
+
+		// Advanced formatting with validation
 		const formatOptions: FormatOptions = {
 			validateSelections: true,
-			dateTimeFormat: 'iso'
+			dateTimeFormat: 'iso',
 		};
-		
+
 		try {
 			const formattedData = ApiHelper.formatRowData(data, columns, formatOptions);
 
-			const result = await ApiHelper.makeApiRequest<Row>(
-				context,
-				'POST',
-				endpoint,
-				{ data: formattedData },
-			);
+			const result = await ApiHelper.makeApiRequest<Row>(context, 'POST', endpoint, {
+				data: formattedData,
+			});
 
 			return this.formatRowForOutput(result, columns);
 		} catch (error) {
@@ -429,14 +447,14 @@ export class RowHandler {
 	}
 
 	/**
-	 * Eine Zeile aktualisieren
+	 * Update a row
 	 */
 	private static async update(context: IExecuteFunctions, itemIndex: number): Promise<Row> {
 		const tableId = ApiHelper.getResourceId(context.getNodeParameter('tableId', itemIndex));
 		const rowId = ApiHelper.validateRowId(context.getNodeParameter('rowId', itemIndex));
 		const dataArray = context.getNodeParameter('data.column', itemIndex, []) as any[];
 
-		// Formatiere die Daten für die API
+		// Format data for the API
 		const data: Record<string, any> = {};
 		for (const item of dataArray) {
 			if (item.columnId && item.value !== undefined) {
@@ -444,20 +462,20 @@ export class RowHandler {
 			}
 		}
 
-		// Spalten-Info laden für korrekte Datenformatierung
+		// Load column info for correct data formatting
 		const columns = await ApiHelper.getTableColumns(context, tableId);
-		
-		// Erweiterte Formatierung mit Validierung
+
+		// Advanced formatting with validation
 		const formatOptions: FormatOptions = {
 			validateSelections: true,
-			dateTimeFormat: 'iso'
+			dateTimeFormat: 'iso',
 		};
 
 		try {
 			const formattedData = ApiHelper.formatRowData(data, columns, formatOptions);
 
 			if (Object.keys(formattedData).length === 0) {
-				throw new Error('Mindestens eine Spalte muss für die Aktualisierung angegeben werden');
+				throw new Error('At least one column must be specified for the update');
 			}
 
 			const result = await ApiHelper.makeApiRequest<Row>(
@@ -474,7 +492,7 @@ export class RowHandler {
 	}
 
 	/**
-	 * Formatiert eine einzelne Zeile für bessere Ausgabe
+	 * Formats a single row for better output
 	 */
 	private static formatRowForOutput(row: Row, columns: Column[]): any {
 		const formatted: any = {
@@ -484,15 +502,15 @@ export class RowHandler {
 			createdAt: row.createdAt,
 			lastEditBy: row.lastEditBy,
 			lastEditAt: row.lastEditAt,
-			data: {}
+			data: {},
 		};
 
-		// Daten mit Spaltennamen anstatt IDs formatieren
+		// Format data with column names instead of IDs
 		if (row.data && Array.isArray(row.data)) {
 			for (const item of row.data) {
-				const column = columns.find(col => col.id === item.columnId);
+				const column = columns.find((col) => col.id === item.columnId);
 				const columnName = column?.title || `column_${item.columnId}`;
-				
+
 				formatted.data[columnName] = this.formatValueForOutput(item.value, column);
 			}
 		}
@@ -501,14 +519,14 @@ export class RowHandler {
 	}
 
 	/**
-	 * Formatiert mehrere Zeilen für bessere Ausgabe
+	 * Formats multiple rows for better output
 	 */
 	private static formatRowsForOutput(rows: Row[], columns: Column[]): any[] {
-		return rows.map(row => this.formatRowForOutput(row, columns));
+		return rows.map((row) => this.formatRowForOutput(row, columns));
 	}
 
 	/**
-	 * Formatiert einen Wert für die Ausgabe basierend auf Spaltentyp
+	 * Formats a value for output based on column type
 	 */
 	private static formatValueForOutput(value: any, column?: Column): any {
 		if (value === null || value === undefined) {
@@ -519,10 +537,10 @@ export class RowHandler {
 			return value;
 		}
 
-		// Formatierung basierend auf Spalten-Typ
+		// Formatting based on column type
 		switch (column.type) {
 			case 'datetime':
-				// Datum formatieren
+				// Format date
 				if (typeof value === 'string' && value) {
 					try {
 						return new Date(value).toISOString();
@@ -532,14 +550,14 @@ export class RowHandler {
 				}
 				return value;
 			case 'number':
-				// Nummer formatieren
+				// Format number
 				if (typeof value === 'string' && value) {
 					const num = parseFloat(value);
 					return isNaN(num) ? value : num;
 				}
 				return value;
 			case 'selection':
-				// Selection-Werte sind normalerweise schon korrekt formatiert
+				// Selection values are usually already properly formatted
 				return value;
 			default:
 				return value;
@@ -547,16 +565,19 @@ export class RowHandler {
 	}
 
 	// ==============================================
-	// AI-FRIENDLY METHODS - Optimiert für KI Agents
+	// AI-FRIENDLY METHODS - Optimized for AI Agents
 	// ==============================================
 
 	/**
-	 * AI-Friendly Zeile erstellen
-	 * Alle Parameter sind durch fixedCollection gleichzeitig verfügbar
+	 * AI-Friendly create row
+	 * All parameters are available at once through fixedCollection
 	 */
-	private static async createAIFriendly(context: IExecuteFunctions, itemIndex: number): Promise<Row> {
+	private static async createAIFriendly(
+		context: IExecuteFunctions,
+		itemIndex: number,
+	): Promise<Row> {
 		try {
-			// Extrahiere Source-Konfiguration
+			// Extract source configuration
 			const sourceConfig = context.getNodeParameter('sourceConfig', itemIndex) as {
 				source?: {
 					type: 'table' | 'view';
@@ -566,35 +587,39 @@ export class RowHandler {
 			};
 
 			if (!sourceConfig?.source) {
-				throw new Error('Datenquelle-Konfiguration ist erforderlich');
+				throw new Error('Source configuration is required');
 			}
 
 			const { source } = sourceConfig;
 			let endpoint: string;
 			let tableId: number;
 
-			// Bestimme API-Endpunkt basierend auf Quell-Typ
+			// Determine API endpoint based on source type
 			if (source.type === 'table') {
 				if (!source.tableId) {
-					throw new Error('Tabellen-ID ist erforderlich wenn type="table"');
+					throw new Error('Table ID is required when type="table"');
 				}
 				tableId = parseInt(source.tableId);
 				endpoint = `/tables/${tableId}/rows`;
 			} else if (source.type === 'view') {
 				if (!source.viewId) {
-					throw new Error('View-ID ist erforderlich wenn type="view"');
+					throw new Error('View ID is required when type="view"');
 				}
 				const viewId = parseInt(source.viewId);
 				endpoint = `/views/${viewId}/rows`;
-				
-				// Für Views müssen wir die Tabellen-ID ermitteln
-				const view = await ApiHelper.makeApiRequest<any>(context, 'GET', `/views/${viewId}`);
+
+				// For views, we need to determine the table ID
+				const view = await ApiHelper.makeApiRequest<any>(
+					context,
+					'GET',
+					`/views/${viewId}`,
+				);
 				tableId = view.tableId;
 			} else {
-				throw new Error(`Ungültiger Quell-Typ: ${source.type}`);
+				throw new Error(`Invalid source type: ${source.type}`);
 			}
 
-			// Extrahiere Zeilen-Daten
+			// Extract row data
 			const rowDataConfig = context.getNodeParameter('rowDataConfig', itemIndex) as {
 				data?: {
 					columns?: Array<{
@@ -607,10 +632,10 @@ export class RowHandler {
 			};
 
 			if (!rowDataConfig?.data?.columns || rowDataConfig.data.columns.length === 0) {
-				throw new Error('Mindestens eine Spalte mit Daten ist erforderlich');
+				throw new Error('At least one column with data is required');
 			}
 
-			// Konvertiere AI-Friendly Format zu Nextcloud API Format
+			// Convert AI-Friendly format to Nextcloud API format
 			const data: Record<string, any> = {};
 			for (const columnEntry of rowDataConfig.data.columns) {
 				if (columnEntry.column?.columnId) {
@@ -618,15 +643,12 @@ export class RowHandler {
 				}
 			}
 
-			// Erstelle Zeile
-			const response = await ApiHelper.makeApiRequest<Row>(
-				context,
-				'POST',
-				endpoint,
-				{ data }
-			);
+			// Create row
+			const response = await ApiHelper.makeApiRequest<Row>(context, 'POST', endpoint, {
+				data,
+			});
 
-			// Formatiere Ausgabe mit Spalten-Informationen
+			// Format output with column information
 			const columns = await ApiHelper.getTableColumns(context, tableId);
 			return this.formatRowForOutput(response, columns);
 		} catch (error) {
@@ -635,12 +657,15 @@ export class RowHandler {
 	}
 
 	/**
-	 * AI-Friendly Alle Zeilen abrufen mit erweiterten Optionen
-	 * Alle Filter/Sortierung/Suche Parameter gleichzeitig verfügbar
+	 * AI-Friendly get all rows with advanced options
+	 * All filter/sorting/search parameters available at once
 	 */
-	private static async getAllAIFriendly(context: IExecuteFunctions, itemIndex: number): Promise<Row[]> {
+	private static async getAllAIFriendly(
+		context: IExecuteFunctions,
+		itemIndex: number,
+	): Promise<Row[]> {
 		try {
-			// Extrahiere Source-Konfiguration
+			// Extract source configuration
 			const sourceConfig = context.getNodeParameter('sourceConfig', itemIndex) as {
 				source?: {
 					type: 'table' | 'view';
@@ -650,45 +675,53 @@ export class RowHandler {
 			};
 
 			if (!sourceConfig?.source) {
-				throw new Error('Datenquelle-Konfiguration ist erforderlich');
+				throw new Error('Source configuration is required');
 			}
 
 			const { source } = sourceConfig;
 			let endpoint: string;
 			let tableId: number;
 
-			// Bestimme API-Endpunkt basierend auf Quell-Typ
+			// Determine API endpoint based on source type
 			if (source.type === 'table') {
 				if (!source.tableId) {
-					throw new Error('Tabellen-ID ist erforderlich wenn type="table"');
+					throw new Error('Table ID is required when type="table"');
 				}
 				tableId = parseInt(source.tableId);
 				endpoint = `/tables/${tableId}/rows`;
 			} else if (source.type === 'view') {
 				if (!source.viewId) {
-					throw new Error('View-ID ist erforderlich wenn type="view"');
+					throw new Error('View ID is required when type="view"');
 				}
 				const viewId = parseInt(source.viewId);
 				endpoint = `/views/${viewId}/rows`;
-				
-				// Für Views müssen wir die Tabellen-ID ermitteln
-				const view = await ApiHelper.makeApiRequest<any>(context, 'GET', `/views/${viewId}`);
+
+				// For views, we need to determine the table ID
+				const view = await ApiHelper.makeApiRequest<any>(
+					context,
+					'GET',
+					`/views/${viewId}`,
+				);
 				tableId = view.tableId;
 			} else {
-				throw new Error(`Ungültiger Quell-Typ: ${source.type}`);
+				throw new Error(`Invalid source type: ${source.type}`);
 			}
 
-			// Extrahiere Query-Optionen
+			// Extract query options
 			const queryConfig = context.getNodeParameter('queryConfig', itemIndex, {}) as {
 				query?: {
 					pagination?: { settings?: { limit?: number; offset?: number } };
-					filters?: Array<{ filter?: { columnId: string; operator: string; value: string } }>;
+					filters?: Array<{
+						filter?: { columnId: string; operator: string; value: string };
+					}>;
 					sorting?: Array<{ sort?: { columnId: string; direction: 'ASC' | 'DESC' } }>;
-					search?: { settings?: { term?: string; columns?: string; caseSensitive?: boolean } };
+					search?: {
+						settings?: { term?: string; columns?: string; caseSensitive?: boolean };
+					};
 				};
 			};
 
-			// Baue Query-Parameter
+			// Build query parameters
 			const queryParams: Record<string, string> = {};
 
 			// Pagination
@@ -697,73 +730,77 @@ export class RowHandler {
 				if (limit !== undefined) queryParams.limit = limit.toString();
 				if (offset !== undefined) queryParams.offset = offset.toString();
 			} else {
-				// Standard-Werte
+				// Default values
 				queryParams.limit = '50';
 				queryParams.offset = '0';
 			}
 
-			// Filter
+			// Filters
 			if (queryConfig.query?.filters && queryConfig.query.filters.length > 0) {
 				const filters = queryConfig.query.filters
-					.map(f => f.filter)
-					.filter(f => f?.columnId && f?.operator);
+					.map((f) => f.filter)
+					.filter((f) => f?.columnId && f?.operator);
 				this.applyFilters(queryParams, filters);
 			}
 
-			// Sortierung
+			// Sorting
 			if (queryConfig.query?.sorting && queryConfig.query.sorting.length > 0) {
 				const sorting = queryConfig.query.sorting
-					.map(s => s.sort)
-					.filter(s => s?.columnId && s?.direction);
+					.map((s) => s.sort)
+					.filter((s) => s?.columnId && s?.direction);
 				this.applySorting(queryParams, sorting);
 			}
 
-			// Suche
+			// Search
 			if (queryConfig.query?.search?.settings?.term) {
 				const searchSettings = queryConfig.query.search.settings;
 				const search = {
 					term: searchSettings.term,
-					searchColumns: searchSettings.columns ? searchSettings.columns.split(',').map(id => id.trim()) : [],
-					caseSensitive: searchSettings.caseSensitive
+					searchColumns: searchSettings.columns
+						? searchSettings.columns.split(',').map((id) => id.trim())
+						: [],
+					caseSensitive: searchSettings.caseSensitive,
 				};
 				this.applySearch(queryParams, search);
 			}
 
-			// Führe API-Abfrage aus - mit useQueryParams = true
+			// Perform API request - with useQueryParams = true
 			const rows = await ApiHelper.makeApiRequest<Row[]>(
 				context,
 				'GET',
 				endpoint,
 				queryParams,
-				true // useQueryParams für GET-Request
+				true, // useQueryParams for GET request
 			);
 
-			// Spalten-Info laden für bessere Datenformatierung
+			// Load column info for better data formatting
 			const columns = await ApiHelper.getTableColumns(context, tableId);
 
-			// Client-seitige Nachbearbeitung falls erforderlich
+			// Client-side post-processing if needed
 			let processedRows = rows;
-			
-			// Client-seitige Filterung falls Server-API nicht alle Filter unterstützt
+
+			// Client-side filtering if server API doesn't support all filters
 			if (queryConfig.query?.filters && queryConfig.query.filters.length > 0) {
 				const filters = queryConfig.query.filters
-					.map(f => f.filter)
-					.filter(f => f?.columnId && f?.operator);
+					.map((f) => f.filter)
+					.filter((f) => f?.columnId && f?.operator);
 				processedRows = this.applyClientSideFilters(processedRows, filters, columns);
 			}
 
-			// Client-seitige Suche falls Server-API nicht alle Suchoptionen unterstützt
+			// Client-side search if server API doesn't support all search options
 			if (queryConfig.query?.search?.settings?.term) {
 				const searchSettings = queryConfig.query.search.settings;
 				const search = {
 					term: searchSettings.term,
-					searchColumns: searchSettings.columns ? searchSettings.columns.split(',').map(id => id.trim()) : [],
-					caseSensitive: searchSettings.caseSensitive
+					searchColumns: searchSettings.columns
+						? searchSettings.columns.split(',').map((id) => id.trim())
+						: [],
+					caseSensitive: searchSettings.caseSensitive,
 				};
 				processedRows = this.applyClientSideSearch(processedRows, search, columns);
 			}
 
-			// Zeilen für bessere Lesbarkeit formatieren
+			// Format rows for better readability
 			return this.formatRowsForOutput(processedRows, columns);
 		} catch (error) {
 			ApiHelper.handleApiError(error);
@@ -771,12 +808,15 @@ export class RowHandler {
 	}
 
 	/**
-	 * AI-Friendly Zeile aktualisieren
-	 * Alle Parameter durch fixedCollection gleichzeitig verfügbar
+	 * AI-Friendly update row
+	 * All parameters available at once through fixedCollection
 	 */
-	private static async updateAIFriendly(context: IExecuteFunctions, itemIndex: number): Promise<Row> {
+	private static async updateAIFriendly(
+		context: IExecuteFunctions,
+		itemIndex: number,
+	): Promise<Row> {
 		try {
-			// Extrahiere Update-Konfiguration
+			// Extract update configuration
 			const updateDataConfig = context.getNodeParameter('updateDataConfig', itemIndex) as {
 				update?: {
 					rowId: string;
@@ -791,27 +831,27 @@ export class RowHandler {
 			};
 
 			if (!updateDataConfig?.update) {
-				throw new Error('Update-Konfiguration ist erforderlich');
+				throw new Error('Update configuration is required');
 			}
 
 			const { update } = updateDataConfig;
 
 			if (!update.rowId) {
-				throw new Error('Zeilen-ID ist erforderlich');
+				throw new Error('Row ID is required');
 			}
 
 			if (!update.tableId) {
-				throw new Error('Tabellen-ID ist erforderlich');
+				throw new Error('Table ID is required');
 			}
 
 			if (!update.columns || update.columns.length === 0) {
-				throw new Error('Mindestens eine Spalte mit Daten ist erforderlich');
+				throw new Error('At least one column with data is required');
 			}
 
 			const tableId = parseInt(update.tableId);
 			const rowId = parseInt(update.rowId);
 
-			// Konvertiere AI-Friendly Format zu Nextcloud API Format
+			// Convert AI-Friendly format to Nextcloud API format
 			const data: Record<string, any> = {};
 			for (const columnEntry of update.columns) {
 				if (columnEntry.column?.columnId) {
@@ -819,20 +859,18 @@ export class RowHandler {
 				}
 			}
 
-			// Aktualisiere Zeile
+			// Update row
 			const endpoint = `/tables/${tableId}/rows/${rowId}`;
-			const response = await ApiHelper.makeApiRequest<Row>(
-				context,
-				'PUT',
-				endpoint,
-				{ data }
-			);
+			const response = await ApiHelper.makeApiRequest<Row>(context, 'PUT', endpoint, {
+				data,
+			});
 
-			// Formatiere Ausgabe mit Spalten-Informationen
+			// Format output with column information
 			const columns = await ApiHelper.getTableColumns(context, tableId);
 			return this.formatRowForOutput(response, columns);
 		} catch (error) {
 			ApiHelper.handleApiError(error);
 		}
 	}
-} 
+}
+

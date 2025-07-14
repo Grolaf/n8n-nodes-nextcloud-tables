@@ -1,259 +1,317 @@
 # n8n-nodes-nextcloud-tables
 
-Ein **Community** n8n Node für die Integration mit Nextcloud Tables. Diese Node ermöglicht vollständige Tabellen-Verwaltung, erweiterte Datenoperationen und ist **speziell für KI-Agents optimiert**.
+A **community** n8n node for integration with Nextcloud Tables. This node enables full table management, advanced data operations, and is **specifically optimized for AI agents**.
 
-## 🚀 **Produktions-Status: v2.4.7** ✅
+This repo is the english translation of the original one https://github.com/terschawebIT/n8n-nodes-nextcloud-tables
 
-**Diese Node ist produktionsreif für die getesteten Kern-Features und gegen kritische NaN-Bugs abgehärtet!**
+## 🚀 **Production Status: v2.5.0** ✅
+
+**This node is production-ready for the tested core features and hardened against critical NaN bugs!**
+
+### ✅ **Version 2.5.0 - Production-Ready:**
+
+- ✅ **English translation** - All node is now accessible in english
 
 ### ✅ **Version 2.4.8 - Production-Ready:**
-- ✅ **Robuste Resource Locator Validierung** - Keine NaN-Fehler mehr
-- ✅ **KI-Agent Kompatibilität** - Spezielle AI-Friendly Operationen  
-- ✅ **Umfassende Fehlerbehandlung** - Detaillierte HTTP-Status-Codes
-- ✅ **Optimierte API-Performance** - Query-Parameter für Column-Operationen
-- ✅ **Verbesserte Log-Kennzeichnung** - Eindeutige Node-Identifikation für besseres Grepping
-- ✅ **Strukturiertes Logging** - Debug, Info, Warn, Error Level mit Kontext
+- ✅ **Robust Resource Locator Validation** - No more NaN errors
+- ✅ **AI-Agent Compatibility** - Special AI-friendly operations
+- ✅ **Comprehensive Error Handling** - Detailed HTTP status codes
+- ✅ **Optimized API Performance** - Query parameters for column operations
+- ✅ **Improved Log Labeling** - Unique node identification for better grepping
+- ✅ **Structured Logging** - Debug, Info, Warn, Error levels with context
 
 ### ✅ **Version 2.4.7 - Production-Ready:**
-- **🛡️ NaN-Bug-Fixes**: Robuste Validierung gegen alle NaN-Quellen (null, undefined, 'NaN' strings)
-- **🧹 Production-Cleanup**: Alle Debug-Tools entfernt, saubere Codebase
-- ⚡ **Enhanced Error Handling**: Hilfreiche Fehlermeldungen für Resource Locator Probleme
-- 🔧 **Optimierte Builds**: TypeScript-Compilation ohne Warnings
-- 📦 **Clean Dependencies**: Entfernte veraltete Scripts und Altlasten
+- **🛡️ NaN Bug Fixes**: Robust validation against all NaN sources (null, undefined, 'NaN' strings)
+- **🧹 Production Cleanup**: Removed all debug tools, clean codebase
+- ⚡ **Enhanced Error Handling**: Helpful error messages for Resource Locator issues
+- 🔧 **Optimized Builds**: TypeScript compilation without warnings
+- 📦 **Clean Dependencies**: Removed outdated scripts and legacy code
 
-### ✅ **Getestet & Produktionsreif:**
-- **Tabellen-Management**: Grundlegende CRUD-Operationen (getAll, get) ✅
-- **Spalten-Management**: Alle Operationen inkl. AI-friendly Extensions ✅
-- **Zeilen-Management**: Basis CRUD (create, getAll, get) ✅
-- **Views-Management**: Basis-Operationen (getAll, create) ✅
-- **Shares-Management**: Benutzer/Gruppen-Freigaben ✅
-- **NaN-Bug-Protection**: Robuste Resource Locator Validierung ✅
+### ✅ **Tested & Production-Ready:**
+- **Table Management**: Basic CRUD operations (getAll, get) ✅
+- **Column Management**: All operations including AI-friendly extensions ✅
+- **Row Management**: Basic CRUD (create, getAll, get) ✅
+- **Views Management**: Basic operations (getAll, create) ✅
+- **Shares Management**: User/Group sharing ✅
+- **NaN Bug Protection**: Robust Resource Locator validation ✅
 
-### ⚠️ **Implementiert aber ungetestet:**
-- **Erweiterte Tabellen-Ops**: update, delete
-- **Erweiterte Zeilen-Ops**: update (delete nicht von API unterstützt)
-- **Erweiterte Views-Ops**: get, update, delete, getRows
-- **Erweiterte Shares-Ops**: update, delete
-- **CSV-Import**: Vollständige Import-Pipeline
-- **Context-Integration**: App-Context-Features
-- **Erweiterte Filter/Sort**: Komplexe Multi-Column-Operationen
+### ⚠️ **Implemented but Untested:**
+- **Advanced Table Ops**: update, delete
+- **Advanced Row Ops**: update (delete not supported by API)
+- **Advanced Views Ops**: get, update, delete, getRows
+- **Advanced Shares Ops**: update, delete
+- **CSV Import**: Complete import pipeline
+- **Context Integration**: App-context features
+- **Advanced Filter/Sort**: Complex multi-column operations
 
-## 🛡️ **Kritische Bug-Fixes in v2.4.7**
+## 🛡️ **Critical Bug Fixes in v2.4.7**
 
-### **Problem gelöst: NaN Table IDs**
-Nextcloud-Logs zeigten kritische Fehler wie:
-```
+### **Problem Solved: NaN Table IDs**
+Nextcloud logs showed critical errors like:
 [error] Did expect one result but found none for table id = NaN
 [error] no read access to table id = 0
-```
+
 
 ### **Root Cause: Resource Locator Handling**
 ```typescript
-// VORHER: Unzureichende Validierung führte zu NaN IDs
+// BEFORE: Insufficient validation led to NaN IDs
 if (!tableId || isNaN(tableId)) { ... }
 
-// NACHHER: Robuste Validierung gegen ALLE NaN-Quellen
+// AFTER: Robust validation against ALL NaN sources
 if (resourceLocator === null || resourceLocator === undefined || 
     resourceLocator === 'null' || resourceLocator === 'undefined' ||
     resourceLocator === 'NaN' || 
     (typeof resourceLocator === 'number' && isNaN(resourceLocator))) {
-    throw new Error('Resource Locator ist erforderlich aber nicht gesetzt oder ungültig');
+    throw new Error('Resource Locator is required but not set or invalid');
 }
-```
+Hardened Validation in Load Options
 
-### **Gehärtete Validation in Load Options**
-- ✅ **Tabellen-ID Extraktion**: Robuste Behandlung von `__rl` Resource Locators
-- ✅ **Column/View Loading**: Validierung verhindert `/tables/NaN/columns` Requests
-- ✅ **Error Messages**: Hilfreiche Debugging-Informationen
-- ✅ **String-to-Number Conversion**: Sichere parseInt() mit Validation
+    ✅ Table ID Extraction: Robust handling of __rl resource locators
 
-## 🤖 **KI-Agent Optimiert** ⭐
+    ✅ Column/View Loading: Validation prevents /tables/NaN/columns requests
 
-**Einzigartig**: Diese Node ist die **erste n8n Community Node**, die speziell für **KI-Agents** optimiert wurde!
+    ✅ Error Messages: Helpful debugging information
 
-### **Problem gelöst**: 
-Standard n8n-Nodes verwenden `displayOptions`, die Parameter dynamisch verstecken. KI-Agents können diese nicht sehen.
+    ✅ String-to-Number Conversion: Safe parseInt() with validation
 
-### **Lösung**: AI-Friendly Operationen
-- ✅ **Alle Parameter gleichzeitig sichtbar**
-- ✅ **Keine UI-Dependencies** für KI-Agents
-- ✅ **String-basierte IDs** statt Dropdown-Navigation
-- ✅ **Flache Parameter-Struktur** ohne Verschachtelung
-- ✅ **Robuste NaN-Protection** in v2.4.7
+🤖 AI-Agent Optimized ⭐
 
-### **AI-Friendly Operationen verfügbar:**
+Unique: This is the first n8n community node specifically optimized for AI agents!
+Problem Solved:
 
-#### **Spalten-Management (AI-Optimiert)**
-```javascript
-// Für KI-Agents optimiert - ALLE Parameter sichtbar
-Operation: "Spalte Erstellen (KI-Friendly)"
+Standard n8n nodes use displayOptions to dynamically hide parameters. AI agents can't see these.
+Solution: AI-Friendly Operations
+
+    ✅ All parameters visible at once
+
+    ✅ No UI dependencies for AI agents
+
+    ✅ String-based IDs instead of dropdown navigation
+
+    ✅ Flat parameter structure without nesting
+
+    ✅ Robust NaN protection in v2.4.7
+
+Available AI-Friendly Operations:
+Column Management (AI-Optimized)
+
+// Optimized for AI agents - ALL parameters visible
+Operation: "Create Column (AI-Friendly)"
 {
   "tableIdAI": "123",
   "columnType": "selection", 
   "columnTitle": "Status",
   "columnMandatory": true,
-  
-  // Alle typ-spezifischen Parameter gleichzeitig verfügbar:
-  "selectionOptionsAI": "[\"Offen\", \"In Bearbeitung\", \"Fertig\"]",
-  "selectionDefaultAI": "Offen",
+
+  // All type-specific parameters available at once:
+  "selectionOptionsAI": "[\"Open\", \"In Progress\", \"Done\"]",
+  "selectionDefaultAI": "Open",
   "selectionMultipleAI": false,
-  
-  // Text-Parameter (werden ignoriert bei anderen Typen):
+
+  // Text parameters (ignored for other types):
   "textSubtypeAI": "line",
-  "textMaxLengthAI": 255,
-  // ... alle anderen Parameter verfügbar
+  "textMaxLengthAI": 255
+  // ... all other parameters available
 }
 
-// Vollständige Updates möglich
-Operation: "Spalte Aktualisieren (KI-Friendly)"
+// Full updates possible
+Operation: "Update Column (AI-Friendly)"
 {
   "columnIdAI": "456",
-  "columnType": "text",           // Typ ändern
-  "columnTitle": "Neuer Name",    // Titel ändern
-  "textSubtypeAI": "long",        // Text-spezifisch
-  "textMaxLengthAI": 500,         // Max-Länge ändern
-  // Nur relevante Parameter werden verwendet
+  "columnType": "text",           // Change type
+  "columnTitle": "New Name",      // Change title
+  "textSubtypeAI": "long",        // Text-specific
+  "textMaxLengthAI": 500          // Change max length
+  // Only relevant parameters are used
 }
-```
 
-**Vorteile für KI-Agents:**
-- 🔍 **Parameter-Transparenz**: 24 Parameter gleichzeitig sichtbar
-- 🎯 **Autonome Operationen**: Keine UI-Interaktion erforderlich
-- 🚀 **String-basierte Eingaben**: Keine Dropdown-Listen, maximale Flexibilität
-- 🛡️ **NaN-Protection**: Robuste Validierung verhindert API-Fehler (v2.4.7)
-- ↩️ **Backward Compatible**: Human-UI bleibt unverändert
+Benefits for AI Agents:
 
-## 📊 **Feature-Übersicht & Test-Status**
+    🔍 Parameter transparency: 24 parameters visible at once
 
-### 🏗️ **Tabellen-Operationen**
-- ✅ **Alle Tabellen abrufen**: Getestet, produktionsreif
-- ✅ **Tabelle abrufen**: Getestet, produktionsreif
-- ⚠️ **Tabelle erstellen**: Implementiert, ungetestet
-- ⚠️ **Tabelle aktualisieren**: Implementiert, ungetestet
-- ⚠️ **Tabelle löschen**: Implementiert, ungetestet
+    🎯 Autonomous operations: No UI interaction required
 
-### 📋 **Spalten-Management** ✅ **VOLLSTÄNDIG GETESTET & AI-OPTIMIERT**
-**Standard-Operationen:**
-- ✅ **Alle Spalten abrufen**: Getestet, produktionsreif
-- ✅ **Spalte abrufen**: Getestet, produktionsreif
-- ✅ **Spalte erstellen**: Getestet, produktionsreif
-- ⚠️ **Spalte aktualisieren**: Implementiert, ungetestet
-- ⚠️ **Spalte löschen**: Implementiert, ungetestet
+    🚀 String-based inputs: No dropdowns, maximum flexibility
 
-**🤖 KI-Friendly Operationen:**
-- ✅ **Spalte Erstellen (KI-Friendly)**: Getestet, produktionsreif - 23 Parameter gleichzeitig sichtbar
-- ⚠️ **Spalte Aktualisieren (KI-Friendly)**: Implementiert, ungetestet - 24 Parameter für vollständige Updates
+    🛡️ NaN protection: Robust validation prevents API errors (v2.4.7)
 
-**5 Spaltentypen vollständig unterstützt:**
-- ✅ **Text**: Getestet - Pattern-Validierung, Max-Länge, Subtypen (einzeilig/mehrzeilig)
-- ✅ **Number**: Getestet - Min/Max, Dezimalstellen, Präfix/Suffix, Validierung
-- ✅ **DateTime**: Getestet - Standard-Datum, flexible Eingabeformate
-- ✅ **Selection**: Getestet - Dropdown-Optionen, Standard-Werte, Mehrfachauswahl
-- ✅ **UserGroup**: Getestet - Benutzer/Gruppen-Auswahl, Multi-Select, Teams
+    ↩️ Backward compatible: Human UI remains unchanged
 
-### 🎯 **Zeilen-Operationen**
-- ✅ **Alle Zeilen abrufen**: Getestet, produktionsreif
-- ✅ **Zeile abrufen**: Getestet, produktionsreif (clientseitige Filterung)
-- ✅ **Zeile erstellen**: Getestet, produktionsreif
-- ⚠️ **Zeile aktualisieren**: Implementiert, ungetestet
-- ❌ **Zeile löschen**: Nicht von Nextcloud Tables API unterstützt
+📊 Feature Overview & Test Status
+🏗️ Table Operations
 
-**Erweiterte Zeilen-Features (ungetestet):**
-- ⚠️ **Smart-Pagination**: 1-1000 Zeilen optimiert
-- ⚠️ **11 Filter-Operatoren**: =, !=, >, >=, <, <=, LIKE, starts_with, ends_with, is_empty, is_not_empty
-- ⚠️ **Multi-Column-Sorting**: Prioritäts-basierte Sortierung
-- ⚠️ **Volltext-Suche**: Case-sensitive/insensitive, spalten-spezifisch
-- ✅ **Automatische Validierung**: Spalten-basierte Datenformatierung
+    ✅ Get all tables: Tested, production-ready
 
-### 📋 **Views-Management**
-- ✅ **Views abrufen**: Getestet, produktionsreif
-- ✅ **View erstellen**: Getestet, produktionsreif
-- ⚠️ **View abrufen (einzeln)**: Implementiert, ungetestet
-- ⚠️ **View aktualisieren**: Implementiert, ungetestet
-- ⚠️ **View löschen**: Implementiert, ungetestet
-- ⚠️ **Zeilen aus View abrufen**: Implementiert, ungetestet
+    ✅ Get table: Tested, production-ready
 
-### 🤝 **Kollaborations-Features**
-- ✅ **Shares abrufen**: Getestet, produktionsreif
-- ✅ **Share erstellen**: Getestet, produktionsreif (Benutzer & Gruppen)
-- ⚠️ **Share aktualisieren**: Implementiert, ungetestet
-- ⚠️ **Share löschen**: Implementiert, ungetestet
-- ✅ **Benutzer/Gruppen-Listen**: Getestet, produktionsreif
+    ⚠️ Create table: Implemented, untested
 
-### 📥 **CSV-Import** ⚠️ **UNGETESTET**
-- ⚠️ **Flexible Optionen**: Header-Erkennung, Trennzeichen-Auswahl
-- ⚠️ **Column-Mapping**: Automatische oder manuelle Zuordnung
-- ⚠️ **Datentyp-Konvertierung**: Auto, Text, Number, DateTime, Boolean
-- ⚠️ **Import-Status**: Überwachung und Fehlerbehandlung
+    ⚠️ Update table: Implemented, untested
 
-### 🌐 **App-Context-Integration** ⚠️ **UNGETESTET**
-- ⚠️ **Context-Navigation**: Nahtlose Nextcloud-App-Integration
-- ⚠️ **Context-Tabellen**: Gefilterte Ansichten nach App-Context
-- ⚠️ **Context-Pages**: App-Page-Management
+    ⚠️ Delete table: Implemented, untested
+
+📋 Column Management ✅ FULLY TESTED & AI-OPTIMIZED
+
+Standard operations:
+
+    ✅ Get all columns: Tested, production-ready
+
+    ✅ Get column: Tested, production-ready
+
+    ✅ Create column: Tested, production-ready
+
+    ⚠️ Update column: Implemented, untested
+
+    ⚠️ Delete column: Implemented, untested
+
+🤖 AI-Friendly Operations:
+
+    ✅ Create Column (AI-Friendly): Tested, production-ready - 23 parameters visible
+
+    ⚠️ Update Column (AI-Friendly): Implemented, untested - 24 parameters for full updates
+
+5 fully supported column types:
+
+    ✅ Text: Tested - pattern validation, max length, subtypes (single/multiline)
+
+    ✅ Number: Tested - min/max, decimals, prefix/suffix, validation
+
+    ✅ DateTime: Tested - default date, flexible input formats
+
+    ✅ Selection: Tested - dropdown options, default values, multi-select
+
+    ✅ UserGroup: Tested - user/group selection, multi-select, teams
+
+🎯 Row Operations
+
+    ✅ Get all rows: Tested, production-ready
+
+    ✅ Get row: Tested, production-ready (client-side filtering)
+
+    ✅ Create row: Tested, production-ready
+
+    ⚠️ Update row: Implemented, untested
+
+    ❌ Delete row: Not supported by Nextcloud Tables API
+
+Advanced row features (untested):
+
+    ⚠️ Smart pagination: Optimized for 1-1000 rows
+
+    ⚠️ 11 filter operators: =, !=, >, >=, <, <=, LIKE, starts_with, ends_with, is_empty, is_not_empty
+
+    ⚠️ Multi-column sorting: Priority-based sorting
+
+    ⚠️ Full-text search: Case-sensitive/insensitive, column-specific
+
+    ✅ Automatic validation: Column-based data formatting
+
+📋 Views Management
+
+    ✅ Get views: Tested, production-ready
+
+    ✅ Create view: Tested, production-ready
+
+    ⚠️ Get view (single): Implemented, untested
+
+    ⚠️ Update view: Implemented, untested
+
+    ⚠️ Delete view: Implemented, untested
+
+    ⚠️ Get rows from view: Implemented, untested
+
+🤝 Collaboration Features
+
+    ✅ Get shares: Tested, production-ready
+
+    ✅ Create share: Tested, production-ready (users & groups)
+
+    ⚠️ Update share: Implemented, untested
+
+    ⚠️ Delete share: Implemented, untested
+
+    ✅ Get users/groups: Tested, production-ready
+
+📥 CSV Import ⚠️ UNTESTED
+
+    ⚠️ Flexible options: Header detection, delimiter selection
+
+    ⚠️ Column mapping: Automatic or manual mapping
+
+    ⚠️ Data type conversion: Auto, text, number, datetime, boolean
+
+    ⚠️ Import status: Monitoring and error handling
+
+🌐 App-Context Integration ⚠️ UNTESTED
+
+    ⚠️ Context navigation: Seamless Nextcloud app integration
+
+    ⚠️ Context tables: Filtered views by app context
+
+    ⚠️ Context pages: App page management
 
 ## Installation
 
 ```bash
 npm install n8n-nodes-nextcloud-tables
-```
 
-Starten Sie n8n neu, um die neue Node zu laden.
+Restart n8n to load the new node.
+Configuration
+Credentials
 
-## Konfiguration
+Create new credentials of type Nextcloud Tables API:
 
-### Credentials
-Erstellen Sie neue Credentials vom Typ "Nextcloud Tables API":
+    Nextcloud URL: Full URL (e.g. https://cloud.example.com)
 
-1. **Nextcloud URL**: Vollständige URL (z.B. `https://cloud.example.com`)
-2. **Benutzername**: Ihr Nextcloud-Benutzername  
-3. **Passwort**: App-Passwort (empfohlen) oder normales Passwort
+    Username: Your Nextcloud username
 
-**🔒 Sicherheit**: Verwenden Sie App-Passwörter:
-- Nextcloud → Einstellungen → Sicherheit → App-Passwörter
-- Erstellen Sie ein neues App-Passwort für n8n
+    Password: App password (recommended) or normal password
 
-## 🤖 **KI-Agent Usage Examples**
+🔒 Security Tip: Use App Passwords:
 
-### Spalte für KI-Agents erstellen
-```javascript
+    Nextcloud → Settings → Security → App Passwords
+
+    Create a new app password for n8n
+
+🤖 AI-Agent Usage Examples
+Create Column (AI-Friendly)
+
 {
-  "resource": "Spalte",
-  "operation": "Spalte Erstellen (KI-Friendly)",
+  "resource": "Column",
+  "operation": "Create Column (AI-Friendly)",
   "tableIdAI": "123",
   "columnType": "selection",
-  "columnTitle": "Projekt-Status", 
-  "columnDescription": "Aktueller Status des Projekts",
+  "columnTitle": "Project Status", 
+  "columnDescription": "Current status of the project",
   "columnMandatory": true,
-  "selectionOptionsAI": "[\"Geplant\", \"In Arbeit\", \"Testing\", \"Fertig\", \"Archiviert\"]",
-  "selectionDefaultAI": "Geplant",
+  "selectionOptionsAI": "[\"Planned\", \"In Progress\", \"Testing\", \"Done\", \"Archived\"]",
+  "selectionDefaultAI": "Planned",
   "selectionMultipleAI": false
 }
-```
 
-### Spalte für KI-Agents aktualisieren
-```javascript
+Update Column (AI-Friendly)
+
 {
-  "resource": "Spalte", 
-  "operation": "Spalte Aktualisieren (KI-Friendly)",
+  "resource": "Column", 
+  "operation": "Update Column (AI-Friendly)",
   "columnIdAI": "456",
-  "columnTitle": "Erweiterte Projekt-Status",
+  "columnTitle": "Advanced Project Status",
   "selectionOptionsAI": "[\"Backlog\", \"Sprint\", \"Review\", \"Done\", \"Cancelled\"]",
   "selectionDefaultAI": "Backlog"
 }
-```
 
-### Verschiedene Spaltentypen für KI-Agents
-```javascript
-// Text-Spalte erstellen
+Various Column Types for AI Agents
+
+// Create Text Column
 {
   "columnType": "text",
-  "columnTitle": "Beschreibung",
+  "columnTitle": "Description",
   "textSubtypeAI": "long",
   "textMaxLengthAI": 1000,
   "textPatternAI": "^[A-Za-z0-9\\s]+$"
 }
 
-// Zahlen-Spalte erstellen  
+// Create Number Column  
 {
   "columnType": "number",
   "columnTitle": "Budget",
@@ -263,37 +321,34 @@ Erstellen Sie neue Credentials vom Typ "Nextcloud Tables API":
   "numberPrefixAI": "€"
 }
 
-// Benutzer/Gruppen-Spalte erstellen
+// Create User/Group Column
 {
   "columnType": "usergroup", 
-  "columnTitle": "Zuständig",
+  "columnTitle": "Responsible",
   "usergroupTypeAI": "user",
   "usergroupMultipleAI": false
 }
-```
 
-### Human vs. KI-Agent Vergleich
-```javascript
-// HUMAN (UI-optimiert) - Parameter erscheinen dynamisch
-Operation: "Spalte Erstellen"
-Tabelle: [Dropdown-Auswahl]
-Typ: "Auswahl" 
-// → Dann erscheinen Auswahl-spezifische Parameter
+Human vs. AI-Agent Comparison
 
-// KI-AGENT (AI-optimiert) - Alle Parameter sichtbar
-Operation: "Spalte Erstellen (KI-Friendly)"  
-// → ALLE 23 Parameter sofort sichtbar und verwendbar
-// → String-basierte Eingaben statt Dropdown-Listen
-// → Maximale Flexibilität für autonome Ausführung
-```
+// HUMAN (UI-optimized) - Parameters appear dynamically
+Operation: "Create Column"
+Table: [Dropdown Selection]
+Type: "Selection" 
+// → Then type-specific parameters appear
 
-## 🔧 **Advanced Usage**
+// AI-AGENT (AI-optimized) - All parameters visible
+Operation: "Create Column (AI-Friendly)"  
+// → ALL 23 parameters immediately visible and usable
+// → String-based inputs instead of dropdowns
+// → Maximum flexibility for autonomous execution
 
-### Erweiterte Zeilen-Abfrage mit Filtern
-```javascript
+🔧 Advanced Usage
+Advanced Row Query with Filters
+
 {
-  "resource": "Zeile",
-  "operation": "Alle Zeilen Abrufen",
+  "resource": "Row",
+  "operation": "Get All Rows",
   "source": "table",
   "tableId": "123",
   "useFiltering": true,
@@ -301,7 +356,7 @@ Operation: "Spalte Erstellen (KI-Friendly)"
     {
       "columnId": "5",
       "operator": "EQ", 
-      "value": "Aktiv"
+      "value": "Active"
     },
     {
       "columnId": "8",
@@ -317,197 +372,208 @@ Operation: "Spalte Erstellen (KI-Friendly)"
     }
   ]
 }
-```
 
-### CSV-Import mit Column-Mapping
-```javascript
+CSV Import with Column Mapping
+
 {
   "resource": "Import",
-  "operation": "CSV in Tabelle Importieren",
+  "operation": "Import CSV to Table",
   "tableId": "123",
   "csvData": "[Binary CSV Data]",
   "hasHeader": true,
   "delimiter": ";",
   "columnMapping": [
     {
-      "csvColumn": "Kundenname",
+      "csvColumn": "Customer Name",
       "tableColumn": "1",
       "dataType": "text"
     },
     {
-      "csvColumn": "Erstellungsdatum", 
+      "csvColumn": "Created Date", 
       "tableColumn": "2",
       "dataType": "datetime"
     }
   ]
 }
-```
 
-## 📊 **Vollständige API-Abdeckung**
+📊 Full API Coverage
+✅ Implemented Endpoints
 
-### ✅ Implementierte Endpunkte
-- **Tables**: `/tables/*` (vollständige CRUD)
-- **Rows**: `/tables/{id}/rows`, `/views/{id}/rows` (vollständige CRUD außer DELETE*)
-- **Views**: `/tables/{id}/views`, `/views/{id}` (vollständige CRUD)
-- **Columns**: `/tables/{id}/columns`, `/columns/{id}` (vollständige CRUD + AI-friendly)
-- **Shares**: `/tables/{id}/shares`, `/shares/{id}` (vollständige CRUD)
-- **Import**: `/tables/{id}/import` (POST + Status-Monitoring)
-- **Context**: `/contexts/*` (GET-Operationen)
+    Tables: /tables/* (full CRUD)
 
-**\*Note**: Row DELETE ist von der Nextcloud Tables API nicht unterstützt
+    Rows: /tables/{id}/rows, /views/{id}/rows (full CRUD except DELETE*)
 
-### 🔧 **Kompatibilität**
-- **Nextcloud**: 28+ (getestet)
-- **Tables App**: 0.6+ (getestet) 
-- **n8n**: 1.0+ (getestet)
+    Views: /tables/{id}/views, /views/{id} (full CRUD)
 
-### 🛠️ **Technische Details**
-- **API Version**: Hybrid v1/v2 (optimal je nach Operation)
-- **Authentifizierung**: Basic Auth mit App-Passwort-Support
-- **Error Handling**: 10 HTTP-Status-Codes mit spezifischen Meldungen
-- **Retry Logic**: 3 Versuche mit exponentiellem Backoff
-- **Validation**: Spalten-basierte Echtzeit-Validierung
+    Columns: /tables/{id}/columns, /columns/{id} (full CRUD + AI-friendly)
 
-## Development & Testing
+    Shares: /tables/{id}/shares, /shares/{id} (full CRUD)
 
-### Setup
-```bash
-npm install          # Dependencies
-npm run build        # TypeScript kompilieren  
-npm run dev          # Development-Modus
-npm run lint         # Code-Prüfung
-npm run format       # Code formatieren
-```
+    Import: /tables/{id}/import (POST + status monitoring)
 
-### Projekt-Architektur
-```
+    Context: /contexts/* (GET operations)
+
+*Note: Row DELETE is not supported by the Nextcloud Tables API
+🔧 Compatibility
+
+    Nextcloud: 28+ (tested)
+
+    Tables App: 0.6+ (tested)
+
+    n8n: 1.0+ (tested)
+
+🛠️ Technical Details
+
+    API Version: Hybrid v1/v2 (optimized per operation)
+
+    Authentication: Basic Auth with app-password support
+
+    Error Handling: 10 HTTP status codes with specific messages
+
+    Retry Logic: 3 attempts with exponential backoff
+
+    Validation: Column-based real-time validation
+
+Development & Testing
+Setup
+
+npm install          # Install dependencies
+npm run build        # Compile TypeScript  
+npm run dev          # Development mode
+npm run lint         # Lint code
+npm run format       # Format code
+
+Project Structure
+
 nodes/NextcloudTables/
-├── NextcloudTables.node.ts              # Haupt-Node
-├── descriptions/                        # UI-Definitionen
-│   ├── column.ts     ← KI-OPTIMIERT
+├── NextcloudTables.node.ts           # Main node
+├── descriptions/                     # UI definitions
+│   ├── column.ts     ← AI-OPTIMIZED
 │   ├── table.ts      ├── row.ts
 │   ├── view.ts       ├── share.ts  
 │   ├── import.ts     └── context.ts
-├── handlers/                           # Business Logic
-│   ├── column.handler.ts ← KI-FRIENDLY LOGIC
+├── handlers/                         # Business logic
+│   ├── column.handler.ts ← AI-FRIENDLY LOGIC
 │   └── *.handler.ts
-├── helpers/                           # Core Utilities
-│   ├── api.helper.ts                  # HTTP + Error Handling
-│   ├── data.formatter.ts              # Validation
-│   └── node.methods.ts                # Dynamic Dropdowns
-└── interfaces/                        # TypeScript Types
-```
+├── helpers/                          # Core utilities
+│   ├── api.helper.ts                 # HTTP + error handling
+│   ├── data.formatter.ts             # Validation
+│   └── node.methods.ts               # Dynamic dropdowns
+└── interfaces/                       # TypeScript types
 
-## 🛠️ **Troubleshooting**
+🛠️ Troubleshooting
+Logging & Debugging
 
-### Logging & Debugging
+🔍 Improved Log Labeling (New in v2.4.8)
+All node logs are now clearly labeled for better grepping:
 
-**🔍 Verbesserte Log-Kennzeichnung (Neu in v2.4.8)**  
-Alle Logs der Node sind jetzt eindeutig gekennzeichnet für besseres Grepping:
-
-```bash
-# Alle Nextcloud Tables Node Logs
+# All Nextcloud Tables node logs
 grep "N8N-NEXTCLOUD-TABLES" /path/to/n8n/logs
 
-# Nur API-Fehler
+# Only API errors
 grep "N8N-NEXTCLOUD-TABLES.*API-ERROR" /path/to/n8n/logs
 
-# Nur Validierungsfehler
+# Only validation errors
 grep "N8N-NEXTCLOUD-TABLES.*VALIDATION-ERROR" /path/to/n8n/logs
 
-# Operation-spezifische Logs
+# Operation-specific logs
 grep "N8N-NEXTCLOUD-TABLES.*OPERATION-" /path/to/n8n/logs
 
-# Resource Locator Debugging
+# Resource Locator debugging
 grep "N8N-NEXTCLOUD-TABLES.*RESOURCE-VALIDATION" /path/to/n8n/logs
-```
 
-**Log-Kategorien:**
-- `[N8N-NEXTCLOUD-TABLES] [DEBUG] [API-REQUEST]` - API-Anfragen
-- `[N8N-NEXTCLOUD-TABLES] [DEBUG] [API-RESPONSE]` - API-Antworten  
-- `[N8N-NEXTCLOUD-TABLES] [INFO] [OPERATION-START]` - Operation gestartet
-- `[N8N-NEXTCLOUD-TABLES] [INFO] [OPERATION-SUCCESS]` - Operation erfolgreich
-- `[N8N-NEXTCLOUD-TABLES] [ERROR] [OPERATION-ERROR]` - Operation fehlgeschlagen
-- `[N8N-NEXTCLOUD-TABLES] [WARN] [VALIDATION-ERROR]` - Validierungsfehler
-- `[N8N-NEXTCLOUD-TABLES] [DEBUG] [RESOURCE-VALIDATION]` - Resource Locator Debugging
+Log Categories:
 
-**Beispiel-Logs:**
-```
+    [N8N-NEXTCLOUD-TABLES] [DEBUG] [API-REQUEST] - API requests
+
+    [N8N-NEXTCLOUD-TABLES] [DEBUG] [API-RESPONSE] - API responses
+
+    [N8N-NEXTCLOUD-TABLES] [INFO] [OPERATION-START] - Operation started
+
+    [N8N-NEXTCLOUD-TABLES] [INFO] [OPERATION-SUCCESS] - Operation successful
+
+    [N8N-NEXTCLOUD-TABLES] [ERROR] [OPERATION-ERROR] - Operation failed
+
+    [N8N-NEXTCLOUD-TABLES] [WARN] [VALIDATION-ERROR] - Validation error
+
+    [N8N-NEXTCLOUD-TABLES] [DEBUG] [RESOURCE-VALIDATION] - Resource locator debugging
+
+Example Logs:
+
 2024-01-15T10:30:45.123Z [N8N-NEXTCLOUD-TABLES] [INFO] [OPERATION-START] table.getAll
 2024-01-15T10:30:45.124Z [N8N-NEXTCLOUD-TABLES] [DEBUG] [API-REQUEST] GET /tables
 2024-01-15T10:30:45.234Z [N8N-NEXTCLOUD-TABLES] [DEBUG] [API-RESPONSE] GET /tables -> 200 (110ms)
 2024-01-15T10:30:45.235Z [N8N-NEXTCLOUD-TABLES] [INFO] [OPERATION-SUCCESS] table.getAll completed (112ms)
-```
 
-### Häufige Probleme
+### Common Issues
 
 **401 Unauthorized**  
-✅ **Lösung**: App-Passwort verwenden, Berechtigungen prüfen
+✅ **Solution**: Use an app password, check permissions.
 
-**KI-Agent kann Parameter nicht sehen**  
-✅ **Lösung**: KI-Friendly Operationen verwenden (`createAIFriendly`, `updateAIFriendly`)
+**AI Agent can't see parameters**  
+✅ **Solution**: Use AI-Friendly operations (`createAIFriendly`, `updateAIFriendly`).
 
-**🚨 NaN Table ID Errors (BEHOBEN in v2.4.7)**  
-❌ **Symptom**: Nextcloud-Logs zeigen `table id = NaN` oder `table id = 0`  
-✅ **Lösung**: Update auf v2.4.7 - Robuste Resource Locator Validierung implementiert
+**🚨 NaN Table ID Errors (FIXED in v2.4.7)**  
+❌ **Symptom**: Nextcloud logs show `table id = NaN` or `table id = 0`.  
+✅ **Solution**: Update to v2.4.7 – robust Resource Locator validation implemented.
 
-**Filter funktionieren nicht**  
-✅ **Lösung**: Spalten-IDs statt Namen, korrekte Operatoren verwenden
+**Filters not working**  
+✅ **Solution**: Use column IDs instead of names, ensure correct operators.
 
-**Column-Erstellung fehlgeschlagen**  
-✅ **Behoben**: Verwendet optimierte API v1 mit Query-Parametern
+**Column creation failed**  
+✅ **Fixed**: Uses optimized API v1 with query parameters.
 
 **Resource Locator Validation Errors**  
-✅ **Neu in v2.4.7**: Detaillierte Fehlermeldungen helfen bei Debugging:
-```
-"Resource Locator ist erforderlich aber nicht gesetzt oder ungültig"
-"Ungültige ID in Resource Locator: 'undefined' ist keine gültige Zahl"
-```
+✅ **New in v2.4.7**: Detailed error messages to help with debugging:
+
+"Resource Locator is required but not set or invalid"
+"Invalid ID in Resource Locator: 'undefined' is not a valid number"
+
 
 ### Error Handling
-Detaillierte Fehlermeldungen für alle HTTP-Status-Codes:
-- **400-404**: Client-Fehler mit Lösungshinweisen
-- **429**: Rate-Limiting mit automatischer Wiederholung  
-- **5xx**: Server-Fehler mit Retry-Logic
-- **Resource Locator**: Spezifische Validierung und Debugging-Hilfen (v2.4.7)
+Detailed error messages for all HTTP status codes:
+- **400–404**: Client errors with suggested fixes
+- **429**: Rate-limiting with automatic retry
+- **5xx**: Server errors with retry logic
+- **Resource Locator**: Specific validation and helpful debugging (v2.4.7)
 
 ## 🎯 **Roadmap**
 
-### ✅ **Version 2.4.8 (Aktuell)**
-- ✅ **Verbesserte Log-Kennzeichnung** - Eindeutige `[N8N-NEXTCLOUD-TABLES]` Präfixe
-- ✅ **Strukturiertes Logging** - Debug, Info, Warn, Error Level mit Kontext
-- ✅ **API-Request/Response Logging** - Detaillierte Debugging-Informationen
-- ✅ **Operation-Tracking** - Start, Success, Error Logging mit Zeitstempel
-- ✅ **Validation-Logging** - Resource Locator und Parameter-Validierung
-- ✅ **Grep-freundliche Logs** - Einfache Filterung nach Kategorien
+### ✅ **Version 2.4.8 (Current)**
+- ✅ **Improved Log Labeling** – clear `[N8N-NEXTCLOUD-TABLES]` prefixes
+- ✅ **Structured Logging** – Debug, Info, Warn, Error levels with context
+- ✅ **API Request/Response Logging** – detailed debugging information
+- ✅ **Operation Tracking** – start, success, error logging with timestamps
+- ✅ **Validation Logging** – resource locator and parameter validation
+- ✅ **Grep-friendly logs** – easy filtering by category
 
 ### ✅ **Version 2.4.7**
-- 🛡️ **Kritische NaN-Bug-Fixes**: Robuste Resource Locator Validierung
-- 🧹 **Production-Cleanup**: Entfernung aller Debug-Tools und Altlasten
-- ⚡ **Enhanced Error Handling**: Hilfreiche Fehlermeldungen und Validierung
-- 📦 **Optimierte Builds**: Saubere TypeScript-Compilation ohne Warnings
+- 🛡️ **Critical NaN Bug Fixes**: Robust resource locator validation
+- 🧹 **Production Cleanup**: Removed all debug tools and legacy code
+- ⚡ **Enhanced Error Handling**: Helpful messages and validation
+- 📦 **Optimized Builds**: Clean TypeScript compilation without warnings
 
-### ✅ **Version 2.4.6 (Vorgänger)**
-- Vollständige KI-Agent-Optimierung
-- 24 AI-Parameter mit systematischer Trennung
-- Robuste Validierung und Error Handling
-- Saubere UX für alle Operationen
+### ✅ **Version 2.4.6 (Previous)**
+- Full AI-Agent optimization
+- 24 AI parameters with systematic separation
+- Robust validation and error handling
+- Clean UX for all operations
 
-### 🔮 **Zukünftige Versionen**
-- **Weitere AI-Friendly Operationen** für andere Ressourcen
-- **Erweiterte KI-Features** (Bulk-Operations, Schema-Inference)
-- **Performance-Optimierungen** für große Datenmengen
-- **Extended Context-Integration** mit mehr Nextcloud-Apps
+### 🔮 **Future Versions**
+- More AI-Friendly operations for other resources
+- Extended AI features (bulk operations, schema inference)
+- Performance optimizations for large datasets
+- Extended context integration with more Nextcloud apps
 
 ## Contributing
 
-**Beiträge willkommen!** Besonders:
-- 🤖 **KI-Agent Testing**: Testen Sie die AI-friendly Operationen
-- 🐛 **Bug Reports**: GitHub Issues für Probleme
-- 💻 **Code**: Verbesserungen und neue Features
-- 📝 **Dokumentation**: Beispiele und Best Practices
+**Contributions welcome!** Especially:
+- 🤖 **AI-Agent Testing**: Help test the AI-friendly operations
+- 🐛 **Bug Reports**: Use GitHub Issues
+- 💻 **Code**: Improvements and new features
+- 📝 **Documentation**: Examples and best practices
 
-## Lizenz
+## License
 
 MIT
 
@@ -519,5 +585,5 @@ MIT
 
 ---
 
-**🤖 Diese Node ist die erste KI-Agent-optimierte n8n Community Node!**  
-**Probieren Sie die AI-friendly Operationen aus und erleben Sie autonome Tabellen-Verwaltung.** 
+**🤖 This node is the first AI-Agent-optimized n8n community node!**  
+**Try the AI-friendly operations and experience fully autonomous table mana

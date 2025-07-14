@@ -13,16 +13,16 @@ export const importOperations: INodeProperties[] = [
 		},
 		options: [
 			{
-				name: 'CSV-Import',
+				name: 'CSV Import',
 				value: 'importCsv',
-				description: 'Eine CSV-Datei in eine Tabelle importieren',
-				action: 'CSV-Datei importieren',
+				description: 'Import a CSV file into a table',
+				action: 'Import CSV file',
 			},
 			{
-				name: 'Import-Status Prüfen',
+				name: 'Check Import Status',
 				value: 'getImportStatus',
-				description: 'Den Status eines laufenden Imports prüfen',
-				action: 'Import-Status prüfen',
+				description: 'Check the status of an ongoing import',
+				action: 'Check import status',
 			},
 		],
 		default: 'importCsv',
@@ -30,17 +30,17 @@ export const importOperations: INodeProperties[] = [
 ];
 
 export const importFields: INodeProperties[] = [
-	// Tabellen-ID für Import
+	// Table ID for Import
 	{
-		displayName: 'Tabelle',
+		displayName: 'Table',
 		name: 'tableId',
 		type: 'resourceLocator',
 		default: { mode: 'list', value: '' },
 		required: true,
-		description: 'Wählen Sie eine Tabelle aus der Liste oder geben Sie deren ID an',
+		description: 'Select a table from the list or specify its ID',
 		modes: [
 			{
-				displayName: 'Liste',
+				displayName: 'List',
 				name: 'list',
 				type: 'list',
 				typeOptions: {
@@ -53,7 +53,7 @@ export const importFields: INodeProperties[] = [
 				displayName: 'ID',
 				name: 'id',
 				type: 'string',
-				placeholder: 'Tabellen-ID',
+				placeholder: 'Table ID',
 			},
 		],
 		displayOptions: {
@@ -64,9 +64,9 @@ export const importFields: INodeProperties[] = [
 		},
 	},
 
-	// CSV-Datei
+	// CSV File
 	{
-		displayName: 'CSV-Datei',
+		displayName: 'CSV File',
 		name: 'csvFile',
 		type: 'string',
 		required: true,
@@ -77,19 +77,19 @@ export const importFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Die CSV-Datei zum Importieren (Dateiinhalt oder Dateipfad)',
-		placeholder: 'CSV-Dateiinhalt oder Pfad zur Datei...',
+		description: 'The CSV file to import (file content or file path)',
+		placeholder: 'CSV file content or path...',
 		typeOptions: {
 			alwaysOpenEditWindow: true,
 		},
 	},
 
-	// Import-Optionen
+	// Import Options
 	{
-		displayName: 'Import-Optionen',
+		displayName: 'Import Options',
 		name: 'importOptions',
 		type: 'collection',
-		placeholder: 'Option hinzufügen',
+		placeholder: 'Add option',
 		displayOptions: {
 			show: {
 				resource: ['import'],
@@ -99,90 +99,66 @@ export const importFields: INodeProperties[] = [
 		default: {},
 		options: [
 			{
-				displayName: 'Erste Zeile enthält Spaltenüberschriften',
+				displayName: 'First Row Contains Headers',
 				name: 'hasHeader',
 				type: 'boolean',
 				default: true,
-				description: 'Ob die erste Zeile der CSV-Datei Spaltenüberschriften enthält',
+				description: 'Whether the first row of the CSV file contains column headers',
 			},
 			{
-				displayName: 'Trennzeichen',
+				displayName: 'Delimiter',
 				name: 'delimiter',
 				type: 'options',
 				default: ',',
-				description: 'Das Trennzeichen für CSV-Spalten',
+				description: 'The delimiter for CSV columns',
 				options: [
-					{
-						name: 'Komma (,)',
-						value: ',',
-					},
-					{
-						name: 'Semikolon (;)',
-						value: ';',
-					},
-					{
-						name: 'Tab',
-						value: '\t',
-					},
-					{
-						name: 'Pipe (|)',
-						value: '|',
-					},
-					{
-						name: 'Benutzerdefiniert',
-						value: 'custom',
-					},
+					{ name: 'Comma (,)', value: ',' },
+					{ name: 'Semicolon (;)', value: ';' },
+					{ name: 'Tab', value: '\t' },
+					{ name: 'Pipe (|)', value: '|' },
+					{ name: 'Custom', value: 'custom' },
 				],
 			},
 			{
-				displayName: 'Benutzerdefiniertes Trennzeichen',
+				displayName: 'Custom Delimiter',
 				name: 'customDelimiter',
 				type: 'string',
 				default: '',
-				description: 'Benutzerdefiniertes Trennzeichen (nur relevant wenn Trennzeichen auf "Benutzerdefiniert" gesetzt ist)',
-				placeholder: 'z.B. | oder ;',
+				description: 'Custom delimiter (only relevant if Delimiter is set to "Custom")',
+				placeholder: 'e.g. | or ;',
 			},
 			{
-				displayName: 'Textqualifizierer',
+				displayName: 'Text Qualifier',
 				name: 'textQualifier',
 				type: 'options',
 				default: '"',
-				description: 'Zeichen zum Umschließen von Textwerten',
+				description: 'Character used to enclose text values',
 				options: [
-					{
-						name: 'Anführungszeichen (")',
-						value: '"',
-					},
-					{
-						name: 'Apostroph (\')',
-						value: "'",
-					},
-					{
-						name: 'Keine',
-						value: '',
-					},
+					{ name: 'Quote (")', value: '"' },
+					{ name: "Apostrophe (')", value: "'" },
+					{ name: 'None', value: '' },
 				],
 			},
 			{
-				displayName: 'Leere Zeilen überspringen',
+				displayName: 'Skip Empty Rows',
 				name: 'skipEmptyRows',
 				type: 'boolean',
 				default: true,
-				description: 'Ob leere Zeilen beim Import übersprungen werden sollen',
+				description: 'Whether to skip empty rows during import',
 			},
 			{
-				displayName: 'Fehlerhafte Zeilen überspringen',
+				displayName: 'Skip Invalid Rows',
 				name: 'skipInvalidRows',
 				type: 'boolean',
 				default: false,
-				description: 'Ob Zeilen mit Fehlern übersprungen werden sollen (anstatt den Import abzubrechen)',
+				description: 'Whether to skip rows with errors instead of aborting the import',
 			},
 		],
 	},
 
-	// Spalten-Mapping
+	// Column Mapping
 	{
-		displayName: 'Spalten-Mapping',
+		displayName: 'Column Mapping',
 		name: 'columnMapping',
 		type: 'fixedCollection',
 		typeOptions: {
@@ -195,73 +171,74 @@ export const importFields: INodeProperties[] = [
 			},
 		},
 		default: {},
-		placeholder: 'Spalten-Zuordnung hinzufügen',
+		placeholder: 'Add column mapping',
 		options: [
 			{
-				displayName: 'Spalten-Zuordnung',
+				displayName: 'Column Mapping',
 				name: 'mapping',
 				values: [
 					{
-						displayName: 'CSV-Spalte',
+						displayName: 'CSV Column',
 						name: 'csvColumn',
 						type: 'string',
 						default: '',
-						description: 'Name oder Index der CSV-Spalte (bei Index: 0, 1, 2, ...)',
-						placeholder: 'z.B. "Name" oder "0"',
+						description: 'Name or index of the CSV column (if index: 0, 1, 2, ...)',
+						placeholder: 'e.g. "Name" or "0"',
 					},
 					{
-						displayName: 'Tabellen-Spalte',
+						displayName: 'Table Column',
 						name: 'tableColumn',
 						type: 'options',
 						typeOptions: {
 							loadOptionsMethod: 'getColumns',
 						},
 						default: '',
-						description: 'Zielspalte in der Nextcloud-Tabelle',
+						description: 'Target column in the Nextcloud table',
 					},
 					{
-						displayName: 'Datentyp-Konvertierung',
+						displayName: 'Data Type Conversion',
 						name: 'dataType',
 						type: 'options',
 						default: 'auto',
-						description: 'Wie die Daten konvertiert werden sollen',
+						description: 'How the data should be converted',
 						options: [
 							{
-								name: 'Automatisch',
+								name: 'Automatic',
 								value: 'auto',
-								description: 'Automatische Erkennung basierend auf Spaltentyp',
+								description: 'Automatic detection based on column type',
 							},
 							{
 								name: 'Text',
 								value: 'text',
-								description: 'Als Text behandeln',
+								description: 'Treat as text',
 							},
 							{
-								name: 'Zahl',
+								name: 'Number',
 								value: 'number',
-								description: 'Als Zahl behandeln',
+								description: 'Treat as number',
 							},
 							{
-								name: 'Datum',
+								name: 'Date',
 								value: 'datetime',
-								description: 'Als Datum/Zeit behandeln',
+								description: 'Treat as date/time',
 							},
 							{
 								name: 'Boolean',
 								value: 'boolean',
-								description: 'Als Wahr/Falsch behandeln',
+								description: 'Treat as true/false',
 							},
 						],
 					},
 				],
 			},
 		],
-		description: 'Zuordnung zwischen CSV-Spalten und Tabellen-Spalten (optional - ohne Mapping werden Spalten automatisch zugeordnet)',
+		description:
+			'Mapping between CSV columns and table columns (optional - without mapping, columns are matched automatically)',
 	},
 
-	// Import-ID für Status-Abfrage
+	// Import ID for Status Check
 	{
-		displayName: 'Import-ID',
+		displayName: 'Import ID',
 		name: 'importId',
 		type: 'string',
 		required: true,
@@ -272,7 +249,8 @@ export const importFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Die ID des zu prüfenden Imports',
-		placeholder: 'Import-ID eingeben...',
+		description: 'The ID of the import to check',
+		placeholder: 'Enter Import ID...',
 	},
-]; 
+];
+

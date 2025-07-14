@@ -1,33 +1,33 @@
 import {
-	IExecuteFunctions,
-	ILoadOptionsFunctions,
-	INodeExecutionData,
-	INodePropertyOptions,
-	INodeType,
-	INodeTypeDescription,
-	NodeConnectionType,
-	INodeListSearchResult,
+  IExecuteFunctions,
+  ILoadOptionsFunctions,
+  INodeExecutionData,
+  INodeListSearchResult,
+  INodePropertyOptions,
+  INodeType,
+  INodeTypeDescription,
+  NodeConnectionType,
 } from 'n8n-workflow';
 
-// Handler importieren
-import { TableHandler } from './handlers/table.handler';
-import { RowHandler } from './handlers/row.handler';
-import { ViewHandler } from './handlers/view.handler';
+// Import handlers
 import { ColumnHandler } from './handlers/column.handler';
-import { ShareHandler } from './handlers/share.handler';
 import { ImportHandler } from './handlers/import.handler';
+import { RowHandler } from './handlers/row.handler';
+import { ShareHandler } from './handlers/share.handler';
+import { TableHandler } from './handlers/table.handler';
+import { ViewHandler } from './handlers/view.handler';
 
-// Helper importieren
-import { NodeLoadOptions, NodeListSearch } from './helpers/node.methods';
+// Import helpers
 import { NextcloudTablesLogger } from './helpers/api.helper';
+import { NodeListSearch, NodeLoadOptions } from './helpers/node.methods';
 
-// Beschreibungen importieren
-import { tableOperations, tableFields } from './descriptions/table';
-import { rowOperations, rowFields } from './descriptions/row';
-import { viewOperations, viewFields } from './descriptions/view';
-import { columnOperations, columnFields } from './descriptions/column';
-import { shareOperations, shareFields } from './descriptions/share';
-import { importOperations, importFields } from './descriptions/import';
+// Import descriptions
+import { columnFields, columnOperations } from './descriptions/column';
+import { importFields, importOperations } from './descriptions/import';
+import { rowFields, rowOperations } from './descriptions/row';
+import { shareFields, shareOperations } from './descriptions/share';
+import { tableFields, tableOperations } from './descriptions/table';
+import { viewFields, viewOperations } from './descriptions/view';
 
 export class NextcloudTables implements INodeType {
 	description: INodeTypeDescription = {
@@ -37,7 +37,7 @@ export class NextcloudTables implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{ $parameter["operation"] + ": " + $parameter["resource"] }}',
-		description: 'Verwalten Sie Ihre Nextcloud Tables - Tabellen, Zeilen und Daten',
+		description: 'Manage your Nextcloud Tables - tables, rows, and data',
 		defaults: {
 			name: 'Nextcloud Tables',
 		},
@@ -64,40 +64,40 @@ export class NextcloudTables implements INodeType {
 				noDataExpression: true,
 				options: [
 					{
-						name: 'Tabelle',
+						name: 'Table',
 						value: 'table',
-						description: 'Operationen mit Nextcloud Tables',
+						description: 'Operations with Nextcloud Tables',
 					},
 					{
 						name: 'View',
 						value: 'view',
-						description: 'Operationen mit Tabellen-Views',
+						description: 'Operations with table views',
 					},
 					{
-						name: 'Spalte',
+						name: 'Column',
 						value: 'column',
-						description: 'Operationen mit Tabellen-Spalten',
+						description: 'Operations with table columns',
 					},
 					{
 						name: 'Share',
 						value: 'share',
-						description: 'Operationen mit Tabellen-Freigaben',
+						description: 'Operations with table sharing',
 					},
 					{
 						name: 'Import',
 						value: 'import',
-						description: 'CSV-Import in Tabellen',
+						description: 'CSV import into tables',
 					},
 					{
-						name: 'Zeile',
+						name: 'Row',
 						value: 'row',
-						description: 'Operationen mit Tabellen-Zeilen',
+						description: 'Operations with table rows',
 					},
 				],
 				default: 'table',
-				description: 'Die Ressource für diese Operation',
+				description: 'The resource to operate on',
 			},
-			// Operationen und Felder
+			// Operations and fields
 			...tableOperations,
 			...tableFields,
 			...viewOperations,
@@ -135,13 +135,22 @@ export class NextcloudTables implements INodeType {
 			},
 		},
 		listSearch: {
-			async getTables(this: ILoadOptionsFunctions, filter?: string): Promise<INodeListSearchResult> {
+			async getTables(
+				this: ILoadOptionsFunctions,
+				filter?: string,
+			): Promise<INodeListSearchResult> {
 				return NodeListSearch.getTables(this, filter);
 			},
-			async getViews(this: ILoadOptionsFunctions, filter?: string): Promise<INodeListSearchResult> {
+			async getViews(
+				this: ILoadOptionsFunctions,
+				filter?: string,
+			): Promise<INodeListSearchResult> {
 				return NodeListSearch.getViews(this, filter);
 			},
-			async getColumns(this: ILoadOptionsFunctions, filter?: string): Promise<INodeListSearchResult> {
+			async getColumns(
+				this: ILoadOptionsFunctions,
+				filter?: string,
+			): Promise<INodeListSearchResult> {
 				return NodeListSearch.getColumns(this, filter);
 			},
 		},
@@ -160,7 +169,7 @@ export class NextcloudTables implements INodeType {
 				// Log operation start
 				NextcloudTablesLogger.operationStart(resource, operation, {
 					itemIndex: i,
-					totalItems: items.length
+					totalItems: items.length,
 				});
 
 				let result;
@@ -184,8 +193,13 @@ export class NextcloudTables implements INodeType {
 						result = await RowHandler.execute(this, operation, i);
 						break;
 					default:
-						NextcloudTablesLogger.error('OPERATION-ERROR', `Unknown resource: ${resource}`, null, { resource, operation });
-						throw new Error(`[N8N-NEXTCLOUD-TABLES] Unbekannte Ressource: ${resource}`);
+						NextcloudTablesLogger.error(
+							'OPERATION-ERROR',
+							`Unknown resource: ${resource}`,
+							null,
+							{ resource, operation },
+						);
+						throw new Error(`[N8N-NEXTCLOUD-TABLES] Unknown resource: ${resource}`);
 				}
 
 				const duration = Date.now() - startTime;
@@ -196,9 +210,9 @@ export class NextcloudTables implements INodeType {
 				const duration = Date.now() - startTime;
 				const resource = this.getNodeParameter('resource', i, 'unknown') as string;
 				const operation = this.getNodeParameter('operation', i, 'unknown') as string;
-				
+
 				NextcloudTablesLogger.operationError(resource, operation, error, duration);
-				
+
 				const nodeError = error as Error;
 				if (this.continueOnFail()) {
 					returnData.push({
@@ -212,4 +226,5 @@ export class NextcloudTables implements INodeType {
 
 		return this.prepareOutputData(returnData);
 	}
-} 
+}
+

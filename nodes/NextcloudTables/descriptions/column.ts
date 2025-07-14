@@ -13,46 +13,46 @@ export const columnOperations: INodeProperties[] = [
 		},
 		options: [
 			{
-				name: 'Alle Spalten Abrufen',
+				name: 'Get All Columns',
 				value: 'getAll',
-				description: 'Alle Spalten einer Tabelle abrufen',
-				action: 'Alle Spalten abrufen',
+				description: 'Retrieve all columns of a table',
+				action: 'Get all columns',
 			},
 			{
-				name: 'Spalte Abrufen',
+				name: 'Get Column',
 				value: 'get',
-				description: 'Eine spezifische Spalte abrufen',
-				action: 'Spalte abrufen',
+				description: 'Retrieve a specific column',
+				action: 'Get column',
 			},
 			{
-				name: 'Spalte Erstellen',
+				name: 'Create Column',
 				value: 'create',
-				description: 'Eine neue Spalte erstellen',
-				action: 'Spalte erstellen',
+				description: 'Create a new column',
+				action: 'Create column',
 			},
 			{
-				name: 'Spalte Erstellen (KI-Friendly)',
+				name: 'Create Column (AI-Friendly)',
 				value: 'createAIFriendly',
-				description: 'Eine neue Spalte erstellen - optimiert für KI Agents',
-				action: 'Spalte erstellen (KI-Friendly)',
+				description: 'Create a new column optimized for AI agents',
+				action: 'Create column (AI-Friendly)',
 			},
 			{
-				name: 'Spalte Aktualisieren',
+				name: 'Update Column',
 				value: 'update',
-				description: 'Eine Spalte aktualisieren',
-				action: 'Spalte aktualisieren',
+				description: 'Update a column',
+				action: 'Update column',
 			},
 			{
-				name: 'Spalte Aktualisieren (KI-Friendly)',
+				name: 'Update Column (AI-Friendly)',
 				value: 'updateAIFriendly',
-				description: 'Eine Spalte komplett aktualisieren - optimiert für KI Agents',
-				action: 'Spalte aktualisieren (KI-Friendly)',
+				description: 'Fully update a column optimized for AI agents',
+				action: 'Update column (AI-Friendly)',
 			},
 			{
-				name: 'Spalte Löschen',
+				name: 'Delete Column',
 				value: 'delete',
-				description: 'Eine Spalte löschen',
-				action: 'Spalte löschen',
+				description: 'Delete a column',
+				action: 'Delete column',
 			},
 		],
 		default: 'getAll',
@@ -61,10 +61,10 @@ export const columnOperations: INodeProperties[] = [
 
 export const columnFields: INodeProperties[] = [
 	// ==============================================
-	// KI-FRIENDLY OPERATIONS - ALLE Parameter verfügbar
+	// AI-FRIENDLY OPERATIONS - All parameters available
 	// ==============================================
 
-	// Tabellen-ID (String-Eingabe für KI Agents - nur für CREATE)
+	// Table ID (string input for AI Agents - only for CREATE)
 	{
 		displayName: 'tableIdAI',
 		name: 'tableIdAI',
@@ -77,11 +77,12 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Die ID der Tabelle in der die Spalte erstellt werden soll (nur für createAIFriendly Operation verwendet, wird bei anderen ignoriert)',
+		description:
+			'The ID of the table where the column should be created (used only for createAIFriendly operation, ignored otherwise)',
 		placeholder: '123',
 	},
 
-	// Basis-Parameter (immer verfügbar)
+	// Base parameters (always available)
 	{
 		displayName: 'columnType',
 		name: 'columnType',
@@ -94,7 +95,8 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: 'text',
-		description: 'Der Typ der Spalte (erforderlich für createAIFriendly, optional für updateAIFriendly, wird bei anderen ignoriert). Gültige Werte: "text", "number", "datetime", "selection", "usergroup"',
+		description:
+			'Type of the column (required for createAIFriendly, optional for updateAIFriendly, ignored otherwise). Valid values: "text", "number", "datetime", "selection", "usergroup"',
 		placeholder: 'text',
 	},
 
@@ -110,8 +112,9 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Der Titel der Spalte (erforderlich für createAIFriendly, optional für updateAIFriendly, wird bei anderen ignoriert)',
-		placeholder: 'Meine Spalte',
+		description:
+			'The title of the column (required for createAIFriendly, optional for updateAIFriendly, ignored otherwise)',
+		placeholder: 'My Column',
 	},
 
 	{
@@ -125,8 +128,9 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Optionale Beschreibung für die Spalte (für createAIFriendly/updateAIFriendly Operationen verwendet, wird bei anderen ignoriert)',
-		placeholder: 'Beschreibung der Spalte...',
+		description:
+			'Optional description for the column (used in createAIFriendly/updateAIFriendly operations, ignored otherwise)',
+		placeholder: 'Description of the column...',
 	},
 
 	{
@@ -140,10 +144,11 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: false,
-		description: 'Ob diese Spalte ein Pflichtfeld ist (für createAIFriendly/updateAIFriendly Operationen verwendet, wird bei anderen ignoriert)',
+		description:
+			'Whether this column is required (used in createAIFriendly/updateAIFriendly operations, ignored otherwise)',
 	},
 
-	// TEXT-parameter (immer verfügbar - nur relevant wenn columnType="text")
+	// TEXT parameters (always available - only relevant if columnType="text")
 	{
 		displayName: 'textSubtypeAI',
 		name: 'textSubtypeAI',
@@ -155,7 +160,8 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: 'line',
-		description: 'Subtyp für Text-Spalten (wird ignoriert bei anderen Typen, für createAIFriendly/updateAIFriendly Operationen verwendet). Gültige Werte: "line" (einzeilig), "long" (mehrzeilig)',
+		description:
+			'Subtype for text columns (ignored for other types, used in createAIFriendly/updateAIFriendly operations). Valid values: "line" (single line), "long" (multiline)',
 		placeholder: 'line',
 	},
 
@@ -170,8 +176,9 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Standard-Wert für neue Zeilen (wird ignoriert bei anderen Typen, für createAIFriendly/updateAIFriendly Operationen verwendet)',
-		placeholder: 'Standard-Text...',
+		description:
+			'Default value for new rows (ignored for other types, used in createAIFriendly/updateAIFriendly operations)',
+		placeholder: 'Default text...',
 	},
 
 	{
@@ -185,7 +192,8 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: 255,
-		description: 'Maximale Zeichen-Anzahl (wird ignoriert bei anderen Typen, für createAIFriendly/updateAIFriendly Operationen verwendet)',
+		description:
+			'Maximum number of characters (ignored for other types, used in createAIFriendly/updateAIFriendly operations)',
 	},
 
 	{
@@ -199,11 +207,12 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Regex-Pattern zur Validierung (wird ignoriert bei anderen Typen, für createAIFriendly/updateAIFriendly Operationen verwendet)',
+		description:
+			'Regex pattern for validation (ignored for other types, used in createAIFriendly/updateAIFriendly operations)',
 		placeholder: '^[A-Za-z0-9]+$',
 	},
 
-	// NUMBER-parameter (immer verfügbar - nur relevant wenn columnType="number")
+	// NUMBER parameters (always available - only relevant if columnType="number")
 	{
 		displayName: 'numberDefaultAI',
 		name: 'numberDefaultAI',
@@ -215,7 +224,8 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: 0,
-		description: 'Standard-Wert für neue Zeilen (wird ignoriert bei anderen Typen, für createAIFriendly/updateAIFriendly Operationen verwendet)',
+		description:
+			'Default value for new rows (ignored for other types, used in createAIFriendly/updateAIFriendly operations)',
 	},
 
 	{
@@ -229,7 +239,8 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Kleinster erlaubter Wert (wird ignoriert bei anderen Typen, für createAIFriendly/updateAIFriendly Operationen verwendet)',
+		description:
+			'Minimum allowed value (ignored for other types, used in createAIFriendly/updateAIFriendly operations)',
 	},
 
 	{
@@ -243,7 +254,8 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Größter erlaubter Wert (wird ignoriert bei anderen Typen, für createAIFriendly/updateAIFriendly Operationen verwendet)',
+		description:
+			'Maximum allowed value (ignored for other types, used in createAIFriendly/updateAIFriendly operations)',
 	},
 
 	{
@@ -257,7 +269,8 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: 0,
-		description: 'Anzahl der Dezimalstellen (wird ignoriert bei anderen Typen, für createAIFriendly/updateAIFriendly Operationen verwendet)',
+		description:
+			'Number of decimal places (ignored for other types, used in createAIFriendly/updateAIFriendly operations)',
 	},
 
 	{
@@ -271,7 +284,8 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Text vor der Zahl, z.B. "€" (wird ignoriert bei anderen Typen, für createAIFriendly/updateAIFriendly Operationen verwendet)',
+		description:
+			'Text before the number, e.g. "€" (ignored for other types, used in createAIFriendly/updateAIFriendly operations)',
 		placeholder: '€',
 	},
 
@@ -286,11 +300,12 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Text nach der Zahl, z.B. "kg" (wird ignoriert bei anderen Typen, für createAIFriendly/updateAIFriendly Operationen verwendet)',
+		description:
+			'Text after the number, e.g. "kg" (ignored for other types, used in createAIFriendly/updateAIFriendly operations)',
 		placeholder: 'kg',
 	},
 
-	// DATETIME-parameter (immer verfügbar - nur relevant wenn columnType="datetime")
+	// DATETIME parameters (always available - only relevant if columnType="datetime")
 	{
 		displayName: 'datetimeDefaultAI',
 		name: 'datetimeDefaultAI',
@@ -302,11 +317,12 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Standard-Datum/Zeit in ISO 8601 Format oder "today" (wird ignoriert bei anderen Typen, für createAIFriendly/updateAIFriendly Operationen verwendet)',
-		placeholder: '2024-01-01T12:00:00Z oder "today"',
+		description:
+			'Default date/time in ISO 8601 format or "today" (ignored for other types, used in createAIFriendly/updateAIFriendly operations)',
+		placeholder: '2024-01-01T12:00:00Z or "today"',
 	},
 
-	// SELECTION-parameter (immer verfügbar - nur relevant wenn columnType="selection")
+	// SELECTION parameters (always available - only relevant if columnType="selection")
 	{
 		displayName: 'selectionOptionsAI',
 		name: 'selectionOptionsAI',
@@ -318,7 +334,8 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'JSON-Array mit Auswahl-Optionen, z.B. ["Option 1", "Option 2"] (wird ignoriert bei anderen Typen, für createAIFriendly/updateAIFriendly Operationen verwendet)',
+		description:
+			'JSON array with selection options, e.g. ["Option 1", "Option 2"] (ignored for other types, used in createAIFriendly/updateAIFriendly operations)',
 		placeholder: '["Option 1", "Option 2", "Option 3"]',
 	},
 
@@ -333,7 +350,8 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Standard-Auswahl (muss in den Optionen enthalten sein, wird ignoriert bei anderen Typen, für createAIFriendly/updateAIFriendly Operationen verwendet)',
+		description:
+			'Default selection (must be one of the options, ignored for other types, used in createAIFriendly/updateAIFriendly operations)',
 		placeholder: 'Option 1',
 	},
 
@@ -348,10 +366,11 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: false,
-		description: 'Ob mehrere Optionen gleichzeitig ausgewählt werden können (wird ignoriert bei anderen Typen, für createAIFriendly/updateAIFriendly Operationen verwendet)',
+		description:
+			'Whether multiple options can be selected (ignored for other types, used in createAIFriendly/updateAIFriendly operations)',
 	},
 
-	// USERGROUP-parameter (immer verfügbar - nur relevant wenn columnType="usergroup")
+	// USERGROUP parameters (always available - only relevant if columnType="usergroup")
 	{
 		displayName: 'usergroupTypeAI',
 		name: 'usergroupTypeAI',
@@ -363,7 +382,8 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: 'user',
-		description: 'Art der Benutzer/Gruppen-Auswahl (wird ignoriert bei anderen Typen, für createAIFriendly/updateAIFriendly Operationen verwendet). Gültige Werte: "user" (Benutzer), "group" (Gruppen)',
+		description:
+			'Type of user/group selection (ignored for other types, used in createAIFriendly/updateAIFriendly operations). Valid values: "user", "group"',
 		placeholder: 'user',
 	},
 
@@ -378,7 +398,8 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Standard-Benutzer/Gruppe (wird ignoriert bei anderen Typen, für createAIFriendly/updateAIFriendly Operationen verwendet)',
+		description:
+			'Default user/group (ignored for other types, used in createAIFriendly/updateAIFriendly operations)',
 		placeholder: 'admin',
 	},
 
@@ -393,10 +414,11 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: false,
-		description: 'Ob mehrere Benutzer/Gruppen gleichzeitig ausgewählt werden können (wird ignoriert bei anderen Typen, für createAIFriendly/updateAIFriendly Operationen verwendet)',
+		description:
+			'Whether multiple users/groups can be selected (ignored for other types, used in createAIFriendly/updateAIFriendly operations)',
 	},
 
-	// SPALTEN-ID für updateAIFriendly (String-Eingabe für KI Agents)
+	// COLUMN-ID for updateAIFriendly (String input for AI Agents)
 	{
 		displayName: 'columnIdAI',
 		name: 'columnIdAI',
@@ -409,25 +431,26 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Die ID der Spalte die aktualisiert werden soll (nur für updateAIFriendly Operation verwendet, wird bei anderen ignoriert)',
+		description:
+			'ID of the column to update (only used for updateAIFriendly operation, ignored otherwise)',
 		placeholder: '456',
 	},
 
 	// ==============================================
-	// ORIGINAL OPERATIONS - Für normale UI Nutzer
+	// ORIGINAL OPERATIONS - For standard UI users
 	// ==============================================
 
-	// Tabellen-ID für getAll, create
+	// Table ID for getAll, create
 	{
-		displayName: 'Tabelle',
+		displayName: 'Table',
 		name: 'tableId',
 		type: 'resourceLocator',
 		default: { mode: 'list', value: '' },
 		required: true,
-		description: 'Wählen Sie eine Tabelle aus der Liste oder geben Sie deren ID an',
+		description: 'Select a table from the list or enter its ID',
 		modes: [
 			{
-				displayName: 'Liste',
+				displayName: 'List',
 				name: 'list',
 				type: 'list',
 				typeOptions: {
@@ -440,13 +463,13 @@ export const columnFields: INodeProperties[] = [
 				displayName: 'ID',
 				name: 'id',
 				type: 'string',
-				placeholder: 'Tabellen-ID',
+				placeholder: 'Table ID',
 				validation: [
 					{
 						type: 'regex',
 						properties: {
 							regex: '^[0-9]+$',
-							errorMessage: 'Bitte eine gültige Tabellen-ID (Zahl) eingeben',
+							errorMessage: 'Please enter a valid Table ID (number)',
 						},
 					},
 				],
@@ -460,17 +483,17 @@ export const columnFields: INodeProperties[] = [
 		},
 	},
 
-	// Spalten-ID als resourceLocator für get, update, delete
+	// Column ID as resourceLocator for get, update, delete
 	{
-		displayName: 'Spalte',
+		displayName: 'Column',
 		name: 'columnId',
 		type: 'resourceLocator',
 		default: { mode: 'list', value: '' },
 		required: true,
-		description: 'Wählen Sie eine Spalte aus der Liste oder geben Sie deren ID an',
+		description: 'Select a column from the list or enter its ID',
 		modes: [
 			{
-				displayName: 'Liste',
+				displayName: 'List',
 				name: 'list',
 				type: 'list',
 				typeOptions: {
@@ -483,13 +506,13 @@ export const columnFields: INodeProperties[] = [
 				displayName: 'ID',
 				name: 'id',
 				type: 'string',
-				placeholder: 'Spalten-ID',
+				placeholder: 'Column ID',
 				validation: [
 					{
 						type: 'regex',
 						properties: {
 							regex: '^[0-9]+$',
-							errorMessage: 'Bitte eine gültige Spalten-ID (Zahl) eingeben',
+							errorMessage: 'Please enter a valid Column ID (number)',
 						},
 					},
 				],
@@ -503,9 +526,9 @@ export const columnFields: INodeProperties[] = [
 		},
 	},
 
-	// Titel für create
+	// Title for create
 	{
-		displayName: 'Titel',
+		displayName: 'Title',
 		name: 'title',
 		type: 'string',
 		required: true,
@@ -519,13 +542,13 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Der Titel der neuen Spalte',
-		placeholder: 'Spalten-Name eingeben...',
+		description: 'The title of the new column',
+		placeholder: 'Enter column name...',
 	},
 
-	// Beschreibung für create
+	// Description for create
 	{
-		displayName: 'Beschreibung',
+		displayName: 'Description',
 		name: 'description',
 		type: 'string',
 		typeOptions: {
@@ -538,13 +561,13 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Eine optionale Beschreibung für die Spalte',
-		placeholder: 'Beschreibung der Spalte...',
+		description: 'An optional description for the column',
+		placeholder: 'Column description...',
 	},
 
-	// Typ für create
+	// Type for create
 	{
-		displayName: 'Spalten-Typ',
+		displayName: 'Column Type',
 		name: 'type',
 		type: 'options',
 		required: true,
@@ -558,36 +581,36 @@ export const columnFields: INodeProperties[] = [
 			{
 				name: 'Text',
 				value: 'text',
-				description: 'Textspalte',
+				description: 'Text column',
 			},
 			{
-				name: 'Zahl',
+				name: 'Number',
 				value: 'number',
-				description: 'Zahlenspalte',
+				description: 'Number column',
 			},
 			{
-				name: 'Datum/Zeit',
+				name: 'Date/Time',
 				value: 'datetime',
-				description: 'Datum- und Zeitspalte',
+				description: 'Date and time column',
 			},
 			{
-				name: 'Auswahl',
+				name: 'Selection',
 				value: 'selection',
-				description: 'Auswahlliste',
+				description: 'Dropdown selection list',
 			},
 			{
-				name: 'Benutzer/Gruppe',
+				name: 'User/Group',
 				value: 'usergroup',
-				description: 'Benutzer- oder Gruppenauswahl',
+				description: 'User or group selection',
 			},
 		],
 		default: 'text',
-		description: 'Der Typ der Spalte',
+		description: 'The type of the column',
 	},
 
-	// Mandatory für create
+	// Mandatory for create
 	{
-		displayName: 'Pflichtfeld',
+		displayName: 'Required Field',
 		name: 'mandatory',
 		type: 'boolean',
 		displayOptions: {
@@ -597,24 +620,24 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: false,
-		description: 'Ob diese Spalte ein Pflichtfeld ist',
+		description: 'Whether this column is a required field',
 	},
 
-	// Text-spezifische Konfiguration für create
+	// Text-specific configuration for create
 	{
-		displayName: 'Text-Subtyp',
+		displayName: 'Text Subtype',
 		name: 'textSubtype',
 		type: 'options',
 		options: [
 			{
-				name: 'Line (Einzeilig)',
+				name: 'Line (Single line)',
 				value: 'line',
-				description: 'Einzeiliges Textfeld',
+				description: 'Single-line text field',
 			},
 			{
-				name: 'Long Text (Mehrzeilig)',
+				name: 'Long Text (Multiline)',
 				value: 'long',
-				description: 'Mehrzeiliges Textfeld',
+				description: 'Multiline text field',
 			},
 		],
 		default: 'line',
@@ -625,11 +648,11 @@ export const columnFields: INodeProperties[] = [
 				type: ['text'],
 			},
 		},
-		description: 'Der Subtyp der Text-Spalte',
+		description: 'The subtype of the text column',
 	},
 
 	{
-		displayName: 'Standard-Text',
+		displayName: 'Default Text',
 		name: 'textDefault',
 		type: 'string',
 		typeOptions: {
@@ -643,12 +666,12 @@ export const columnFields: INodeProperties[] = [
 				type: ['text'],
 			},
 		},
-		description: 'Standard-Wert für neue Zeilen',
-		placeholder: 'Standard-Text...',
+		description: 'Default value for new rows',
+		placeholder: 'Default text...',
 	},
 
 	{
-		displayName: 'Maximale Länge',
+		displayName: 'Maximum Length',
 		name: 'textMaxLength',
 		type: 'number',
 		default: 255,
@@ -659,11 +682,11 @@ export const columnFields: INodeProperties[] = [
 				type: ['text'],
 			},
 		},
-		description: 'Maximale Anzahl Zeichen (leer = unbegrenzt)',
+		description: 'Maximum number of characters (empty = unlimited)',
 	},
 
 	{
-		displayName: 'Validierungs-Pattern',
+		displayName: 'Validation Pattern',
 		name: 'textAllowedPattern',
 		type: 'string',
 		typeOptions: {
@@ -677,13 +700,13 @@ export const columnFields: INodeProperties[] = [
 				type: ['text'],
 			},
 		},
-		description: 'Regex-Pattern zur Validierung (optional)',
+		description: 'Regex pattern for validation (optional)',
 		placeholder: '^[A-Za-z0-9]+$',
 	},
 
-	// Number-spezifische Konfiguration für create
+	// Number-specific configuration for create
 	{
-		displayName: 'Standard-Zahl',
+		displayName: 'Default Number',
 		name: 'numberDefault',
 		type: 'number',
 		default: 0,
@@ -694,7 +717,7 @@ export const columnFields: INodeProperties[] = [
 				type: ['number'],
 			},
 		},
-		description: 'Standard-Wert für neue Zeilen',
+		description: 'Default value for new rows',
 	},
 
 	{
@@ -709,7 +732,7 @@ export const columnFields: INodeProperties[] = [
 				type: ['number'],
 			},
 		},
-		description: 'Kleinster erlaubter Wert (optional)',
+		description: 'Minimum allowed value (optional)',
 	},
 
 	{
@@ -724,11 +747,11 @@ export const columnFields: INodeProperties[] = [
 				type: ['number'],
 			},
 		},
-		description: 'Größter erlaubter Wert (optional)',
+		description: 'Maximum allowed value (optional)',
 	},
 
 	{
-		displayName: 'Dezimalstellen',
+		displayName: 'Decimal Places',
 		name: 'numberDecimals',
 		type: 'number',
 		default: 0,
@@ -739,11 +762,11 @@ export const columnFields: INodeProperties[] = [
 				type: ['number'],
 			},
 		},
-		description: 'Anzahl der Dezimalstellen',
+		description: 'Number of decimal places',
 	},
 
 	{
-		displayName: 'Präfix',
+		displayName: 'Prefix',
 		name: 'numberPrefix',
 		type: 'string',
 		typeOptions: {
@@ -757,7 +780,7 @@ export const columnFields: INodeProperties[] = [
 				type: ['number'],
 			},
 		},
-		description: 'Text vor der Zahl (z.B. "€")',
+		description: 'Text before the number (e.g. "€")',
 		placeholder: '€',
 	},
 
@@ -776,13 +799,13 @@ export const columnFields: INodeProperties[] = [
 				type: ['number'],
 			},
 		},
-		description: 'Text nach der Zahl (z.B. "kg")',
+		description: 'Text after the number (e.g. "kg")',
 		placeholder: 'kg',
 	},
 
-	// Datetime-spezifische Konfiguration für create
+	// Datetime-specific configuration for create
 	{
-		displayName: 'Standard-Datum',
+		displayName: 'Default Date',
 		name: 'datetimeDefault',
 		type: 'string',
 		typeOptions: {
@@ -796,19 +819,19 @@ export const columnFields: INodeProperties[] = [
 				type: ['datetime'],
 			},
 		},
-		description: 'Standard-Datum/Zeit (ISO 8601 Format oder "today")',
-		placeholder: '2024-01-01T12:00:00Z oder "today"',
+		description: 'Default date/time (ISO 8601 format or "today")',
+		placeholder: '2024-01-01T12:00:00Z or "today"',
 	},
 
-	// Selection-spezifische Konfiguration für create
+	// Selection-specific configuration for create
 	{
-		displayName: 'Auswahl-Optionen',
+		displayName: 'Selection Options',
 		name: 'selectionOptions',
 		type: 'fixedCollection',
 		typeOptions: {
 			multipleValues: true,
 		},
-		placeholder: 'Option hinzufügen',
+		placeholder: 'Add Option',
 		displayOptions: {
 			show: {
 				resource: ['column'],
@@ -823,21 +846,21 @@ export const columnFields: INodeProperties[] = [
 				name: 'option',
 				values: [
 					{
-						displayName: 'Wert',
+						displayName: 'Value',
 						name: 'value',
 						type: 'string',
 						default: '',
-						description: 'Der Wert der Option',
-						placeholder: 'Option eingeben...',
+						description: 'The value of the option',
+						placeholder: 'Enter option...',
 					},
 				],
 			},
 		],
-		description: 'Die verfügbaren Auswahl-Optionen',
+		description: 'The available selection options',
 	},
 
 	{
-		displayName: 'Standard-Auswahl',
+		displayName: 'Default Selection',
 		name: 'selectionDefault',
 		type: 'string',
 		typeOptions: {
@@ -851,12 +874,12 @@ export const columnFields: INodeProperties[] = [
 				type: ['selection'],
 			},
 		},
-		description: 'Standard-Auswahl (muss in den Optionen enthalten sein)',
+		description: 'Default selection (must be included in the options)',
 		placeholder: 'Option 1',
 	},
 
 	{
-		displayName: 'Mehrfach-Auswahl',
+		displayName: 'Multiple Selection',
 		name: 'selectionMultiple',
 		type: 'boolean',
 		default: false,
@@ -867,24 +890,24 @@ export const columnFields: INodeProperties[] = [
 				type: ['selection'],
 			},
 		},
-		description: 'Ob mehrere Optionen gleichzeitig ausgewählt werden können',
+		description: 'Whether multiple options can be selected at the same time',
 	},
 
-	// UserGroup-spezifische Konfiguration für create
+	// UserGroup-specific configuration for create
 	{
-		displayName: 'Benutzer/Gruppen-Typ',
+		displayName: 'User/Group Type',
 		name: 'usergroupType',
 		type: 'options',
 		options: [
 			{
-				name: 'User (Benutzer)',
+				name: 'User',
 				value: 'user',
-				description: 'Nur Benutzer auswählbar',
+				description: 'Only users selectable',
 			},
 			{
-				name: 'Group (Gruppen)',
+				name: 'Group',
 				value: 'group',
-				description: 'Nur Gruppen auswählbar',
+				description: 'Only groups selectable',
 			},
 		],
 		default: 'user',
@@ -895,11 +918,11 @@ export const columnFields: INodeProperties[] = [
 				type: ['usergroup'],
 			},
 		},
-		description: 'Art der Benutzer/Gruppen-Auswahl',
+		description: 'Type of user/group selection',
 	},
 
 	{
-		displayName: 'Standard-Benutzer/Gruppe',
+		displayName: 'Default User/Group',
 		name: 'usergroupDefault',
 		type: 'string',
 		typeOptions: {
@@ -913,12 +936,12 @@ export const columnFields: INodeProperties[] = [
 				type: ['usergroup'],
 			},
 		},
-		description: 'Standard-Benutzer/Gruppe',
+		description: 'Default user/group',
 		placeholder: 'admin',
 	},
 
 	{
-		displayName: 'Mehrfach-Auswahl',
+		displayName: 'Multiple Selection',
 		name: 'usergroupMultiple',
 		type: 'boolean',
 		default: false,
@@ -929,12 +952,12 @@ export const columnFields: INodeProperties[] = [
 				type: ['usergroup'],
 			},
 		},
-		description: 'Ob mehrere Benutzer/Gruppen gleichzeitig ausgewählt werden können',
+		description: 'Whether multiple users/groups can be selected at the same time',
 	},
 
-	// Felder für update
+	// Fields for update
 	{
-		displayName: 'Titel',
+		displayName: 'Title',
 		name: 'title',
 		type: 'string',
 		typeOptions: {
@@ -947,12 +970,12 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Der neue Titel der Spalte (optional)',
-		placeholder: 'Neuer Spalten-Name...',
+		description: 'The new title of the column (optional)',
+		placeholder: 'Enter new column name...',
 	},
 
 	{
-		displayName: 'Beschreibung',
+		displayName: 'Description',
 		name: 'description',
 		type: 'string',
 		typeOptions: {
@@ -965,12 +988,12 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Die neue Beschreibung der Spalte (optional)',
-		placeholder: 'Neue Beschreibung...',
+		description: 'The new description of the column (optional)',
+		placeholder: 'New description...',
 	},
 
 	{
-		displayName: 'Pflichtfeld',
+		displayName: 'Required Field',
 		name: 'mandatory',
 		type: 'boolean',
 		displayOptions: {
@@ -980,6 +1003,7 @@ export const columnFields: INodeProperties[] = [
 			},
 		},
 		default: false,
-		description: 'Ob diese Spalte ein Pflichtfeld ist',
+		description: 'Whether this column is a required field',
 	},
-]; 
+];
+

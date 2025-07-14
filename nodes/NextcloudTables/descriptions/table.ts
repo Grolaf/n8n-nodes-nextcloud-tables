@@ -13,34 +13,34 @@ export const tableOperations: INodeProperties[] = [
 		},
 		options: [
 			{
-				name: 'Alle Tabellen Abrufen',
+				name: 'Get All Tables',
 				value: 'getAll',
-				description: 'Alle verfügbaren Tabellen abrufen',
-				action: 'Alle Tabellen abrufen',
+				description: 'Retrieve all available tables',
+				action: 'Get all tables',
 			},
 			{
-				name: 'Tabelle Abrufen',
+				name: 'Get Table',
 				value: 'get',
-				description: 'Eine spezifische Tabelle abrufen',
-				action: 'Tabelle abrufen',
+				description: 'Retrieve a specific table',
+				action: 'Get table',
 			},
 			{
-				name: 'Tabelle Erstellen',
+				name: 'Create Table',
 				value: 'create',
-				description: 'Eine neue Tabelle erstellen',
-				action: 'Tabelle erstellen',
+				description: 'Create a new table',
+				action: 'Create table',
 			},
 			{
-				name: 'Tabelle Aktualisieren',
+				name: 'Update Table',
 				value: 'update',
-				description: 'Eine Tabelle aktualisieren',
-				action: 'Tabelle aktualisieren',
+				description: 'Update a table',
+				action: 'Update table',
 			},
 			{
-				name: 'Tabelle Löschen',
+				name: 'Delete Table',
 				value: 'delete',
-				description: 'Eine Tabelle löschen',
-				action: 'Tabelle löschen',
+				description: 'Delete a table',
+				action: 'Delete table',
 			},
 		],
 		default: 'getAll',
@@ -48,17 +48,17 @@ export const tableOperations: INodeProperties[] = [
 ];
 
 export const tableFields: INodeProperties[] = [
-	// Tabellen-ID als resourceLocator für get, update, delete
+	// Table ID as resourceLocator for get, update, delete
 	{
-		displayName: 'Tabelle',
+		displayName: 'Table',
 		name: 'tableId',
 		type: 'resourceLocator',
 		default: { mode: 'list', value: '' },
 		required: true,
-		description: 'Wählen Sie eine Tabelle aus der Liste oder geben Sie deren ID an',
+		description: 'Select a table from the list or enter its ID',
 		modes: [
 			{
-				displayName: 'Liste',
+				displayName: 'List',
 				name: 'list',
 				type: 'list',
 				typeOptions: {
@@ -71,13 +71,13 @@ export const tableFields: INodeProperties[] = [
 				displayName: 'ID',
 				name: 'id',
 				type: 'string',
-				placeholder: 'Tabellen-ID',
+				placeholder: 'Table ID',
 				validation: [
 					{
 						type: 'regex',
 						properties: {
 							regex: '^[0-9]+$',
-							errorMessage: 'Bitte eine gültige Tabellen-ID (Zahl) eingeben',
+							errorMessage: 'Please enter a valid table ID (number)',
 						},
 					},
 				],
@@ -91,9 +91,9 @@ export const tableFields: INodeProperties[] = [
 		},
 	},
 
-	// Titel für create
+	// Title for create
 	{
-		displayName: 'Titel',
+		displayName: 'Title',
 		name: 'title',
 		type: 'string',
 		required: true,
@@ -107,11 +107,11 @@ export const tableFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Der Titel der neuen Tabelle',
-		placeholder: 'Tabellen-Name eingeben...',
+		description: 'The title of the new table',
+		placeholder: 'Enter table name...',
 	},
 
-	// Emoji für create
+	// Emoji for create
 	{
 		displayName: 'Emoji',
 		name: 'emoji',
@@ -126,11 +126,11 @@ export const tableFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Ein optionales Emoji für die Tabelle',
+		description: 'An optional emoji for the table',
 		placeholder: '📊',
 	},
 
-	// Template für create
+	// Template for create
 	{
 		displayName: 'Template',
 		name: 'template',
@@ -143,33 +143,33 @@ export const tableFields: INodeProperties[] = [
 		},
 		options: [
 			{
-				name: 'Keine Vorlage',
+				name: 'No Template',
 				value: '',
-				description: 'Erstelle eine leere Tabelle',
+				description: 'Create an empty table',
 			},
 			{
-				name: 'Todo-Liste',
+				name: 'Todo List',
 				value: 'todo',
-				description: 'Erstelle eine Tabelle basierend auf der Todo-Vorlage',
+				description: 'Create a table based on the todo template',
 			},
 			{
-				name: 'Mitarbeiter',
+				name: 'Employees',
 				value: 'employees',
-				description: 'Erstelle eine Tabelle basierend auf der Mitarbeiter-Vorlage',
+				description: 'Create a table based on the employees template',
 			},
 			{
-				name: 'Kunden',
+				name: 'Customers',
 				value: 'customers',
-				description: 'Erstelle eine Tabelle basierend auf der Kunden-Vorlage',
+				description: 'Create a table based on the customers template',
 			},
 		],
 		default: '',
-		description: 'Wählen Sie eine Vorlage für die neue Tabelle',
+		description: 'Choose a template for the new table',
 	},
 
-	// Zusätzliche Felder für update
+	// Additional fields for update
 	{
-		displayName: 'Titel',
+		displayName: 'Title',
 		name: 'title',
 		type: 'string',
 		typeOptions: {
@@ -182,8 +182,8 @@ export const tableFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Der neue Titel der Tabelle (optional)',
-		placeholder: 'Neuer Tabellen-Name...',
+		description: 'The new title for the table (optional)',
+		placeholder: 'New table name...',
 	},
 
 	{
@@ -200,12 +200,12 @@ export const tableFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Das neue Emoji für die Tabelle (optional)',
+		description: 'The new emoji for the table (optional)',
 		placeholder: '📊',
 	},
 
 	{
-		displayName: 'Archiviert',
+		displayName: 'Archived',
 		name: 'archived',
 		type: 'boolean',
 		displayOptions: {
@@ -215,6 +215,7 @@ export const tableFields: INodeProperties[] = [
 			},
 		},
 		default: false,
-		description: 'Ob die Tabelle archiviert werden soll',
+		description: 'Whether the table should be archived',
 	},
-]; 
+];
+

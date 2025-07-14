@@ -3,7 +3,11 @@ import { ApiHelper } from '../helpers/api.helper';
 import { Share } from '../interfaces';
 
 export class ShareHandler {
-	static async execute(context: IExecuteFunctions, operation: string, itemIndex: number): Promise<any> {
+	static async execute(
+		context: IExecuteFunctions,
+		operation: string,
+		itemIndex: number,
+	): Promise<any> {
 		switch (operation) {
 			case 'getAll':
 				return this.getAll(context, itemIndex);
@@ -14,58 +18,58 @@ export class ShareHandler {
 			case 'delete':
 				return this.delete(context, itemIndex);
 			default:
-				throw new Error(`Unbekannte Operation: ${operation}`);
+				throw new Error(`Unknown operation: ${operation}`);
 		}
 	}
 
 	/**
-	 * Alle Shares einer Tabelle abrufen
+	 * Fetch all shares for a table
 	 */
 	private static async getAll(context: IExecuteFunctions, itemIndex: number): Promise<Share[]> {
 		const tableId = ApiHelper.getResourceId(context.getNodeParameter('tableId', itemIndex));
-		
-		return ApiHelper.makeApiRequest<Share[]>(
-			context,
-			'GET',
-			`/tables/${tableId}/shares`,
-		);
+
+		return ApiHelper.makeApiRequest<Share[]>(context, 'GET', `/tables/${tableId}/shares`);
 	}
 
 	/**
-	 * Einen neuen Share erstellen
+	 * Create a new share
 	 */
 	private static async create(context: IExecuteFunctions, itemIndex: number): Promise<Share> {
 		const tableId = ApiHelper.getResourceId(context.getNodeParameter('tableId', itemIndex));
 		const shareType = context.getNodeParameter('shareType', itemIndex) as string;
-		
-		// Receiver abhängig vom Share-Typ extrahieren
+
+		// Extract receiver based on share type
 		let receiver: string;
 		if (shareType === 'user') {
 			receiver = context.getNodeParameter('userReceiver', itemIndex) as string;
 		} else if (shareType === 'group') {
 			receiver = context.getNodeParameter('groupReceiver', itemIndex) as string;
 		} else {
-			throw new Error(`Unbekannter Share-Typ: ${shareType}`);
+			throw new Error(`Unknown share type: ${shareType}`);
 		}
-		
-		const permissionsCollection = context.getNodeParameter('permissions', itemIndex, {}) as any;
-		const additionalOptions = context.getNodeParameter('additionalOptions', itemIndex, {}) as any;
 
-		// Basis-Body aufbauen
+		const permissionsCollection = context.getNodeParameter('permissions', itemIndex, {}) as any;
+		const additionalOptions = context.getNodeParameter(
+			'additionalOptions',
+			itemIndex,
+			{},
+		) as any;
+
+		// Build base request body
 		const body: any = {
 			receiver,
 			receiverType: shareType,
 		};
 
-		// Anzeigename hinzufügen falls angegeben
+		// Add display name if specified
 		if (additionalOptions.displayName) {
 			body.receiverDisplayName = additionalOptions.displayName;
 		}
 
-		// Berechtigungen aus fixedCollection extrahieren
+		// Extract permissions from fixedCollection
 		const permissions = permissionsCollection?.permission?.[0] || null;
 
-		// Berechtigungen hinzufügen
+		// Add permissions
 		if (permissions) {
 			body.permissionRead = permissions.read || false;
 			body.permissionCreate = permissions.create || false;
@@ -73,7 +77,7 @@ export class ShareHandler {
 			body.permissionDelete = permissions.delete || false;
 			body.permissionManage = permissions.manage || false;
 		} else {
-			// Standard-Berechtigung: nur Lesen
+			// Default permission: read-only
 			body.permissionRead = true;
 			body.permissionCreate = false;
 			body.permissionUpdate = false;
@@ -81,25 +85,20 @@ export class ShareHandler {
 			body.permissionManage = false;
 		}
 
-		return ApiHelper.makeApiRequest<Share>(
-			context,
-			'POST',
-			`/tables/${tableId}/shares`,
-			body,
-		);
+		return ApiHelper.makeApiRequest<Share>(context, 'POST', `/tables/${tableId}/shares`, body);
 	}
 
 	/**
-	 * Berechtigungen eines Shares aktualisieren
+	 * Update permissions of a share
 	 */
 	private static async update(context: IExecuteFunctions, itemIndex: number): Promise<Share> {
 		const shareId = context.getNodeParameter('shareId', itemIndex) as string;
 		const permissionsCollection = context.getNodeParameter('permissions', itemIndex, {}) as any;
 
-		// Berechtigungen aus fixedCollection extrahieren
+		// Extract permissions from fixedCollection
 		const permissions = permissionsCollection?.permission?.[0] || null;
 
-		// Berechtigungen-Body aufbauen
+		// Build permissions body
 		const body: any = {};
 
 		if (permissions) {
@@ -109,50 +108,46 @@ export class ShareHandler {
 			body.permissionDelete = permissions.delete || false;
 			body.permissionManage = permissions.manage || false;
 		} else {
-			throw new Error('Mindestens eine Berechtigung muss angegeben werden');
+			throw new Error('At least one permission must be specified');
 		}
 
-		return ApiHelper.makeApiRequest<Share>(
-			context,
-			'PUT',
-			`/shares/${shareId}`,
-			body,
-		);
+		return ApiHelper.makeApiRequest<Share>(context, 'PUT', `/shares/${shareId}`, body);
 	}
 
 	/**
-	 * Einen Share löschen
+	 * Delete a share
 	 */
-	private static async delete(context: IExecuteFunctions, itemIndex: number): Promise<{ success: boolean; message?: string }> {
+	private static async delete(
+		context: IExecuteFunctions,
+		itemIndex: number,
+	): Promise<{ success: boolean; message?: string }> {
 		const shareId = context.getNodeParameter('shareId', itemIndex) as string;
 
-		await ApiHelper.makeApiRequest(
-			context,
-			'DELETE',
-			`/shares/${shareId}`,
-		);
+		await ApiHelper.makeApiRequest(context, 'DELETE', `/shares/${shareId}`);
 
-		return { success: true, message: `Share ${shareId} wurde erfolgreich gelöscht` };
+		return { success: true, message: `Share ${shareId} was successfully deleted` };
 	}
 
 	/**
-	 * Hilfsfunktion: Berechtigungen validieren
+	 * Helper function: validate permissions
 	 */
 	private static validatePermissions(permissions: any): boolean {
 		if (!permissions) {
 			return false;
 		}
 
-		// Mindestens eine Berechtigung muss true sein
-		return permissions.read || 
-			   permissions.create || 
-			   permissions.update || 
-			   permissions.delete || 
-			   permissions.manage;
+		// At least one permission must be true
+		return (
+			permissions.read ||
+			permissions.create ||
+			permissions.update ||
+			permissions.delete ||
+			permissions.manage
+		);
 	}
 
 	/**
-	 * Hilfsfunktion: Share-Typ validieren  
+	 * Helper function: validate share type
 	 */
 	private static validateShareType(shareType: string): boolean {
 		const validTypes = ['user', 'group'];
@@ -160,16 +155,17 @@ export class ShareHandler {
 	}
 
 	/**
-	 * Hilfsfunktion: Empfänger validieren (grundlegend)
+	 * Helper function: basic receiver validation
 	 */
 	private static validateReceiver(receiver: string): boolean {
-		// Grundlegende Validierung: nicht leer und keine Sonderzeichen
+		// Basic validation: not empty and no special characters
 		if (!receiver || receiver.trim().length === 0) {
 			return false;
 		}
 
-		// Einfache Regex für Nextcloud-Benutzernamen (Buchstaben, Zahlen, Unterstrich, Bindestrich)
+		// Simple regex for Nextcloud usernames (letters, numbers, underscore, hyphen)
 		const receiverRegex = /^[a-zA-Z0-9_-]+$/;
 		return receiverRegex.test(receiver.trim());
 	}
-} 
+}
+

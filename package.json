@@ -1,69 +1,69 @@
 {
-  "name": "n8n-nodes-nextcloud-tables",
-  "version": "2.4.6",
-  "description": "Production-Ready n8n Node für Nextcloud Tables - Vollständige API-Abdeckung mit erweiterten Filtern, Multi-Column-Sorting, CSV-Import und professioneller Datenvalidierung",
-  "keywords": [
-    "n8n-community-node-package",
-    "n8n-node-nextcloud",
-    "nextcloud",
-    "tables",
-    "database",
-    "data-management",
-    "professional",
-    "csv-import",
-    "filtering",
-    "sorting",
-    "data-validation",
-    "collaboration",
-    "workflow-automation"
-  ],
-  "license": "MIT",
-  "homepage": "https://n8n.io",
-  "author": {
-    "name": "Niko Terschawetz",
-    "email": "nt@terschaweb.de"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/terschawebIT/n8n-nodes-nextcloud-tables.git"
-  },
-  "main": "index.js",
-  "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
-    "format": "prettier --write .",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "package": "npm run build && npm pack"
-  },
-  "files": [
-    "dist"
-  ],
-  "n8n": {
-    "n8nNodesApiVersion": 1,
-    "credentials": [
-      "dist/credentials/NextcloudTablesApi.credentials.js"
-    ],
-    "nodes": [
-      "dist/nodes/NextcloudTables/NextcloudTables.node.js"
-    ]
-  },
-  "devDependencies": {
-    "@types/node": "^20.0.0",
-    "@typescript-eslint/eslint-plugin": "^6.21.0",
-    "@typescript-eslint/parser": "^6.21.0",
-    "eslint": "^8.57.0",
-    "eslint-plugin-n8n-nodes-base": "^1.16.0",
-    "gulp": "^5.0.0",
-    "n8n-workflow": "^1.2.0",
-    "prettier": "^3.0.0",
-    "typescript": "~5.3.0"
-  },
-  "dependencies": {
-    "axios": "^1.7.0",
-    "form-data": "^4.0.0"
-  },
-  "peerDependencies": {
-    "n8n-workflow": ">=1.0.0"
-  }
+	"name": "n8n-nodes-nextcloud-tables-en",
+	"version": "2.5.0",
+	"description": "Production-ready n8n node for Nextcloud Tables – full API coverage with advanced filters, multi-column sorting, CSV import, and professional data validation",
+	"keywords": [
+		"n8n-community-node-package",
+		"n8n-node-nextcloud",
+		"nextcloud",
+		"tables",
+		"database",
+		"data-management",
+		"professional",
+		"csv-import",
+		"filtering",
+		"sorting",
+		"data-validation",
+		"collaboration",
+		"workflow-automation"
+	],
+	"license": "MIT",
+	"homepage": "https://n8n.io",
+	"author": {
+		"name": "Niko Terschawetz",
+		"email": "nt@terschaweb.de"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/terschawebIT/n8n-nodes-nextcloud-tables.git"
+	},
+	"main": "index.js",
+	"scripts": {
+		"build": "tsc",
+		"dev": "tsc --watch",
+		"format": "prettier --write .",
+		"lint": "eslint .",
+		"lint:fix": "eslint . --fix",
+		"package": "npm run build && npm pack"
+	},
+	"files": [
+		"dist"
+	],
+	"n8n": {
+		"n8nNodesApiVersion": 1,
+		"credentials": [
+			"dist/credentials/NextcloudTablesApi.credentials.js"
+		],
+		"nodes": [
+			"dist/nodes/NextcloudTables/NextcloudTables.node.js"
+		]
+	},
+	"devDependencies": {
+		"@types/node": "^20.0.0",
+		"@typescript-eslint/eslint-plugin": "^6.21.0",
+		"@typescript-eslint/parser": "^6.21.0",
+		"eslint": "^8.57.0",
+		"eslint-plugin-n8n-nodes-base": "^1.16.0",
+		"gulp": "^5.0.0",
+		"n8n-workflow": "^1.2.0",
+		"prettier": "^3.0.0",
+		"typescript": "~5.3.0"
+	},
+	"dependencies": {
+		"axios": "^1.7.0",
+		"form-data": "^4.0.0"
+	},
+	"peerDependencies": {
+		"n8n-workflow": ">=1.0.0"
+	}
 }

@@ -3,44 +3,55 @@ import { ApiHelper } from '../helpers/api.helper';
 import { ImportState } from '../interfaces';
 
 export class ImportHandler {
-	static async execute(context: IExecuteFunctions, operation: string, itemIndex: number): Promise<any> {
+	static async execute(
+		context: IExecuteFunctions,
+		operation: string,
+		itemIndex: number,
+	): Promise<any> {
 		switch (operation) {
 			case 'importCsv':
 				return this.importCsv(context, itemIndex);
 			case 'getImportStatus':
 				return this.getImportStatus(context, itemIndex);
 			default:
-				throw new Error(`Unbekannte Operation: ${operation}`);
+				throw new Error(`Unknown operation: ${operation}`);
 		}
 	}
 
 	/**
-	 * CSV-Datei in eine Tabelle importieren
+	 * Import CSV file into a table
 	 */
-	private static async importCsv(context: IExecuteFunctions, itemIndex: number): Promise<ImportState> {
+	private static async importCsv(
+		context: IExecuteFunctions,
+		itemIndex: number,
+	): Promise<ImportState> {
 		const tableId = ApiHelper.getResourceId(context.getNodeParameter('tableId', itemIndex));
 		const csvFile = context.getNodeParameter('csvFile', itemIndex) as string;
 		const importOptions = context.getNodeParameter('importOptions', itemIndex, {}) as any;
-		const columnMapping = context.getNodeParameter('columnMapping.mapping', itemIndex, []) as any[];
+		const columnMapping = context.getNodeParameter(
+			'columnMapping.mapping',
+			itemIndex,
+			[],
+		) as any[];
 
-		// CSV-Datei validieren
+		// Validate CSV file
 		if (!csvFile || csvFile.trim().length === 0) {
 			throw new Error('CSV-Datei darf nicht leer sein');
 		}
 
-		// Import-Body aufbauen
+		// Build import body
 		const body: any = {
 			file: csvFile.trim(),
 		};
 
-		// Import-Optionen hinzufügen
+		// Add import options
 		if (importOptions) {
-			// Header-Zeile
+			// Header row
 			if (typeof importOptions.hasHeader === 'boolean') {
 				body.hasHeader = importOptions.hasHeader;
 			}
 
-			// Trennzeichen
+			// Delimiter
 			if (importOptions.delimiter) {
 				if (importOptions.delimiter === 'custom' && importOptions.customDelimiter) {
 					body.delimiter = importOptions.customDelimiter;
@@ -49,12 +60,12 @@ export class ImportHandler {
 				}
 			}
 
-			// Textqualifizierer
+			// Text qualifier
 			if (importOptions.textQualifier) {
 				body.textQualifier = importOptions.textQualifier;
 			}
 
-			// Zusätzliche Optionen
+			// Additional options
 			if (typeof importOptions.skipEmptyRows === 'boolean') {
 				body.skipEmptyRows = importOptions.skipEmptyRows;
 			}
@@ -63,7 +74,7 @@ export class ImportHandler {
 			}
 		}
 
-		// Spalten-Mapping hinzufügen
+		// Add column mapping
 		if (columnMapping && columnMapping.length > 0) {
 			body.columnMapping = this.buildColumnMapping(columnMapping);
 		}
@@ -79,19 +90,22 @@ export class ImportHandler {
 			return result;
 		} catch (error) {
 			const apiError = error as Error;
-			throw new Error(`Fehler beim CSV-Import: ${apiError.message}`);
+			throw new Error(`Error during CSV import: ${apiError.message}`);
 		}
 	}
 
 	/**
-	 * Status eines Imports abrufen
+	 * Get status of an import
 	 */
-	private static async getImportStatus(context: IExecuteFunctions, itemIndex: number): Promise<ImportState> {
+	private static async getImportStatus(
+		context: IExecuteFunctions,
+		itemIndex: number,
+	): Promise<ImportState> {
 		const importId = context.getNodeParameter('importId', itemIndex) as string;
 
-		// Import-ID validieren
+		// Validate import ID
 		if (!importId || importId.trim().length === 0) {
-			throw new Error('Import-ID darf nicht leer sein');
+			throw new Error('Import ID must not be empty');
 		}
 
 		try {
@@ -102,12 +116,12 @@ export class ImportHandler {
 			);
 		} catch (error) {
 			const apiError = error as Error;
-			throw new Error(`Fehler beim Abrufen des Import-Status: ${apiError.message}`);
+			throw new Error(`Error retrieving import status: ${apiError.message}`);
 		}
 	}
 
 	/**
-	 * Hilfsfunktion: Spalten-Mapping aufbauen
+	 * Helper function: build column mapping
 	 */
 	private static buildColumnMapping(mappings: any[]): Record<string, any> {
 		const columnMapping: Record<string, any> = {};
@@ -130,55 +144,55 @@ export class ImportHandler {
 	}
 
 	/**
-	 * Hilfsfunktion: CSV-Inhalt validieren
+	 * Helper function: validate CSV content
 	 */
 	private static validateCsvContent(csvContent: string): boolean {
 		if (!csvContent || csvContent.trim().length === 0) {
 			return false;
 		}
 
-		// Grundlegende CSV-Validierung
+		// Basic CSV validation
 		const lines = csvContent.trim().split('\n');
 		if (lines.length < 1) {
 			return false;
 		}
 
-		// Prüfen ob mindestens eine Zeile Inhalt hat
-		return lines.some(line => line.trim().length > 0);
+		// Check if at least one line has content
+		return lines.some((line) => line.trim().length > 0);
 	}
 
 	/**
-	 * Hilfsfunktion: Trennzeichen validieren
+	 * Helper function: validate delimiter
 	 */
 	private static validateDelimiter(delimiter: string): boolean {
 		if (!delimiter) {
 			return false;
 		}
 
-		// Erlaubte Trennzeichen
+		// Allowed delimiters
 		const allowedDelimiters = [',', ';', '\t', '|'];
 		return allowedDelimiters.includes(delimiter) || delimiter.length === 1;
 	}
 
 	/**
-	 * Hilfsfunktion: Import-Optionen validieren
+	 * Helper function: validate import options
 	 */
 	private static validateImportOptions(options: any): string[] {
 		const errors: string[] = [];
 
 		if (options.delimiter === 'custom' && !options.customDelimiter) {
-			errors.push('Benutzerdefiniertes Trennzeichen muss angegeben werden');
+			errors.push('Custom delimiter must be specified');
 		}
 
 		if (options.customDelimiter && !this.validateDelimiter(options.customDelimiter)) {
-			errors.push('Ungültiges benutzerdefiniertes Trennzeichen');
+			errors.push('Invalid custom delimiter');
 		}
 
 		return errors;
 	}
 
 	/**
-	 * Hilfsfunktion: Spalten-Mapping validieren
+	 * Helper function: validate column mapping
 	 */
 	private static validateColumnMapping(mappings: any[]): string[] {
 		const errors: string[] = [];
@@ -187,26 +201,27 @@ export class ImportHandler {
 
 		for (const mapping of mappings) {
 			if (!mapping.csvColumn || !mapping.tableColumn) {
-				errors.push('Alle Spalten-Zuordnungen müssen sowohl CSV- als auch Tabellen-Spalte enthalten');
+				errors.push('All column mappings must contain both CSV and table columns');
 				continue;
 			}
 
 			const csvCol = mapping.csvColumn.trim();
 			const tableCol = mapping.tableColumn.trim();
 
-			// Prüfen auf doppelte CSV-Spalten
+			// Check for duplicate CSV columns
 			if (usedCsvColumns.has(csvCol)) {
-				errors.push(`CSV-Spalte "${csvCol}" wird mehrfach verwendet`);
+				errors.push(`CSV column "${csvCol}" is used multiple times`);
 			}
 			usedCsvColumns.add(csvCol);
 
-			// Prüfen auf doppelte Tabellen-Spalten
+			// Check for duplicate table columns
 			if (usedTableColumns.has(tableCol)) {
-				errors.push(`Tabellen-Spalte "${tableCol}" wird mehrfach verwendet`);
+				errors.push(`Table column "${tableCol}" is used multiple times`);
 			}
 			usedTableColumns.add(tableCol);
 		}
 
 		return errors;
 	}
-} 
+}
+

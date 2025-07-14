@@ -3,7 +3,11 @@ import { ApiHelper } from '../helpers/api.helper';
 import { View } from '../interfaces';
 
 export class ViewHandler {
-	static async execute(context: IExecuteFunctions, operation: string, itemIndex: number): Promise<any> {
+	static async execute(
+		context: IExecuteFunctions,
+		operation: string,
+		itemIndex: number,
+	): Promise<any> {
 		switch (operation) {
 			case 'getAll':
 				return this.getAll(context, itemIndex);
@@ -20,38 +24,30 @@ export class ViewHandler {
 			case 'delete':
 				return this.delete(context, itemIndex);
 			default:
-				throw new Error(`Unbekannte Operation: ${operation}`);
+				throw new Error(`Unknown operation: ${operation}`);
 		}
 	}
 
 	/**
-	 * Alle Views einer Tabelle abrufen
+	 * Fetch all views of a table
 	 */
 	private static async getAll(context: IExecuteFunctions, itemIndex: number): Promise<View[]> {
 		const tableId = ApiHelper.getResourceId(context.getNodeParameter('tableId', itemIndex));
-		
-		return ApiHelper.makeApiRequest<View[]>(
-			context,
-			'GET',
-			`/tables/${tableId}/views`,
-		);
+
+		return ApiHelper.makeApiRequest<View[]>(context, 'GET', `/tables/${tableId}/views`);
 	}
 
 	/**
-	 * Eine spezifische View abrufen
+	 * Fetch a specific view
 	 */
 	private static async get(context: IExecuteFunctions, itemIndex: number): Promise<View> {
 		const viewId = ApiHelper.getResourceId(context.getNodeParameter('viewId', itemIndex));
-		
-		return ApiHelper.makeApiRequest<View>(
-			context,
-			'GET',
-			`/views/${viewId}`,
-		);
+
+		return ApiHelper.makeApiRequest<View>(context, 'GET', `/views/${viewId}`);
 	}
 
 	/**
-	 * Eine neue View erstellen
+	 * Create a new view
 	 */
 	private static async create(context: IExecuteFunctions, itemIndex: number): Promise<View> {
 		const tableId = ApiHelper.getResourceId(context.getNodeParameter('tableId', itemIndex));
@@ -73,7 +69,7 @@ export class ViewHandler {
 			body.description = description;
 		}
 
-		// Filter formatieren
+		// Format filters
 		if (filterArray && filterArray.length > 0) {
 			body.filter = filterArray.map((filter) => ({
 				columnId: parseInt(filter.columnId, 10),
@@ -82,7 +78,7 @@ export class ViewHandler {
 			}));
 		}
 
-		// Sortierung formatieren
+		// Format sorting
 		if (sortArray && sortArray.length > 0) {
 			body.sort = sortArray.map((sort) => ({
 				columnId: parseInt(sort.columnId, 10),
@@ -90,16 +86,11 @@ export class ViewHandler {
 			}));
 		}
 
-		return ApiHelper.makeApiRequest<View>(
-			context,
-			'POST',
-			`/tables/${tableId}/views`,
-			body,
-		);
+		return ApiHelper.makeApiRequest<View>(context, 'POST', `/tables/${tableId}/views`, body);
 	}
 
 	/**
-	 * Eine View aktualisieren
+	 * Update a view
 	 */
 	private static async update(context: IExecuteFunctions, itemIndex: number): Promise<View> {
 		const viewId = ApiHelper.getResourceId(context.getNodeParameter('viewId', itemIndex));
@@ -123,7 +114,7 @@ export class ViewHandler {
 			body.description = description;
 		}
 
-		// Filter formatieren (nur wenn angegeben)
+		// Format filters (only if provided)
 		if (filterArray && filterArray.length > 0) {
 			body.filter = filterArray.map((filter) => ({
 				columnId: parseInt(filter.columnId, 10),
@@ -132,7 +123,7 @@ export class ViewHandler {
 			}));
 		}
 
-		// Sortierung formatieren (nur wenn angegeben)
+		// Format sorting (only if provided)
 		if (sortArray && sortArray.length > 0) {
 			body.sort = sortArray.map((sort) => ({
 				columnId: parseInt(sort.columnId, 10),
@@ -140,45 +131,42 @@ export class ViewHandler {
 			}));
 		}
 
-		// Nur aktualisieren, wenn es Änderungen gibt
+		// Only update if there are changes
 		if (Object.keys(body).length === 0) {
-			throw new Error('Mindestens ein Feld muss für die Aktualisierung angegeben werden');
+			throw new Error('At least one field must be specified for the update');
 		}
 
-		return ApiHelper.makeApiRequest<View>(
-			context,
-			'PUT',
-			`/views/${viewId}`,
-			body,
-		);
+		return ApiHelper.makeApiRequest<View>(context, 'PUT', `/views/${viewId}`, body);
 	}
 
 	/**
-	 * Eine View löschen
+	 * Delete a view
 	 */
-	private static async delete(context: IExecuteFunctions, itemIndex: number): Promise<{ success: boolean; message?: string }> {
+	private static async delete(
+		context: IExecuteFunctions,
+		itemIndex: number,
+	): Promise<{ success: boolean; message?: string }> {
 		const viewId = ApiHelper.getResourceId(context.getNodeParameter('viewId', itemIndex));
 
-		await ApiHelper.makeApiRequest(
-			context,
-			'DELETE',
-			`/views/${viewId}`,
-		);
+		await ApiHelper.makeApiRequest(context, 'DELETE', `/views/${viewId}`);
 
-		return { success: true, message: `View ${viewId} wurde erfolgreich gelöscht` };
+		return { success: true, message: `View ${viewId} was successfully deleted` };
 	}
 
 	// ==============================================
-	// AI-FRIENDLY METHODS - Optimiert für KI Agents
+	// AI-FRIENDLY METHODS - Optimized for AI agents
 	// ==============================================
 
 	/**
-	 * AI-Friendly View erstellen
-	 * Alle Parameter sind durch fixedCollection gleichzeitig verfügbar
+	 * Create AI-Friendly view
+	 * All parameters available via fixedCollection simultaneously
 	 */
-	private static async createAIFriendly(context: IExecuteFunctions, itemIndex: number): Promise<View> {
+	private static async createAIFriendly(
+		context: IExecuteFunctions,
+		itemIndex: number,
+	): Promise<View> {
 		try {
-			// Extrahiere Basis-Konfiguration
+			// Extract base configuration
 			const viewConfig = context.getNodeParameter('viewConfig', itemIndex) as {
 				basic?: {
 					title: string;
@@ -189,22 +177,22 @@ export class ViewHandler {
 			};
 
 			if (!viewConfig?.basic) {
-				throw new Error('Basis-Konfiguration ist erforderlich');
+				throw new Error('Base configuration is required');
 			}
 
 			const { basic } = viewConfig;
 
 			if (!basic.title) {
-				throw new Error('Titel ist erforderlich');
+				throw new Error('Title is required');
 			}
 
 			if (!basic.tableId) {
-				throw new Error('Tabellen-ID ist erforderlich');
+				throw new Error('Table ID is required');
 			}
 
 			const tableId = parseInt(basic.tableId);
 
-			// Basis-Body aufbauen
+			// Build base body
 			const body: any = {
 				title: basic.title,
 			};
@@ -217,7 +205,7 @@ export class ViewHandler {
 				body.description = basic.description;
 			}
 
-			// Extrahiere Filter-Konfiguration
+			// Extract filter configuration
 			const filterConfig = context.getNodeParameter('filterConfig', itemIndex, {}) as {
 				rules?: {
 					filters?: Array<{
@@ -229,8 +217,7 @@ export class ViewHandler {
 					}>;
 				};
 			};
-
-			// Filter verarbeiten
+			// Process filters
 			if (filterConfig.rules?.filters && filterConfig.rules.filters.length > 0) {
 				body.filter = [];
 				for (const filterEntry of filterConfig.rules.filters) {
@@ -244,7 +231,7 @@ export class ViewHandler {
 				}
 			}
 
-			// Extrahiere Sortierungs-Konfiguration
+			// Extract sorting configuration
 			const sortConfig = context.getNodeParameter('sortConfig', itemIndex, {}) as {
 				rules?: {
 					sorting?: Array<{
@@ -256,7 +243,7 @@ export class ViewHandler {
 				};
 			};
 
-			// Sortierung verarbeiten
+			// Process sorting
 			if (sortConfig.rules?.sorting && sortConfig.rules.sorting.length > 0) {
 				body.sort = [];
 				for (const sortEntry of sortConfig.rules.sorting) {
@@ -269,12 +256,12 @@ export class ViewHandler {
 				}
 			}
 
-			// Erstelle View
+			// Create view
 			const response = await ApiHelper.makeApiRequest<View>(
 				context,
 				'POST',
 				`/tables/${tableId}/views`,
-				body
+				body,
 			);
 
 			return response;
@@ -284,12 +271,15 @@ export class ViewHandler {
 	}
 
 	/**
-	 * AI-Friendly View aktualisieren
-	 * Alle Parameter durch fixedCollection gleichzeitig verfügbar
+	 * AI-Friendly view update
+	 * All parameters available via fixedCollection simultaneously
 	 */
-	private static async updateAIFriendly(context: IExecuteFunctions, itemIndex: number): Promise<View> {
+	private static async updateAIFriendly(
+		context: IExecuteFunctions,
+		itemIndex: number,
+	): Promise<View> {
 		try {
-			// Extrahiere Update-Konfiguration
+			// Extract update configuration
 			const updateConfig = context.getNodeParameter('updateConfig', itemIndex) as {
 				data?: {
 					viewId: string;
@@ -300,18 +290,18 @@ export class ViewHandler {
 			};
 
 			if (!updateConfig?.data) {
-				throw new Error('Update-Konfiguration ist erforderlich');
+				throw new Error('Update configuration is required');
 			}
 
 			const { data } = updateConfig;
 
 			if (!data.viewId) {
-				throw new Error('View-ID ist erforderlich');
+				throw new Error('View ID is required');
 			}
 
 			const viewId = parseInt(data.viewId);
 
-			// Basis-Body aufbauen (nur veränderte Felder)
+			// Build base body (only changed fields)
 			const body: any = {};
 
 			if (data.title) {
@@ -326,7 +316,7 @@ export class ViewHandler {
 				body.description = data.description;
 			}
 
-			// Extrahiere Filter-Konfiguration
+			// Extract filter configuration
 			const filterConfig = context.getNodeParameter('filterConfig', itemIndex, {}) as {
 				rules?: {
 					filters?: Array<{
@@ -339,7 +329,7 @@ export class ViewHandler {
 				};
 			};
 
-			// Filter verarbeiten (überschreibt alle bestehenden Filter)
+			// Process filters (overwrites all existing filters)
 			if (filterConfig.rules?.filters && filterConfig.rules.filters.length > 0) {
 				body.filter = [];
 				for (const filterEntry of filterConfig.rules.filters) {
@@ -353,7 +343,7 @@ export class ViewHandler {
 				}
 			}
 
-			// Extrahiere Sortierungs-Konfiguration
+			// Extract sorting configuration
 			const sortConfig = context.getNodeParameter('sortConfig', itemIndex, {}) as {
 				rules?: {
 					sorting?: Array<{
@@ -365,7 +355,7 @@ export class ViewHandler {
 				};
 			};
 
-			// Sortierung verarbeiten (überschreibt alle bestehenden Sortierungen)
+			// Process sorting (overwrites all existing sorting)
 			if (sortConfig.rules?.sorting && sortConfig.rules.sorting.length > 0) {
 				body.sort = [];
 				for (const sortEntry of sortConfig.rules.sorting) {
@@ -378,17 +368,17 @@ export class ViewHandler {
 				}
 			}
 
-			// Mindestens eine Änderung muss vorhanden sein
+			// At least one change must be present
 			if (Object.keys(body).length === 0) {
-				throw new Error('Mindestens ein Feld muss für die Aktualisierung angegeben werden');
+				throw new Error('At least one field must be specified for the update');
 			}
 
-			// Aktualisiere View
+			// Update view
 			const response = await ApiHelper.makeApiRequest<View>(
 				context,
 				'PUT',
 				`/views/${viewId}`,
-				body
+				body,
 			);
 
 			return response;
@@ -396,4 +386,5 @@ export class ViewHandler {
 			ApiHelper.handleApiError(error);
 		}
 	}
-} 
+}
+

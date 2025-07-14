@@ -1,32 +1,42 @@
 # Changelog
 
+## [2.5.0] - 2025-07-14
+
+### ✨ New Feature
+
+- ✅ **Translated entire app into English**
+
+---
+
 ## [2.4.8] - 2024-01-15
 
-### 🔍 Verbesserte Log-Kennzeichnung & Debugging
+### 🔍 Improved Log Labeling & Debugging
 
-**Neue Features:**
-- ✅ **Eindeutige Node-Kennzeichnung**: Alle Logs haben jetzt `[N8N-NEXTCLOUD-TABLES]` Präfix für besseres Grepping
-- ✅ **Strukturiertes Logging**: Debug, Info, Warn, Error Level mit Zeitstempel und Kontext
-- ✅ **API-Request/Response Tracking**: Detaillierte Logging von HTTP-Anfragen mit Dauer
-- ✅ **Operation-Lifecycle Logging**: Start, Success, Error Tracking für alle Operationen
-- ✅ **Validation-Debugging**: Ausführliche Logs für Resource Locator Validierung
-- ✅ **Grep-freundliche Kategorien**: Einfache Filterung nach Log-Typen
+**New Features:**
+- ✅ **Unique Node Labeling**: All logs now have the `[N8N-NEXTCLOUD-TABLES]` prefix for easier grepping
+- ✅ **Structured Logging**: Debug, Info, Warn, Error levels with timestamp and context
+- ✅ **API Request/Response Tracking**: Detailed logging of HTTP requests with duration
+- ✅ **Operation Lifecycle Logging**: Start, Success, Error tracking for all operations
+- ✅ **Validation Debugging**: Detailed logs for Resource Locator validation
+- ✅ **Grep-Friendly Categories**: Easy filtering by log type
 
-**Verbesserte Fehlermeldungen:**
-- Alle Error-Messages haben jetzt `[N8N-NEXTCLOUD-TABLES]` Präfix
-- Detaillierte Validierungsfehler mit Kontext-Informationen
-- API-Fehler mit HTTP-Status-Codes und Debugging-Daten
+**Improved Error Messages:**
+- All error messages now include the `[N8N-NEXTCLOUD-TABLES]` prefix
+- Detailed validation errors with contextual information
+- API errors include HTTP status codes and debugging data
 
-**Grep-Beispiele:**
-```bash
-# Alle Node-Logs
+**Grep Examples:**
+\`\`\`bash
+# All Node Logs
 grep "N8N-NEXTCLOUD-TABLES" /path/to/logs
 
-# Nur Fehler
+# Only Errors
 grep "N8N-NEXTCLOUD-TABLES.*ERROR" /path/to/logs
 
-# API-Performance
+# API Performance
 grep "N8N-NEXTCLOUD-TABLES.*API-RESPONSE" /path/to/logs
-```
+\`\`\`
 
-## [2.4.7] - 2024-01-10 
+---
+
+## [2.4.7] - 2024-01-10

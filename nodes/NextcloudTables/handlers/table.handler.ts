@@ -3,7 +3,11 @@ import { ApiHelper } from '../helpers/api.helper';
 import { Table } from '../interfaces';
 
 export class TableHandler {
-	static async execute(context: IExecuteFunctions, operation: string, itemIndex: number): Promise<any> {
+	static async execute(
+		context: IExecuteFunctions,
+		operation: string,
+		itemIndex: number,
+	): Promise<any> {
 		switch (operation) {
 			case 'getAll':
 				return this.getAll(context, itemIndex);
@@ -16,36 +20,28 @@ export class TableHandler {
 			case 'delete':
 				return this.delete(context, itemIndex);
 			default:
-				throw new Error(`Unbekannte Operation: ${operation}`);
+				throw new Error(`Unknown operation: ${operation}`);
 		}
 	}
 
 	/**
-	 * Alle Tabellen abrufen
+	 * Fetch all tables
 	 */
 	private static async getAll(context: IExecuteFunctions, itemIndex: number): Promise<Table[]> {
-		return ApiHelper.makeApiRequest<Table[]>(
-			context,
-			'GET',
-			'/tables',
-		);
+		return ApiHelper.makeApiRequest<Table[]>(context, 'GET', '/tables');
 	}
 
 	/**
-	 * Eine spezifische Tabelle abrufen
+	 * Fetch a specific table
 	 */
 	private static async get(context: IExecuteFunctions, itemIndex: number): Promise<Table> {
 		const tableId = ApiHelper.getResourceId(context.getNodeParameter('tableId', itemIndex));
-		
-		return ApiHelper.makeApiRequest<Table>(
-			context,
-			'GET',
-			`/tables/${tableId}`,
-		);
+
+		return ApiHelper.makeApiRequest<Table>(context, 'GET', `/tables/${tableId}`);
 	}
 
 	/**
-	 * Eine neue Tabelle erstellen
+	 * Create a new table
 	 */
 	private static async create(context: IExecuteFunctions, itemIndex: number): Promise<Table> {
 		const title = context.getNodeParameter('title', itemIndex) as string;
@@ -64,16 +60,11 @@ export class TableHandler {
 			body.template = template;
 		}
 
-		return ApiHelper.makeApiRequest<Table>(
-			context,
-			'POST',
-			'/tables',
-			body,
-		);
+		return ApiHelper.makeApiRequest<Table>(context, 'POST', '/tables', body);
 	}
 
 	/**
-	 * Eine Tabelle aktualisieren
+	 * Update a table
 	 */
 	private static async update(context: IExecuteFunctions, itemIndex: number): Promise<Table> {
 		const tableId = ApiHelper.getResourceId(context.getNodeParameter('tableId', itemIndex));
@@ -95,31 +86,26 @@ export class TableHandler {
 			body.archived = archived;
 		}
 
-		// Nur aktualisieren, wenn es Änderungen gibt
+		// Only update if there are changes
 		if (Object.keys(body).length === 0) {
-			throw new Error('Mindestens ein Feld muss für die Aktualisierung angegeben werden');
+			throw new Error('At least one field must be specified for the update');
 		}
 
-		return ApiHelper.makeApiRequest<Table>(
-			context,
-			'PUT',
-			`/tables/${tableId}`,
-			body,
-		);
+		return ApiHelper.makeApiRequest<Table>(context, 'PUT', `/tables/${tableId}`, body);
 	}
 
 	/**
-	 * Eine Tabelle löschen
+	 * Delete a table
 	 */
-	private static async delete(context: IExecuteFunctions, itemIndex: number): Promise<{ success: boolean; message?: string }> {
+	private static async delete(
+		context: IExecuteFunctions,
+		itemIndex: number,
+	): Promise<{ success: boolean; message?: string }> {
 		const tableId = ApiHelper.getResourceId(context.getNodeParameter('tableId', itemIndex));
 
-		await ApiHelper.makeApiRequest(
-			context,
-			'DELETE',
-			`/tables/${tableId}`,
-		);
+		await ApiHelper.makeApiRequest(context, 'DELETE', `/tables/${tableId}`);
 
-		return { success: true, message: `Tabelle ${tableId} wurde erfolgreich gelöscht` };
+		return { success: true, message: `Table ${tableId} was successfully deleted` };
 	}
-} 
+}
+

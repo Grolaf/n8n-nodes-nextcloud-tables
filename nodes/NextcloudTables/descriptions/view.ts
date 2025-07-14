@@ -13,46 +13,46 @@ export const viewOperations: INodeProperties[] = [
 		},
 		options: [
 			{
-				name: 'Alle Views Abrufen',
+				name: 'Get All Views',
 				value: 'getAll',
-				description: 'Alle Views einer Tabelle abrufen',
-				action: 'Alle Views abrufen',
+				description: 'Retrieve all views of a table',
+				action: 'Get all views',
 			},
 			{
-				name: 'View Abrufen',
+				name: 'Get View',
 				value: 'get',
-				description: 'Eine spezifische View abrufen',
-				action: 'View abrufen',
+				description: 'Retrieve a specific view',
+				action: 'Get view',
 			},
 			{
-				name: 'View Erstellen',
+				name: 'Create View',
 				value: 'create',
-				description: 'Eine neue View erstellen',
-				action: 'View erstellen',
+				description: 'Create a new view',
+				action: 'Create view',
 			},
 			{
-				name: 'View Erstellen (KI-Friendly)',
+				name: 'Create View (AI-Friendly)',
 				value: 'createAIFriendly',
-				description: 'Eine neue View erstellen - optimiert für KI Agents',
-				action: 'View erstellen (KI-Friendly)',
+				description: 'Create a new view - optimized for AI agents',
+				action: 'Create view (AI-Friendly)',
 			},
 			{
-				name: 'View Aktualisieren',
+				name: 'Update View',
 				value: 'update',
-				description: 'Eine View aktualisieren',
-				action: 'View aktualisieren',
+				description: 'Update a view',
+				action: 'Update view',
 			},
 			{
-				name: 'View Aktualisieren (KI-Friendly)',
+				name: 'Update View (AI-Friendly)',
 				value: 'updateAIFriendly',
-				description: 'Eine View aktualisieren - optimiert für KI Agents',
-				action: 'View aktualisieren (KI-Friendly)',
+				description: 'Update a view - optimized for AI agents',
+				action: 'Update view (AI-Friendly)',
 			},
 			{
-				name: 'View Löschen',
+				name: 'Delete View',
 				value: 'delete',
-				description: 'Eine View löschen',
-				action: 'View löschen',
+				description: 'Delete a view',
+				action: 'Delete view',
 			},
 		],
 		default: 'getAll',
@@ -61,12 +61,12 @@ export const viewOperations: INodeProperties[] = [
 
 export const viewFields: INodeProperties[] = [
 	// ==============================================
-	// KI-FRIENDLY OPERATIONS - Alle Parameter verfügbar
+	// AI-FRIENDLY OPERATIONS - All parameters available
 	// ==============================================
 
-	// View-Konfiguration für AI-Friendly create
+	// View config for AI-Friendly create
 	{
-		displayName: 'View-Konfiguration (AI-Friendly)',
+		displayName: 'View Configuration (AI-Friendly)',
 		name: 'viewConfig',
 		type: 'fixedCollection',
 		required: true,
@@ -79,25 +79,25 @@ export const viewFields: INodeProperties[] = [
 		default: {},
 		options: [
 			{
-				displayName: 'Basis-Konfiguration',
+				displayName: 'Basic Configuration',
 				name: 'basic',
 				values: [
 					{
-						displayName: 'Titel',
+						displayName: 'Title',
 						name: 'title',
 						type: 'string',
 						required: true,
 						default: '',
-						description: 'Der Titel der neuen View',
-						placeholder: 'Meine View',
+						description: 'The title of the new view',
+						placeholder: 'My View',
 					},
 					{
-						displayName: 'Tabellen-ID',
+						displayName: 'Table ID',
 						name: 'tableId',
 						type: 'string',
 						required: true,
 						default: '',
-						description: 'Die ID der Tabelle für die View',
+						description: 'The ID of the table for the view',
 						placeholder: '123',
 					},
 					{
@@ -105,26 +105,26 @@ export const viewFields: INodeProperties[] = [
 						name: 'emoji',
 						type: 'string',
 						default: '',
-						description: 'Ein optionales Emoji für die View',
+						description: 'An optional emoji for the view',
 						placeholder: '🔍',
 					},
 					{
-						displayName: 'Beschreibung',
+						displayName: 'Description',
 						name: 'description',
 						type: 'string',
 						default: '',
-						description: 'Eine optionale Beschreibung für die View',
-						placeholder: 'Beschreibung der View...',
+						description: 'An optional description for the view',
+						placeholder: 'Description of the view...',
 					},
 				],
 			},
 		],
-		description: 'Basis-Konfiguration für die neue View',
+		description: 'Basic configuration for the new view',
 	},
 
-	// Update-Konfiguration für AI-Friendly update
+	// Update configuration for AI-Friendly update
 	{
-		displayName: 'Update-Konfiguration (AI-Friendly)',
+		displayName: 'Update Configuration (AI-Friendly)',
 		name: 'updateConfig',
 		type: 'fixedCollection',
 		required: true,
@@ -137,51 +137,52 @@ export const viewFields: INodeProperties[] = [
 		default: {},
 		options: [
 			{
-				displayName: 'Update-Daten',
+				displayName: 'Update Data',
 				name: 'data',
 				values: [
 					{
-						displayName: 'View-ID',
+						displayName: 'View ID',
 						name: 'viewId',
 						type: 'string',
 						required: true,
 						default: '',
-						description: 'Die ID der zu aktualisierenden View',
+						description: 'The ID of the view to update',
 						placeholder: '456',
 					},
 					{
-						displayName: 'Neuer Titel',
+						displayName: 'New Title',
 						name: 'title',
 						type: 'string',
 						default: '',
-						description: 'Der neue Titel der View (leer lassen = nicht ändern)',
-						placeholder: 'Neuer View-Name',
+						description: 'The new title for the view (leave empty to keep unchanged)',
+						placeholder: 'New view name',
 					},
 					{
-						displayName: 'Neues Emoji',
+						displayName: 'New Emoji',
 						name: 'emoji',
 						type: 'string',
 						default: '',
-						description: 'Das neue Emoji für die View (leer lassen = nicht ändern)',
+						description: 'The new emoji for the view (leave empty to keep unchanged)',
 						placeholder: '🔍',
 					},
 					{
-						displayName: 'Neue Beschreibung',
+						displayName: 'New Description',
 						name: 'description',
 						type: 'string',
 						default: '',
-						description: 'Die neue Beschreibung der View (leer lassen = nicht ändern)',
-						placeholder: 'Neue Beschreibung...',
+						description:
+							'The new description for the view (leave empty to keep unchanged)',
+						placeholder: 'New description...',
 					},
 				],
 			},
 		],
-		description: 'Update-Konfiguration für die View',
+		description: 'Update configuration for the view',
 	},
 
-	// Filter-Konfiguration für AI-Friendly Operationen
+	// Filter configuration for AI-Friendly operations
 	{
-		displayName: 'Filter-Konfiguration (AI-Friendly)',
+		displayName: 'Filter Configuration (AI-Friendly)',
 		name: 'filterConfig',
 		type: 'fixedCollection',
 		displayOptions: {
@@ -193,30 +194,30 @@ export const viewFields: INodeProperties[] = [
 		default: {},
 		options: [
 			{
-				displayName: 'Filter-Regeln',
+				displayName: 'Filter Rules',
 				name: 'rules',
 				values: [
 					{
-						displayName: 'Filter',
+						displayName: 'Filters',
 						name: 'filters',
 						type: 'fixedCollection',
 						typeOptions: {
 							multipleValues: true,
 						},
-						placeholder: 'Filter hinzufügen',
+						placeholder: 'Add filter',
 						default: {},
 						options: [
 							{
-								displayName: 'Filter-Regel',
+								displayName: 'Filter Rule',
 								name: 'filter',
 								values: [
 									{
-										displayName: 'Spalten-ID',
+										displayName: 'Column ID',
 										name: 'columnId',
 										type: 'string',
 										required: true,
 										default: '',
-										description: 'Die ID der zu filternden Spalte',
+										description: 'The ID of the column to filter',
 										placeholder: '1',
 									},
 									{
@@ -224,31 +225,32 @@ export const viewFields: INodeProperties[] = [
 										name: 'operator',
 										type: 'string',
 										default: 'EQ',
-										description: 'Der Filter-Operator. Gültige Werte: "EQ" (gleich), "NEQ" (ungleich), "GT" (größer), "GTE" (größer gleich), "LT" (kleiner), "LTE" (kleiner gleich), "LIKE" (enthält)',
+										description:
+											'The filter operator. Valid values: "EQ" (equals), "NEQ" (not equals), "GT" (greater than), "GTE" (greater or equal), "LT" (less than), "LTE" (less or equal), "LIKE" (contains)',
 										placeholder: 'EQ',
 									},
 									{
-										displayName: 'Wert',
+										displayName: 'Value',
 										name: 'value',
 										type: 'string',
 										default: '',
-										description: 'Der Filter-Wert',
-										placeholder: 'Filter-Wert...',
+										description: 'The filter value',
+										placeholder: 'Filter value...',
 									},
 								],
 							},
 						],
-						description: 'Die Filter-Regeln für die View',
+						description: 'The filter rules for the view',
 					},
 				],
 			},
 		],
-		description: 'Filter-Konfiguration für die View',
+		description: 'Filter configuration for the view',
 	},
 
-	// Sortierung-Konfiguration für AI-Friendly Operationen
+	// Sort configuration for AI-Friendly operations
 	{
-		displayName: 'Sortierungs-Konfiguration (AI-Friendly)',
+		displayName: 'Sorting Configuration (AI-Friendly)',
 		name: 'sortConfig',
 		type: 'fixedCollection',
 		displayOptions: {
@@ -260,66 +262,67 @@ export const viewFields: INodeProperties[] = [
 		default: {},
 		options: [
 			{
-				displayName: 'Sortier-Regeln',
+				displayName: 'Sorting Rules',
 				name: 'rules',
 				values: [
 					{
-						displayName: 'Sortierung',
+						displayName: 'Sorting',
 						name: 'sorting',
 						type: 'fixedCollection',
 						typeOptions: {
 							multipleValues: true,
 						},
-						placeholder: 'Sortierung hinzufügen',
+						placeholder: 'Add sorting',
 						default: {},
 						options: [
 							{
-								displayName: 'Sortier-Regel',
+								displayName: 'Sort Rule',
 								name: 'sort',
 								values: [
 									{
-										displayName: 'Spalten-ID',
+										displayName: 'Column ID',
 										name: 'columnId',
 										type: 'string',
 										required: true,
 										default: '',
-										description: 'Die ID der zu sortierenden Spalte',
+										description: 'The ID of the column to sort by',
 										placeholder: '1',
 									},
 									{
-										displayName: 'Richtung',
+										displayName: 'Direction',
 										name: 'direction',
 										type: 'string',
 										default: 'ASC',
-										description: 'Die Sortierrichtung. Gültige Werte: "ASC" (aufsteigend A-Z, 1-9), "DESC" (absteigend Z-A, 9-1)',
+										description:
+											'Sort direction. Valid values: "ASC" (ascending A-Z, 1-9), "DESC" (descending Z-A, 9-1)',
 										placeholder: 'ASC',
 									},
 								],
 							},
 						],
-						description: 'Die Sortier-Regeln für die View',
+						description: 'The sorting rules for the view',
 					},
 				],
 			},
 		],
-		description: 'Sortierungs-Konfiguration für die View',
+		description: 'Sorting configuration for the view',
 	},
 
 	// ==============================================
-	// ORIGINAL OPERATIONS - Für normale UI Nutzer
+	// ORIGINAL OPERATIONS - For regular UI users
 	// ==============================================
 
-	// Tabellen-ID für getAll, create
+	// Table ID for getAll, create
 	{
-		displayName: 'Tabelle',
+		displayName: 'Table',
 		name: 'tableId',
 		type: 'resourceLocator',
 		default: { mode: 'list', value: '' },
 		required: true,
-		description: 'Wählen Sie eine Tabelle aus der Liste oder geben Sie deren ID an',
+		description: 'Select a table from the list or enter its ID',
 		modes: [
 			{
-				displayName: 'Liste',
+				displayName: 'List',
 				name: 'list',
 				type: 'list',
 				typeOptions: {
@@ -332,13 +335,13 @@ export const viewFields: INodeProperties[] = [
 				displayName: 'ID',
 				name: 'id',
 				type: 'string',
-				placeholder: 'Tabellen-ID',
+				placeholder: 'Table ID',
 				validation: [
 					{
 						type: 'regex',
 						properties: {
 							regex: '^[0-9]+$',
-							errorMessage: 'Bitte eine gültige Tabellen-ID (Zahl) eingeben',
+							errorMessage: 'Please enter a valid table ID (number)',
 						},
 					},
 				],
@@ -352,17 +355,17 @@ export const viewFields: INodeProperties[] = [
 		},
 	},
 
-	// View-ID als resourceLocator für get, update, delete
+	// View ID as resourceLocator for get, update, delete
 	{
 		displayName: 'View',
 		name: 'viewId',
 		type: 'resourceLocator',
 		default: { mode: 'list', value: '' },
 		required: true,
-		description: 'Wählen Sie eine View aus der Liste oder geben Sie deren ID an',
+		description: 'Select a view from the list or enter its ID',
 		modes: [
 			{
-				displayName: 'Liste',
+				displayName: 'List',
 				name: 'list',
 				type: 'list',
 				typeOptions: {
@@ -375,13 +378,13 @@ export const viewFields: INodeProperties[] = [
 				displayName: 'ID',
 				name: 'id',
 				type: 'string',
-				placeholder: 'View-ID',
+				placeholder: 'View ID',
 				validation: [
 					{
 						type: 'regex',
 						properties: {
 							regex: '^[0-9]+$',
-							errorMessage: 'Bitte eine gültige View-ID (Zahl) eingeben',
+							errorMessage: 'Please enter a valid view ID (number)',
 						},
 					},
 				],
@@ -395,9 +398,9 @@ export const viewFields: INodeProperties[] = [
 		},
 	},
 
-	// Titel für create
+	// Title for create
 	{
-		displayName: 'Titel',
+		displayName: 'Title',
 		name: 'title',
 		type: 'string',
 		required: true,
@@ -411,11 +414,11 @@ export const viewFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Der Titel der neuen View',
-		placeholder: 'View-Name eingeben...',
+		description: 'The title of the new view',
+		placeholder: 'Enter view name...',
 	},
 
-	// Emoji für create
+	// Emoji for create
 	{
 		displayName: 'Emoji',
 		name: 'emoji',
@@ -430,13 +433,13 @@ export const viewFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Ein optionales Emoji für die View',
+		description: 'An optional emoji for the view',
 		placeholder: '🔍',
 	},
 
-	// Beschreibung für create
+	// Description for create
 	{
-		displayName: 'Beschreibung',
+		displayName: 'Description',
 		name: 'description',
 		type: 'string',
 		typeOptions: {
@@ -450,13 +453,13 @@ export const viewFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Eine optionale Beschreibung für die View',
-		placeholder: 'Beschreibung der View...',
+		description: 'An optional description for the view',
+		placeholder: 'Description of the view...',
 	},
 
-	// Zusätzliche Felder für update
+	// Additional fields for update
 	{
-		displayName: 'Titel',
+		displayName: 'Title',
 		name: 'title',
 		type: 'string',
 		typeOptions: {
@@ -469,8 +472,8 @@ export const viewFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Der neue Titel der View (optional)',
-		placeholder: 'Neuer View-Name...',
+		description: 'The new title of the view (optional)',
+		placeholder: 'New view name...',
 	},
 
 	{
@@ -487,12 +490,12 @@ export const viewFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Das neue Emoji für die View (optional)',
+		description: 'The new emoji for the view (optional)',
 		placeholder: '🔍',
 	},
 
 	{
-		displayName: 'Beschreibung',
+		displayName: 'Description',
 		name: 'description',
 		type: 'string',
 		typeOptions: {
@@ -506,11 +509,11 @@ export const viewFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Die neue Beschreibung der View (optional)',
-		placeholder: 'Neue Beschreibung...',
+		description: 'The new description of the view (optional)',
+		placeholder: 'New description...',
 	},
 
-	// Filter für create/update
+	// Filters for create/update
 	{
 		displayName: 'Filter',
 		name: 'filter',
@@ -518,7 +521,7 @@ export const viewFields: INodeProperties[] = [
 		typeOptions: {
 			multipleValues: true,
 		},
-		placeholder: 'Filter hinzufügen',
+		placeholder: 'Add filter',
 		displayOptions: {
 			show: {
 				resource: ['view'],
@@ -528,33 +531,33 @@ export const viewFields: INodeProperties[] = [
 		default: {},
 		options: [
 			{
-				displayName: 'Filter-Regel',
+				displayName: 'Filter Rule',
 				name: 'rule',
 				values: [
 					{
-						displayName: 'Spalte',
+						displayName: 'Column',
 						name: 'columnId',
 						type: 'options',
 						typeOptions: {
 							loadOptionsMethod: 'getColumns',
 						},
 						default: '',
-						description: 'Die Spalte für den Filter',
+						description: 'The column for the filter',
 					},
 					{
 						displayName: 'Operator',
 						name: 'operator',
 						type: 'string',
 						default: 'EQ',
-						description: 'Der Vergleichsoperator',
+						description: 'The comparison operator',
 						placeholder: 'EQ',
 					},
 					{
-						displayName: 'Wert',
+						displayName: 'Value',
 						name: 'value',
 						type: 'string',
 						default: '',
-						description: 'Der Wert für den Vergleich',
+						description: 'The value for the comparison',
 						typeOptions: {
 							canBeExpression: true,
 						},
@@ -562,18 +565,18 @@ export const viewFields: INodeProperties[] = [
 				],
 			},
 		],
-		description: 'Filter-Regeln für die View',
+		description: 'Filter rules for the view',
 	},
 
-	// Sortierung für create/update
+	// Sorting for create/update
 	{
-		displayName: 'Sortierung',
+		displayName: 'Sorting',
 		name: 'sort',
 		type: 'fixedCollection',
 		typeOptions: {
 			multipleValues: true,
 		},
-		placeholder: 'Sortierung hinzufügen',
+		placeholder: 'Add sorting',
 		displayOptions: {
 			show: {
 				resource: ['view'],
@@ -583,41 +586,42 @@ export const viewFields: INodeProperties[] = [
 		default: {},
 		options: [
 			{
-				displayName: 'Sortier-Regel',
+				displayName: 'Sort Rule',
 				name: 'rule',
 				values: [
 					{
-						displayName: 'Spalte',
+						displayName: 'Column',
 						name: 'columnId',
 						type: 'options',
 						typeOptions: {
 							loadOptionsMethod: 'getColumns',
 						},
 						default: '',
-						description: 'Die Spalte für die Sortierung',
+						description: 'The column for sorting',
 					},
 					{
-						displayName: 'Richtung',
+						displayName: 'Direction',
 						name: 'mode',
 						type: 'options',
 						options: [
 							{
-								name: 'Aufsteigend',
+								name: 'Ascending',
 								value: 'ASC',
-								description: 'Von klein zu groß (A-Z, 1-9)',
+								description: 'From small to large (A-Z, 1-9)',
 							},
 							{
-								name: 'Absteigend',
+								name: 'Descending',
 								value: 'DESC',
-								description: 'Von groß zu klein (Z-A, 9-1)',
+								description: 'From large to small (Z-A, 9-1)',
 							},
 						],
 						default: 'ASC',
-						description: 'Die Sortierrichtung',
+						description: 'The sorting direction',
 					},
 				],
 			},
 		],
-		description: 'Sortier-Regeln für die View',
+		description: 'Sorting rules for the view',
 	},
-]; 
+];
+

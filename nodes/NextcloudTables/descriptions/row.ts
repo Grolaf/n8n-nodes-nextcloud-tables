@@ -13,46 +13,47 @@ export const rowOperations: INodeProperties[] = [
 		},
 		options: [
 			{
-				name: 'Alle Zeilen Abrufen',
+				name: 'Get All Rows',
 				value: 'getAll',
-				description: 'Alle Zeilen einer Tabelle oder View abrufen',
-				action: 'Alle Zeilen abrufen',
+				description: 'Retrieve all rows from a table or view',
+				action: 'Get all rows',
 			},
 			{
-				name: 'Zeile Abrufen',
+				name: 'Get Row',
 				value: 'get',
-				description: 'Eine spezifische Zeile abrufen',
-				action: 'Zeile abrufen',
+				description: 'Retrieve a specific row',
+				action: 'Get row',
 			},
 			{
-				name: 'Zeile Erstellen',
+				name: 'Create Row',
 				value: 'create',
-				description: 'Eine neue Zeile erstellen',
-				action: 'Zeile erstellen',
+				description: 'Create a new row',
+				action: 'Create row',
 			},
 			{
-				name: 'Zeile Erstellen (KI-Friendly)',
+				name: 'Create Row (AI-Friendly)',
 				value: 'createAIFriendly',
-				description: 'Eine neue Zeile erstellen - optimiert für KI Agents',
-				action: 'Zeile erstellen (KI-Friendly)',
+				description: 'Create a new row - optimized for AI Agents',
+				action: 'Create row (AI-Friendly)',
 			},
 			{
-				name: 'Alle Zeilen Abrufen (KI-Friendly)',
+				name: 'Get All Rows (AI-Friendly)',
 				value: 'getAllAIFriendly',
-				description: 'Zeilen mit erweiterten Filter/Sortierung-Optionen - optimiert für KI Agents',
-				action: 'Alle Zeilen abrufen (KI-Friendly)',
+				description:
+					'Retrieve rows with advanced filter/sort options - optimized for AI Agents',
+				action: 'Get all rows (AI-Friendly)',
 			},
 			{
-				name: 'Zeile Aktualisieren',
+				name: 'Update Row',
 				value: 'update',
-				description: 'Eine Zeile aktualisieren',
-				action: 'Zeile aktualisieren',
+				description: 'Update a row',
+				action: 'Update row',
 			},
 			{
-				name: 'Zeile Aktualisieren (KI-Friendly)',
+				name: 'Update Row (AI-Friendly)',
 				value: 'updateAIFriendly',
-				description: 'Eine Zeile aktualisieren - optimiert für KI Agents',
-				action: 'Zeile aktualisieren (KI-Friendly)',
+				description: 'Update a row - optimized for AI Agents',
+				action: 'Update row (AI-Friendly)',
 			},
 		],
 		default: 'getAll',
@@ -61,12 +62,12 @@ export const rowOperations: INodeProperties[] = [
 
 export const rowFields: INodeProperties[] = [
 	// ==============================================
-	// KI-FRIENDLY OPERATIONS - Alle Parameter verfügbar
+	// AI-FRIENDLY OPERATIONS - All parameters available
 	// ==============================================
 
-	// Quelle für AI-Friendly Operationen
+	// Source for AI-Friendly operations
 	{
-		displayName: 'Datenquelle (AI-Friendly)',
+		displayName: 'Data Source (AI-Friendly)',
 		name: 'sourceConfig',
 		type: 'fixedCollection',
 		required: true,
@@ -79,43 +80,44 @@ export const rowFields: INodeProperties[] = [
 		default: {},
 		options: [
 			{
-				displayName: 'Quelle',
+				displayName: 'Source',
 				name: 'source',
 				values: [
 					{
-						displayName: 'Quell-Typ',
+						displayName: 'Source Type',
 						name: 'type',
 						type: 'string',
 						required: true,
 						default: 'table',
-						description: 'Wählen Sie ob Sie mit einer Tabelle oder View arbeiten. Gültige Werte: "table" (Tabelle), "view" (View)',
+						description:
+							'Choose whether to use a table or view. Valid values: "table", "view"',
 						placeholder: 'table',
 					},
 					{
-						displayName: 'Tabellen-ID',
+						displayName: 'Table ID',
 						name: 'tableId',
 						type: 'string',
 						default: '',
-						description: 'Die ID der Tabelle (nur wenn Typ = "table")',
+						description: 'The ID of the table (only when type = "table")',
 						placeholder: '123',
 					},
 					{
-						displayName: 'View-ID',
+						displayName: 'View ID',
 						name: 'viewId',
 						type: 'string',
 						default: '',
-						description: 'Die ID der View (nur wenn Typ = "view")',
+						description: 'The ID of the view (only when type = "view")',
 						placeholder: '456',
 					},
 				],
 			},
 		],
-		description: 'Konfiguration der Datenquelle für die Operation',
+		description: 'Configuration of the data source for the operation',
 	},
 
-	// Zeilen-Daten für createAIFriendly
+	// Row data for createAIFriendly
 	{
-		displayName: 'Zeilen-Daten (AI-Friendly)',
+		displayName: 'Row Data (AI-Friendly)',
 		name: 'rowDataConfig',
 		type: 'fixedCollection',
 		required: true,
@@ -128,54 +130,54 @@ export const rowFields: INodeProperties[] = [
 		default: {},
 		options: [
 			{
-				displayName: 'Daten',
+				displayName: 'Data',
 				name: 'data',
 				values: [
 					{
-						displayName: 'Spalten-Daten',
+						displayName: 'Column Data',
 						name: 'columns',
 						type: 'fixedCollection',
 						typeOptions: {
 							multipleValues: true,
 						},
-						placeholder: 'Spalte hinzufügen',
+						placeholder: 'Add Column',
 						default: {},
 						options: [
 							{
-								displayName: 'Spalte',
+								displayName: 'Column',
 								name: 'column',
 								values: [
 									{
-										displayName: 'Spalten-ID',
+										displayName: 'Column ID',
 										name: 'columnId',
 										type: 'string',
 										required: true,
 										default: '',
-										description: 'Die ID der Spalte',
+										description: 'The ID of the column',
 										placeholder: '1',
 									},
 									{
-										displayName: 'Wert',
+										displayName: 'Value',
 										name: 'value',
 										type: 'string',
 										default: '',
-										description: 'Der Wert für diese Spalte',
-										placeholder: 'Wert eingeben...',
+										description: 'The value for this column',
+										placeholder: 'Enter value...',
 									},
 								],
 							},
 						],
-						description: 'Die Spalten-Daten für die neue Zeile',
+						description: 'The column data for the new row',
 					},
 				],
 			},
 		],
-		description: 'Konfiguration der Zeilen-Daten',
+		description: 'Configuration of the row data',
 	},
 
-	// Update-Daten für updateAIFriendly
+	// Update data for updateAIFriendly
 	{
-		displayName: 'Update-Daten (AI-Friendly)',
+		displayName: 'Update Data (AI-Friendly)',
 		name: 'updateDataConfig',
 		type: 'fixedCollection',
 		required: true,
@@ -188,72 +190,72 @@ export const rowFields: INodeProperties[] = [
 		default: {},
 		options: [
 			{
-				displayName: 'Update-Konfiguration',
+				displayName: 'Update Configuration',
 				name: 'update',
 				values: [
 					{
-						displayName: 'Zeilen-ID',
+						displayName: 'Row ID',
 						name: 'rowId',
 						type: 'string',
 						required: true,
 						default: '',
-						description: 'Die ID der zu aktualisierenden Zeile',
+						description: 'The ID of the row to update',
 						placeholder: '123',
 					},
 					{
-						displayName: 'Tabellen-ID',
+						displayName: 'Table ID',
 						name: 'tableId',
 						type: 'string',
 						required: true,
 						default: '',
-						description: 'Die ID der Tabelle (erforderlich für API-Pfad)',
+						description: 'The ID of the table (required for API path)',
 						placeholder: '456',
 					},
 					{
-						displayName: 'Spalten-Daten',
+						displayName: 'Column Data',
 						name: 'columns',
 						type: 'fixedCollection',
 						typeOptions: {
 							multipleValues: true,
 						},
-						placeholder: 'Spalte hinzufügen',
+						placeholder: 'Add Column',
 						default: {},
 						options: [
 							{
-								displayName: 'Spalte',
+								displayName: 'Column',
 								name: 'column',
 								values: [
 									{
-										displayName: 'Spalten-ID',
+										displayName: 'Column ID',
 										name: 'columnId',
 										type: 'string',
 										required: true,
 										default: '',
-										description: 'Die ID der Spalte',
+										description: 'The ID of the column',
 										placeholder: '1',
 									},
 									{
-										displayName: 'Neuer Wert',
+										displayName: 'New Value',
 										name: 'value',
 										type: 'string',
 										default: '',
-										description: 'Der neue Wert für diese Spalte',
-										placeholder: 'Neuer Wert...',
+										description: 'The new value for this column',
+										placeholder: 'New value...',
 									},
 								],
 							},
 						],
-						description: 'Die zu aktualisierenden Spalten-Daten',
+						description: 'The column data to update',
 					},
 				],
 			},
 		],
-		description: 'Konfiguration für Zeilen-Update',
+		description: 'Configuration for row update',
 	},
 
-	// Query-Optionen für getAllAIFriendly  
+	// Query options for getAllAIFriendly
 	{
-		displayName: 'Abfrage-Optionen (AI-Friendly)',
+		displayName: 'Query Options (AI-Friendly)',
 		name: 'queryConfig',
 		type: 'fixedCollection',
 		displayOptions: {
@@ -265,7 +267,7 @@ export const rowFields: INodeProperties[] = [
 		default: {},
 		options: [
 			{
-				displayName: 'Abfrage-Konfiguration',
+				displayName: 'Query Configuration',
 				name: 'query',
 				values: [
 					{
@@ -275,7 +277,7 @@ export const rowFields: INodeProperties[] = [
 						default: {},
 						options: [
 							{
-								displayName: 'Pagination-Einstellungen',
+								displayName: 'Pagination Settings',
 								name: 'settings',
 								values: [
 									{
@@ -283,41 +285,41 @@ export const rowFields: INodeProperties[] = [
 										name: 'limit',
 										type: 'number',
 										default: 50,
-										description: 'Maximale Anzahl Zeilen',
+										description: 'Maximum number of rows',
 									},
 									{
 										displayName: 'Offset',
 										name: 'offset',
 										type: 'number',
 										default: 0,
-										description: 'Anzahl zu überspringender Zeilen',
+										description: 'Number of rows to skip',
 									},
 								],
 							},
 						],
-						description: 'Pagination-Einstellungen',
+						description: 'Pagination settings',
 					},
 					{
-						displayName: 'Filter',
+						displayName: 'Filters',
 						name: 'filters',
 						type: 'fixedCollection',
 						typeOptions: {
 							multipleValues: true,
 						},
-						placeholder: 'Filter hinzufügen',
+						placeholder: 'Add Filter',
 						default: {},
 						options: [
 							{
-								displayName: 'Filter-Regel',
+								displayName: 'Filter Rule',
 								name: 'filter',
 								values: [
 									{
-										displayName: 'Spalten-ID',
+										displayName: 'Column ID',
 										name: 'columnId',
 										type: 'string',
 										required: true,
 										default: '',
-										description: 'Die ID der zu filternden Spalte',
+										description: 'The ID of the column to filter',
 										placeholder: '1',
 									},
 									{
@@ -326,175 +328,175 @@ export const rowFields: INodeProperties[] = [
 										type: 'options',
 										options: [
 											{
-												name: 'Gleich (=)',
+												name: 'Equals (=)',
 												value: 'equals',
-												description: 'Exakte Übereinstimmung',
+												description: 'Exact match',
 											},
 											{
-												name: 'Ungleich (!=)',
+												name: 'Not Equals (!=)',
 												value: 'not_equals',
-												description: 'Nicht gleich',
+												description: 'Not equal to',
 											},
 											{
-												name: 'Größer (>)',
+												name: 'Greater Than (>)',
 												value: 'greater_than',
-												description: 'Größer als',
+												description: 'Greater than',
 											},
 											{
-												name: 'Größer gleich (>=)',
+												name: 'Greater or Equal (>=)',
 												value: 'greater_equal',
-												description: 'Größer oder gleich',
+												description: 'Greater than or equal to',
 											},
 											{
-												name: 'Kleiner (<)',
+												name: 'Less Than (<)',
 												value: 'less_than',
-												description: 'Kleiner als',
+												description: 'Less than',
 											},
 											{
-												name: 'Kleiner gleich (<=)',
+												name: 'Less or Equal (<=)',
 												value: 'less_equal',
-												description: 'Kleiner oder gleich',
+												description: 'Less than or equal to',
 											},
 											{
-												name: 'Enthält (LIKE)',
+												name: 'Contains (LIKE)',
 												value: 'contains',
-												description: 'Text enthält Begriff',
+												description: 'Text contains value',
 											},
 											{
-												name: 'Beginnt mit',
+												name: 'Starts With',
 												value: 'starts_with',
-												description: 'Text beginnt mit',
+												description: 'Text starts with value',
 											},
 											{
-												name: 'Endet mit',
+												name: 'Ends With',
 												value: 'ends_with',
-												description: 'Text endet mit',
+												description: 'Text ends with value',
 											},
 											{
-												name: 'Ist leer',
+												name: 'Is Empty',
 												value: 'is_empty',
-												description: 'Feld ist leer',
+												description: 'Field is empty',
 											},
 											{
-												name: 'Ist nicht leer',
+												name: 'Is Not Empty',
 												value: 'is_not_empty',
-												description: 'Feld hat einen Wert',
+												description: 'Field has a value',
 											},
 										],
 										default: 'equals',
-										description: 'Der Filter-Operator',
+										description: 'The filter operator',
 									},
 									{
-										displayName: 'Wert',
+										displayName: 'Value',
 										name: 'value',
 										type: 'string',
 										default: '',
-										description: 'Der Filter-Wert',
-										placeholder: 'Filter-Wert...',
+										description: 'The filter value',
+										placeholder: 'Filter value...',
 									},
 								],
 							},
 						],
-						description: 'Filter-Regeln für die Abfrage',
+						description: 'Filter rules for the query',
 					},
 					{
-						displayName: 'Sortierung',
+						displayName: 'Sorting',
 						name: 'sorting',
 						type: 'fixedCollection',
 						typeOptions: {
 							multipleValues: true,
 						},
-						placeholder: 'Sortierung hinzufügen',
+						placeholder: 'Add Sorting',
 						default: {},
 						options: [
 							{
-								displayName: 'Sortier-Regel',
+								displayName: 'Sort Rule',
 								name: 'sort',
 								values: [
 									{
-										displayName: 'Spalten-ID',
+										displayName: 'Column ID',
 										name: 'columnId',
 										type: 'string',
 										required: true,
 										default: '',
-										description: 'Die ID der zu sortierenden Spalte',
+										description: 'The ID of the column to sort',
 										placeholder: '1',
 									},
 									{
-										displayName: 'Richtung',
+										displayName: 'Direction',
 										name: 'direction',
 										type: 'options',
 										options: [
 											{
-												name: 'Aufsteigend (A-Z, 1-9)',
+												name: 'Ascending (A-Z, 1-9)',
 												value: 'ASC',
-												description: 'Von klein zu groß',
+												description: 'Low to high',
 											},
 											{
-												name: 'Absteigend (Z-A, 9-1)',
+												name: 'Descending (Z-A, 9-1)',
 												value: 'DESC',
-												description: 'Von groß zu klein',
+												description: 'High to low',
 											},
 										],
 										default: 'ASC',
-										description: 'Die Sortierrichtung',
+										description: 'Sorting direction',
 									},
 								],
 							},
 						],
-						description: 'Sortier-Regeln für die Abfrage',
+						description: 'Sorting rules for the query',
 					},
 					{
-						displayName: 'Suche',
+						displayName: 'Search',
 						name: 'search',
 						type: 'fixedCollection',
 						default: {},
 						options: [
 							{
-								displayName: 'Such-Einstellungen',
+								displayName: 'Search Settings',
 								name: 'settings',
 								values: [
 									{
-										displayName: 'Suchbegriff',
+										displayName: 'Search Term',
 										name: 'term',
 										type: 'string',
 										default: '',
-										description: 'Der Suchbegriff',
-										placeholder: 'Suchbegriff...',
+										description: 'The search term',
+										placeholder: 'Search term...',
 									},
 									{
-										displayName: 'Spalten-IDs für Suche',
+										displayName: 'Column IDs for Search',
 										name: 'columns',
 										type: 'string',
 										default: '',
-										description: 'Spalten-IDs durch Komma getrennt (leer = alle)',
+										description: 'Comma-separated column IDs (empty = all)',
 										placeholder: '1,3,5',
 									},
 									{
-										displayName: 'Groß-/Kleinschreibung beachten',
+										displayName: 'Case Sensitive',
 										name: 'caseSensitive',
 										type: 'boolean',
 										default: false,
-										description: 'Ob Groß-/Kleinschreibung beachtet wird',
+										description: 'Whether to match case',
 									},
 								],
 							},
 						],
-						description: 'Such-Konfiguration',
+						description: 'Search configuration',
 					},
 				],
 			},
 		],
-		description: 'Erweiterte Abfrage-Optionen für Zeilen-Abruf',
+		description: 'Advanced query options for row retrieval',
 	},
 
 	// ==============================================
-	// ORIGINAL OPERATIONS - Für normale UI Nutzer
+	// ORIGINAL OPERATIONS - For normal UI users
 	// ==============================================
 
-	// Node Collection für getAll, create
+	// Node Collection for getAll, create
 	{
-		displayName: 'Quelle',
+		displayName: 'Source',
 		name: 'nodeCollection',
 		type: 'options',
 		required: true,
@@ -506,31 +508,31 @@ export const rowFields: INodeProperties[] = [
 		},
 		options: [
 			{
-				name: 'Tabelle',
+				name: 'Table',
 				value: 'tables',
-				description: 'Zeilen direkt aus einer Tabelle abrufen/erstellen',
+				description: 'Fetch/create rows directly in a table',
 			},
 			{
 				name: 'View',
 				value: 'views',
-				description: 'Zeilen aus einer View abrufen/erstellen',
+				description: 'Fetch/create rows from a view',
 			},
 		],
 		default: 'tables',
-		description: 'Wählen Sie aus, ob Sie mit einer Tabelle oder View arbeiten möchten',
+		description: 'Select whether to work with a table or view',
 	},
 
-	// Tabellen-ID für tables nodeCollection
+	// Table ID for tables nodeCollection
 	{
-		displayName: 'Tabelle',
+		displayName: 'Table',
 		name: 'tableId',
 		type: 'resourceLocator',
 		default: { mode: 'list', value: '' },
 		required: true,
-		description: 'Wählen Sie eine Tabelle aus der Liste oder geben Sie deren ID an',
+		description: 'Select a table from the list or enter its ID',
 		modes: [
 			{
-				displayName: 'Liste',
+				displayName: 'List',
 				name: 'list',
 				type: 'list',
 				typeOptions: {
@@ -543,13 +545,13 @@ export const rowFields: INodeProperties[] = [
 				displayName: 'ID',
 				name: 'id',
 				type: 'string',
-				placeholder: 'Tabellen-ID',
+				placeholder: 'Table ID',
 				validation: [
 					{
 						type: 'regex',
 						properties: {
 							regex: '^[0-9]+$',
-							errorMessage: 'Bitte eine gültige Tabellen-ID (Zahl) eingeben',
+							errorMessage: 'Please enter a valid Table ID (number)',
 						},
 					},
 				],
@@ -564,17 +566,17 @@ export const rowFields: INodeProperties[] = [
 		},
 	},
 
-	// View-ID für views nodeCollection
+	// View ID for views nodeCollection
 	{
 		displayName: 'View',
 		name: 'viewId',
 		type: 'resourceLocator',
 		default: { mode: 'list', value: '' },
 		required: true,
-		description: 'Wählen Sie eine View aus der Liste oder geben Sie deren ID an',
+		description: 'Select a view from the list or enter its ID',
 		modes: [
 			{
-				displayName: 'Liste',
+				displayName: 'List',
 				name: 'list',
 				type: 'list',
 				typeOptions: {
@@ -587,13 +589,13 @@ export const rowFields: INodeProperties[] = [
 				displayName: 'ID',
 				name: 'id',
 				type: 'string',
-				placeholder: 'View-ID',
+				placeholder: 'View ID',
 				validation: [
 					{
 						type: 'regex',
 						properties: {
 							regex: '^[0-9]+$',
-							errorMessage: 'Bitte eine gültige View-ID (Zahl) eingeben',
+							errorMessage: 'Please enter a valid View ID (number)',
 						},
 					},
 				],
@@ -608,15 +610,15 @@ export const rowFields: INodeProperties[] = [
 		},
 	},
 
-	// Daten für create - DIREKT nach Tabellen-Auswahl!
+	// Data for create - DIRECTLY after selecting table
 	{
-		displayName: 'Zeilen-Daten',
+		displayName: 'Row Data',
 		name: 'data',
 		type: 'fixedCollection',
 		typeOptions: {
 			multipleValues: true,
 		},
-		placeholder: 'Spalte hinzufügen',
+		placeholder: 'Add Column',
 		required: true,
 		displayOptions: {
 			show: {
@@ -627,25 +629,25 @@ export const rowFields: INodeProperties[] = [
 		default: {},
 		options: [
 			{
-				displayName: 'Spalte',
+				displayName: 'Column',
 				name: 'column',
 				values: [
 					{
-						displayName: 'Spalten-ID',
+						displayName: 'Column ID',
 						name: 'columnId',
 						type: 'options',
 						typeOptions: {
 							loadOptionsMethod: 'getColumns',
 						},
 						default: '',
-						description: 'Die ID der Spalte',
+						description: 'The ID of the column',
 					},
 					{
-						displayName: 'Wert',
+						displayName: 'Value',
 						name: 'value',
 						type: 'string',
 						default: '',
-						description: 'Der Wert für diese Spalte',
+						description: 'The value for this column',
 						typeOptions: {
 							canBeExpression: true,
 						},
@@ -653,12 +655,12 @@ export const rowFields: INodeProperties[] = [
 				],
 			},
 		],
-		description: 'Die Daten für die neue Zeile',
+		description: 'Data for the new row',
 	},
 
-	// Zeilen-ID für get, update
+	// Row ID for get, update
 	{
-		displayName: 'Zeilen-ID',
+		displayName: 'Row ID',
 		name: 'rowId',
 		type: 'string',
 		required: true,
@@ -669,24 +671,24 @@ export const rowFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Die ID der Zeile',
+		description: 'The ID of the row',
 		placeholder: '123',
 		typeOptions: {
 			canBeExpression: true,
 		},
 	},
 
-	// Tabellen-ID für get, update (benötigt für API-Pfad)
+	// Table ID for get, update (required for API path)
 	{
-		displayName: 'Tabelle',
+		displayName: 'Table',
 		name: 'tableId',
 		type: 'resourceLocator',
 		default: { mode: 'list', value: '' },
 		required: true,
-		description: 'Die Tabelle, die die Zeile enthält',
+		description: 'The table containing the row',
 		modes: [
 			{
-				displayName: 'Liste',
+				displayName: 'List',
 				name: 'list',
 				type: 'list',
 				typeOptions: {
@@ -699,13 +701,13 @@ export const rowFields: INodeProperties[] = [
 				displayName: 'ID',
 				name: 'id',
 				type: 'string',
-				placeholder: 'Tabellen-ID',
+				placeholder: 'Table ID',
 				validation: [
 					{
 						type: 'regex',
 						properties: {
 							regex: '^[0-9]+$',
-							errorMessage: 'Bitte eine gültige Tabellen-ID (Zahl) eingeben',
+							errorMessage: 'Please enter a valid Table ID (number)',
 						},
 					},
 				],
@@ -719,15 +721,15 @@ export const rowFields: INodeProperties[] = [
 		},
 	},
 
-	// Daten für update
+	// Data for update
 	{
-		displayName: 'Zeilen-Daten Aktualisieren',
+		displayName: 'Update Row Data',
 		name: 'data',
 		type: 'fixedCollection',
 		typeOptions: {
 			multipleValues: true,
 		},
-		placeholder: 'Spalte hinzufügen',
+		placeholder: 'Add Column',
 		displayOptions: {
 			show: {
 				resource: ['row'],
@@ -737,25 +739,25 @@ export const rowFields: INodeProperties[] = [
 		default: {},
 		options: [
 			{
-				displayName: 'Spalte',
+				displayName: 'Column',
 				name: 'column',
 				values: [
 					{
-						displayName: 'Spalten-ID',
+						displayName: 'Column ID',
 						name: 'columnId',
 						type: 'options',
 						typeOptions: {
 							loadOptionsMethod: 'getColumns',
 						},
 						default: '',
-						description: 'Die ID der Spalte',
+						description: 'The ID of the column',
 					},
 					{
-						displayName: 'Wert',
+						displayName: 'Value',
 						name: 'value',
 						type: 'string',
 						default: '',
-						description: 'Der neue Wert für diese Spalte',
+						description: 'The new value for this column',
 						typeOptions: {
 							canBeExpression: true,
 						},
@@ -763,21 +765,21 @@ export const rowFields: INodeProperties[] = [
 				],
 			},
 		],
-		description: 'Die zu aktualisierenden Daten',
+		description: 'Data to update',
 	},
 
-	// ============ AB HIER: NUR FÜR getAll ============
+	// ============ FROM HERE: ONLY FOR getAll ============
 
-	// Zusätzliche Optionen für getAll - NUR FÜR getAll!
+	// Additional options for getAll - ONLY FOR getAll!
 	{
-		displayName: 'Zusätzliche Optionen',
+		displayName: 'Additional Options',
 		name: 'additionalOptions',
 		type: 'collection',
-		placeholder: 'Option hinzufügen',
+		placeholder: 'Add Option',
 		displayOptions: {
 			show: {
 				resource: ['row'],
-				operation: ['getAll'], // NUR für getAll!
+				operation: ['getAll'], // ONLY for getAll!
 			},
 		},
 		default: {},
@@ -791,8 +793,8 @@ export const rowFields: INodeProperties[] = [
 					maxValue: 1000,
 				},
 				default: 50,
-				description: 'Maximale Anzahl der zurückgegebenen Zeilen',
-				hint: 'Empfohlen: 50-200 für optimale Performance. Maximum: 1000 Zeilen pro Anfrage.',
+				description: 'Maximum number of rows returned',
+				hint: 'Recommended: 50-200 for best performance. Maximum: 1000 rows per request.',
 			},
 			{
 				displayName: 'Offset',
@@ -802,249 +804,254 @@ export const rowFields: INodeProperties[] = [
 					minValue: 0,
 				},
 				default: 0,
-				description: 'Anzahl der zu überspringenden Zeilen (für Pagination)',
-				hint: 'Für Seite 2 mit Limit 50: Offset = 50. Für Seite 3: Offset = 100.',
+				description: 'Number of rows to skip (for pagination)',
+				hint: 'For page 2 with limit 50: Offset = 50. For page 3: Offset = 100.',
 			},
 			{
-				displayName: 'Filter aktivieren',
+				displayName: 'Enable Filters',
 				name: 'useFilters',
 				type: 'boolean',
 				default: false,
-				description: 'Ob Filter angewendet werden sollen',
-				hint: 'Aktivieren Sie Filter um nur bestimmte Zeilen basierend auf Spalten-Werten abzurufen.',
+				description: 'Whether to apply filters',
+				hint: 'Enable filters to retrieve only rows matching specific column values.',
 			},
 			{
-				displayName: 'Sortierung aktivieren',
+				displayName: 'Enable Sorting',
 				name: 'useSorting',
 				type: 'boolean',
 				default: false,
-				description: 'Ob Sortierung angewendet werden soll',
-				hint: 'Sortieren Sie Zeilen nach einer oder mehreren Spalten (erste Regel hat höchste Priorität).',
+				description: 'Whether to apply sorting',
+				hint: 'Sort rows by one or more columns (first rule has highest priority).',
 			},
 			{
-				displayName: 'Suche aktivieren',
+				displayName: 'Enable Search',
 				name: 'useSearch',
 				type: 'boolean',
 				default: false,
-				description: 'Ob Textsuche angewendet werden soll',
-				hint: 'Durchsuchen Sie Text-Spalten nach bestimmten Begriffen.',
+				description: 'Whether to apply text search',
+				hint: 'Search text columns for specific terms.',
 			},
 		],
 	},
 
-	// Filter-Konfiguration - NUR FÜR getAll!
+	// Filter Configuration - ONLY FOR getAll!
 	{
-		displayName: 'Filter (aktiviert wenn "Filter aktivieren" gesetzt ist)',
+		displayName: 'Filter (enabled when "Enable Filters" is set)',
 		name: 'filters',
 		type: 'fixedCollection',
 		typeOptions: {
 			multipleValues: true,
 		},
 		default: {},
-		placeholder: 'Filter hinzufügen',
+		placeholder: 'Add Filter',
 		displayOptions: {
 			show: {
 				resource: ['row'],
-				operation: ['getAll'], // NUR für getAll!
+				operation: ['getAll'],
 			},
 		},
 		options: [
 			{
-				displayName: 'Filter-Regel',
+				displayName: 'Filter Rule',
 				name: 'filter',
 				values: [
 					{
-						displayName: 'Spalte',
+						displayName: 'Column',
 						name: 'columnId',
 						type: 'options',
 						typeOptions: {
 							loadOptionsMethod: 'getColumns',
 						},
 						default: '',
-						description: 'Die zu filternde Spalte',
-						hint: 'Wählen Sie die Spalte aus, auf die der Filter angewendet werden soll.',
+						description: 'The column to filter on',
+						hint: 'Select the column to apply the filter to.',
 					},
 					{
 						displayName: 'Operator',
 						name: 'operator',
 						type: 'options',
 						default: 'equals',
-						description: 'Der Filter-Operator',
-						hint: 'Wählen Sie den Vergleichsoperator für den Filter.',
+						description: 'The filter operator',
+						hint: 'Choose the comparison operator for the filter.',
 						options: [
 							{
-								name: 'Gleich (=)',
+								name: 'Equals (=)',
 								value: 'equals',
-								description: 'Exakte Übereinstimmung - findet nur genau den angegebenen Wert',
+								description: 'Exact match - finds only the specified value',
 							},
 							{
-								name: 'Ungleich (!=)',
+								name: 'Not Equals (!=)',
 								value: 'not_equals',
-								description: 'Nicht gleich - findet alle Werte außer dem angegebenen',
+								description:
+									'Not equal - finds all values except the specified one',
 							},
 							{
-								name: 'Größer (>)',
+								name: 'Greater Than (>)',
 								value: 'greater_than',
-								description: 'Größer als - für Zahlen und Daten',
+								description: 'Greater than - for numbers and dates',
 							},
 							{
-								name: 'Größer gleich (>=)',
+								name: 'Greater or Equal (>=)',
 								value: 'greater_equal',
-								description: 'Größer oder gleich - für Zahlen und Daten',
+								description: 'Greater than or equal - for numbers and dates',
 							},
 							{
-								name: 'Kleiner (<)',
+								name: 'Less Than (<)',
 								value: 'less_than',
-								description: 'Kleiner als - für Zahlen und Daten',
+								description: 'Less than - for numbers and dates',
 							},
 							{
-								name: 'Kleiner gleich (<=)',
+								name: 'Less or Equal (<=)',
 								value: 'less_equal',
-								description: 'Kleiner oder gleich - für Zahlen und Daten',
+								description: 'Less than or equal - for numbers and dates',
 							},
 							{
-								name: 'Enthält (LIKE)',
+								name: 'Contains (LIKE)',
 								value: 'contains',
-								description: 'Text enthält den angegebenen Begriff (Groß-/Kleinschreibung wird ignoriert)',
+								description: 'Text contains the specified term (case-insensitive)',
 							},
 							{
-								name: 'Beginnt mit',
+								name: 'Starts With',
 								value: 'starts_with',
-								description: 'Text beginnt mit dem angegebenen Begriff',
+								description: 'Text starts with the specified term',
 							},
 							{
-								name: 'Endet mit',
+								name: 'Ends With',
 								value: 'ends_with',
-								description: 'Text endet mit dem angegebenen Begriff',
+								description: 'Text ends with the specified term',
 							},
 							{
-								name: 'Ist leer',
+								name: 'Is Empty',
 								value: 'is_empty',
-								description: 'Feld ist leer, null oder nicht gesetzt',
+								description: 'Field is empty, null, or unset',
 							},
 							{
-								name: 'Ist nicht leer',
+								name: 'Is Not Empty',
 								value: 'is_not_empty',
-								description: 'Feld hat einen Wert (nicht leer, null oder nicht gesetzt)',
+								description: 'Field has a value (not empty, null, or unset)',
 							},
 						],
 					},
 					{
-						displayName: 'Wert',
+						displayName: 'Value',
 						name: 'value',
 						type: 'string',
 						default: '',
-						description: 'Der Filter-Wert (leer lassen für Operatoren "ist leer" und "ist nicht leer")',
-						hint: 'Für Zahlen: "42", für Daten: "2024-01-01" oder "2024-01-01T10:00:00Z", für Text: beliebiger Text. Bei "ist leer"/"ist nicht leer" dieses Feld leer lassen.',
-						placeholder: 'Filter-Wert eingeben...',
+						description:
+							'The filter value (leave empty for "Is Empty" and "Is Not Empty" operators)',
+						hint: 'For numbers: "42", for dates: "2024-01-01" or "2024-01-01T10:00:00Z", for text: any string. Leave empty for "Is Empty"/"Is Not Empty".',
+						placeholder: 'Enter filter value...',
 					},
 				],
 			},
 		],
-		description: 'Filter-Regeln für die Zeilen-Abfrage',
+		description: 'Filter rules for the row query',
 	},
 
-	// Sortierung-Konfiguration - NUR FÜR getAll!
+	// Sorting Configuration - ONLY FOR getAll!
 	{
-		displayName: 'Sortierung (aktiviert wenn "Sortierung aktivieren" gesetzt ist)',
+		displayName: 'Sorting (enabled when "Enable Sorting" is set)',
 		name: 'sorting',
 		type: 'fixedCollection',
 		typeOptions: {
 			multipleValues: true,
 		},
 		default: {},
-		placeholder: 'Sortierung hinzufügen',
+		placeholder: 'Add Sorting',
 		displayOptions: {
 			show: {
 				resource: ['row'],
-				operation: ['getAll'], // NUR für getAll!
+				operation: ['getAll'],
 			},
 		},
 		options: [
 			{
-				displayName: 'Sortier-Regel',
+				displayName: 'Sorting Rule',
 				name: 'sort',
 				values: [
 					{
-						displayName: 'Spalte',
+						displayName: 'Column',
 						name: 'columnId',
 						type: 'options',
 						typeOptions: {
 							loadOptionsMethod: 'getColumns',
 						},
 						default: '',
-						description: 'Die zu sortierende Spalte',
-						hint: 'Wählen Sie die Spalte für die Sortierung. Bei mehreren Regeln hat die erste höchste Priorität.',
+						description: 'The column to sort by',
+						hint: 'Select the column for sorting. First rule has highest priority.',
 					},
 					{
-						displayName: 'Richtung',
+						displayName: 'Direction',
 						name: 'direction',
 						type: 'options',
 						default: 'ASC',
-						description: 'Sortier-Richtung',
-						hint: 'ASC = A-Z, 1-9, älteste zuerst. DESC = Z-A, 9-1, neueste zuerst.',
+						description: 'Sort direction',
+						hint: 'ASC = A-Z, 1-9, oldest first. DESC = Z-A, 9-1, newest first.',
 						options: [
 							{
-								name: 'Aufsteigend (A-Z, 1-9)',
+								name: 'Ascending (A-Z, 1-9)',
 								value: 'ASC',
-								description: 'Alphabetisch A-Z, numerisch 1-9, Datum alt zu neu',
+								description:
+									'Alphabetically A-Z, numerically 1-9, date oldest to newest',
 							},
 							{
-								name: 'Absteigend (Z-A, 9-1)',
+								name: 'Descending (Z-A, 9-1)',
 								value: 'DESC',
-								description: 'Alphabetisch Z-A, numerisch 9-1, Datum neu zu alt',
+								description:
+									'Alphabetically Z-A, numerically 9-1, date newest to oldest',
 							},
 						],
 					},
 				],
 			},
 		],
-		description: 'Sortier-Regeln für die Zeilen-Abfrage (erste Regel hat höchste Priorität)',
+		description: 'Sorting rules for the row query (first rule has highest priority)',
 	},
 
-	// Suche-Konfiguration - NUR FÜR getAll!
+	// Search Configuration - ONLY FOR getAll!
 	{
-		displayName: 'Suche (aktiviert wenn "Suche aktivieren" gesetzt ist)',
+		displayName: 'Search (enabled when "Enable Search" is set)',
 		name: 'search',
 		type: 'collection',
-		placeholder: 'Suche konfigurieren',
+		placeholder: 'Configure Search',
 		default: {},
 		displayOptions: {
 			show: {
 				resource: ['row'],
-				operation: ['getAll'], // NUR für getAll!
+				operation: ['getAll'],
 			},
 		},
 		options: [
 			{
-				displayName: 'Suchbegriff',
+				displayName: 'Search Term',
 				name: 'term',
 				type: 'string',
 				default: '',
-				description: 'Der Suchbegriff (durchsucht alle Text-Spalten)',
-				hint: 'Geben Sie einen Begriff ein, der in den Text-Spalten gesucht werden soll.',
-				placeholder: 'z.B. "München" oder "projekt"',
+				description: 'The search term (searches all text columns)',
+				hint: 'Enter a term to search in text columns.',
+				placeholder: 'e.g. "Munich" or "project"',
 			},
 			{
-				displayName: 'Nur spezifische Spalten durchsuchen',
+				displayName: 'Search Only Specific Columns',
 				name: 'searchColumns',
 				type: 'multiOptions',
 				typeOptions: {
 					loadOptionsMethod: 'getColumns',
 				},
 				default: [],
-				description: 'Nur diese Spalten durchsuchen (leer = alle Text-Spalten)',
-				hint: 'Lassen Sie dies leer um alle Text-Spalten zu durchsuchen, oder wählen Sie spezifische Spalten.',
+				description: 'Search only these columns (empty = all text columns)',
+				hint: 'Leave empty to search all text columns, or select specific columns.',
 			},
 			{
-				displayName: 'Groß-/Kleinschreibung beachten',
+				displayName: 'Case Sensitive',
 				name: 'caseSensitive',
 				type: 'boolean',
 				default: false,
-				description: 'Ob bei der Suche die Groß-/Kleinschreibung beachtet werden soll',
-				hint: 'Deaktiviert: "München" findet auch "münchen". Aktiviert: nur exakte Schreibweise.',
+				description: 'Whether search is case-sensitive',
+				hint: 'Off: "Munich" also finds "munich". On: matches only exact case.',
 			},
 		],
-		description: 'Volltext-Suche in den Zeilen-Daten',
+		description: 'Full-text search in row data',
 	},
-]; 
+];
+
