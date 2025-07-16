@@ -25,7 +25,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/terschawebIT/n8n-nodes-nextcloud-tables.git"
+		"url": "git+https://github.com/terschawebIT/n8n-nodes-nextcloud-tables-en.git"
 	},
 	"main": "index.js",
 	"scripts": {
