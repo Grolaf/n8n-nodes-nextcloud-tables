@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-nextcloud-tables-en",
-	"version": "2.5.2",
+	"version": "2.5.3",
 	"description": "Production-ready n8n node for Nextcloud Tables – full API coverage with advanced filters, multi-column sorting, CSV import, and professional data validation",
 	"keywords": [
 		"n8n-community-node-package",
@@ -29,7 +29,7 @@
 	},
 	"main": "index.js",
 	"scripts": {
-		"build": "tsc",
+		"build": "tsc && gulp build:icons",
 		"dev": "tsc --watch",
 		"format": "prettier --write .",
 		"lint": "eslint .",
