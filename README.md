@@ -4,7 +4,7 @@ A **community** n8n node for integration with Nextcloud Tables. This node enable
 
 This repo is the english translation of the original one https://github.com/terschawebIT/n8n-nodes-nextcloud-tables
 
-## 🚀 **Production Status: v2.5.0** ✅
+## 🚀 **Production Status: v2.5.1** ✅
 
 **This node is production-ready for the tested core features and hardened against critical NaN bugs!**
 

@@ -1,6 +1,5 @@
 import { IExecuteFunctions } from 'n8n-workflow';
 import { ApiHelper } from '../helpers/api.helper';
-import { FormatOptions } from '../helpers/data.formatter';
 import { Column, Row } from '../interfaces';
 
 export class RowHandler {
@@ -417,9 +416,8 @@ export class RowHandler {
 				tableId = view.tableId;
 			} catch (error) {
 				// Fallback: create without column info
-				const formattedData = ApiHelper.formatRowDataSimple(data);
 				return await ApiHelper.makeApiRequest<Row>(context, 'POST', endpoint, {
-					data: formattedData,
+					data,
 				});
 			}
 		}
@@ -427,17 +425,9 @@ export class RowHandler {
 		// Load column info for correct data formatting
 		const columns = await ApiHelper.getTableColumns(context, tableId);
 
-		// Advanced formatting with validation
-		const formatOptions: FormatOptions = {
-			validateSelections: true,
-			dateTimeFormat: 'iso',
-		};
-
 		try {
-			const formattedData = ApiHelper.formatRowData(data, columns, formatOptions);
-
 			const result = await ApiHelper.makeApiRequest<Row>(context, 'POST', endpoint, {
-				data: formattedData,
+				data,
 			});
 
 			return this.formatRowForOutput(result, columns);
@@ -465,25 +455,10 @@ export class RowHandler {
 		// Load column info for correct data formatting
 		const columns = await ApiHelper.getTableColumns(context, tableId);
 
-		// Advanced formatting with validation
-		const formatOptions: FormatOptions = {
-			validateSelections: true,
-			dateTimeFormat: 'iso',
-		};
-
 		try {
-			const formattedData = ApiHelper.formatRowData(data, columns, formatOptions);
-
-			if (Object.keys(formattedData).length === 0) {
-				throw new Error('At least one column must be specified for the update');
-			}
-
-			const result = await ApiHelper.makeApiRequest<Row>(
-				context,
-				'PUT',
-				`/tables/${tableId}/rows/${rowId}`,
-				{ data: formattedData },
-			);
+			const result = await ApiHelper.makeApiRequest<Row>(context, 'PUT', `/rows/${rowId}`, {
+				data,
+			});
 
 			return this.formatRowForOutput(result, columns);
 		} catch (error) {
@@ -873,4 +848,3 @@ export class RowHandler {
 		}
 	}
 }
-

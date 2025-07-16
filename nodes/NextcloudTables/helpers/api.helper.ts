@@ -9,7 +9,6 @@ import {
 
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Column } from '../interfaces';
-import { DataFormatter, FormatOptions } from './data.formatter';
 /**
  * Central logging class for better log labeling and grep-ability
  */
@@ -338,32 +337,6 @@ export class ApiHelper {
 			throw new Error('[N8N-NEXTCLOUD-TABLES] Invalid row ID');
 		}
 		return id;
-	}
-
-	/**
-	 * Formats row data for API requests
-	 */
-	static formatRowData(
-		data: Record<string, any>,
-		columns?: Column[],
-		options: FormatOptions = {},
-	): Record<string, any> {
-		return DataFormatter.formatRowData(data, columns, options);
-	}
-
-	/**
-	 * Formats row data with simple fallback logic (legacy)
-	 */
-	static formatRowDataSimple(data: Record<string, any>): Record<string, any> {
-		const formattedData: Record<string, any> = {};
-
-		for (const [key, value] of Object.entries(data)) {
-			if (value !== undefined && value !== null && value !== '') {
-				formattedData[key] = value;
-			}
-		}
-
-		return formattedData;
 	}
 
 	/**
